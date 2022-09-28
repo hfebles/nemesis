@@ -1,0 +1,7 @@
+id_group,code_group,name_group,id_type_ledger_account
+1,"1","ACTIVO",1
+2,"2","PASIVO",2
+3,"3","PATRIMONIO NETO",0
+4,"4","INGRESOS",2
+5,"5","GASTOS",1
+6,"6","OTROS RESULTADOS INTEGRALES",0
