@@ -43,7 +43,10 @@ use App\Http\Controllers\HumanResources\GroupWorkersController;
 
 
 use App\Http\Controllers\Conf\BankController;
+use App\Http\Controllers\Conf\CargoController;
 use App\Http\Controllers\Conf\Sales\InvoicingConfigutarionController;
+use App\Http\Controllers\Conf\ZoneController;
+use App\Http\Controllers\Delivery\DeliveryController;
 use App\Http\Controllers\Payments\PaymentController;
 use App\Http\Controllers\Production\MaterialsListController;
 use App\Http\Controllers\Production\ProductionOrderController;
@@ -96,6 +99,13 @@ Route::group(['middleware' => ['auth']], function() {
     // bancos 
     Route::resource('/mantenice/banks', BankController::class);
     Route::post('/mantenice/edit-banks', [BankController::class, 'editModal'])->name('banks.edit-banks');
+
+    //Zones
+    Route::resource('/mantenice/zones', ZoneController::class);
+
+    //Cargo
+    Route::resource('/mantenice/cargo', CargoController::class);
+    Route::post('/mantenice/edit-cargo', [CargoController::class, 'editModal'])->name('cargo.edit-cargo');
 
     //conf pedidos
 
@@ -286,6 +296,11 @@ Route::group(['middleware' => ['auth']], function() {
     * FIN PRODUCCION
     * 
     */
+
+
+    //Delivery
+
+    Route::resource('/delivery/delivery', DeliveryController::class);
      
      
 

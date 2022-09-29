@@ -42,6 +42,7 @@ class GroupWorkersController extends Controller
             'show' => false,
             'edit_modal' => true, 
             'url' => "/hhrr/group-workers",
+            'group' => 'rrhh-group-worker',
             'id' => 'id_group_worker',
             'data' => GroupWorkers::whereEnabledGroupWorker(1)->paginate(10),
             'i' => (($request->input('page', 1) - 1) * 5),
@@ -63,7 +64,7 @@ class GroupWorkersController extends Controller
         $save->save();
 
         $message = [
-            'type' => 'danger',
+            'type' => 'success',
             'message' => 'Se registro el grupo: '.$save->name_group_worker.' con exito',
         ];
                         

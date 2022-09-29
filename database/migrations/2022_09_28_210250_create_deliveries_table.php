@@ -20,8 +20,8 @@ class CreateDeliveriesTable extends Migration
             $table->text('ids_invoices');
             $table->integer('id_zone');
             $table->text('comment_delivery')->nullable();
-            $table->boolean('estado_delivery')->default(1);
-            $table->integer('id_user');
+            $table->integer('state_delivery')->default(0);
+            $table->integer('id_worker'); //chofer
             $table->integer('id_caletero');
             $table->boolean('enabled_delivery')->default(1);
             $table->timestamps();

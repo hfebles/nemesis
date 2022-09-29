@@ -124,6 +124,14 @@ php
             'role-list', 'role-create', 'role-edit', 'role-delete',
             'mantenice-list', 'mantenice-create', 'mantenice-edit', 'mantenice-delete',
             'user-list', 'user-create', 'user-edit', 'user-delete',
+            
+
+            //Despachos O delivery
+            'delivery-list', 'delivery-create', 'delivery-edit', 'delivery-delete',
+
+            
+
+
             'menu-list', 'menu-create', 'menu-edit', 'menu-delete',
             'exchange-list', 'exchange-create', 'exchange-edit', 'exchange-delete',
             'sales-list', 'sales-create', 'sales-edit', 'sales-delete',
@@ -136,6 +144,9 @@ php
             'taxes-list', 'taxes-create', 'taxes-edit', 'taxes-delete',
             'banks-list', 'banks-create', 'banks-edit', 'banks-delete',
             'production-list', 'production-create', 'production-edit', 'production-delete',
+
+            'cargo-list', 'cargo-create', 'cargo-edit', 'cargo-delete',
+            'zone-list', 'zone-create', 'zone-edit', 'zone-delete',
             
 
             //Pagos

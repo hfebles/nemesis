@@ -31,7 +31,8 @@ return new class extends Migration
             $table->integer('id_client')->nullable();
             $table->integer('id_user')->nullable();
             $table->integer('id_worker')->nullable();
-            $table->integer('id_invoice')->nullable();
+            $table->integer('id_delivery')->nullable();
+            $table->integer('state_delivery')->default(0);
             $table->boolean('enabled_invoicing')->default(1);
             $table->timestamps();
         });

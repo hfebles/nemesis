@@ -180,7 +180,7 @@ class InvoicingController extends Controller
             $saveInvoice->no_exempt_amout_invoicing = $dataInvoice['subFac'];
             $saveInvoice->total_amount_tax_invoicing = $dataInvoice['total_taxes'];
             $saveInvoice->date_invoicing = date('Y-m-d');
-            $saveInvoice->id_order_state = 2;
+            $saveInvoice->id_order_state = 4;
             $saveInvoice->residual_amount_invoicing = $dataInvoice['total_con_tax'];
             $saveInvoice->save();
 

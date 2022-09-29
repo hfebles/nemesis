@@ -32,6 +32,9 @@ class PermissionTableSeeder extends Seeder
             'banks-list', 'banks-create', 'banks-edit', 'banks-delete',
             'invoices-list', 'invoices-create', 'invoices-edit', 'invoices-delete',
             'production-list', 'production-create', 'production-edit', 'production-delete',
+            'delivery-list', 'delivery-create', 'delivery-edit', 'delivery-delete',
+            'cargo-list', 'cargo-create', 'cargo-edit', 'cargo-delete',
+            'zone-list', 'zone-create', 'zone-edit', 'zone-delete',
 
             'payment-list', 'payment-create', 'payment-edit', 'payment-delete',
 

@@ -105,7 +105,7 @@ class MaterialsListController extends Controller
 
         
 
-        return redirect()->route('material-list.index');
+
 
         $message = [
             'type' => 'danger',
@@ -209,7 +209,7 @@ class MaterialsListController extends Controller
 
 
         $message = [
-            'type' => 'danger',
+            'type' => 'success',
             'message' => 'Se registro la lista de materiales con éxito',
         ];
                         
