@@ -59,7 +59,7 @@ class DeliveryController extends Controller
     public function create(){
 
         $conf = [
-            'title-section' => 'Crear un nuev guía',
+            'title-section' => 'Crear un nueva guía',
             'group' => 'delivery',
             'back' => 'delivery.index',
             'url' => '#'
@@ -104,11 +104,10 @@ class DeliveryController extends Controller
 
         $delivery->save();
 
-        return $delivery->id;
 
         for($i = 0; $i<count($data['ids_invoices']); $i++){            
            Invoicing::whereIdInvoicing($data['ids_invoices'][$i])->update([
-            'id_delivery' =>  $delivery->id,
+            'id_delivery' =>  $delivery->id_delivery,
             'state_delivery' => 1
         ]);
         }

@@ -157,12 +157,17 @@ class ClientController extends Controller
             $data['porcentual_amount_tax_client'] = $data['porcentual_amount_tax_client'];
         }
      
+        Client::whereIdClient($id)->update($data);
+        //return isset($data['porcentual_amount_tax_client']);
 
+        
 
         $message = [
             'type' => 'warning',
             'message' => 'El cliente, se actualizo con éxito',
         ];
+
+        
         
 
         return redirect()->route('clients.index')->with('message', $message);
