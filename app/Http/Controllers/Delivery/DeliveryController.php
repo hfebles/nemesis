@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Conf\Zone;
 use App\Models\Delivery\Delivery;
 use App\Models\HumanResources\Workers;
+use App\Models\Sales\Client;
 use App\Models\Sales\Invoicing;
 use Illuminate\Http\Request;
 
@@ -15,8 +16,8 @@ class DeliveryController extends Controller
     {
          $this->middleware('permission:delivery-list|adm-list', ['only' => ['index']]);
          $this->middleware('permission:adm-create|delivery-create', ['only' => ['create','store']]);
-         $this->middleware('permission:adm-edit|delivery-edit', ['only' => ['edit','update']]);
-         $this->middleware('permission:adm-delete|delivery-delete', ['only' => ['destroy']]);
+         $this->middleware('permission:adm-edit|delivery-edit', ['only' => ['edit','update', 'aprove']]);
+         $this->middleware('permission:adm-delete|delivery-delete', ['only' => ['destroy', 'cancel']]);
     }
 
     public function index(Request $request){
@@ -44,7 +45,7 @@ class DeliveryController extends Controller
             'switch' => false,
             'edit' => false,
             'edit_modal' => false,  
-            'show' => false,
+            'show' => true,
             'url' => "/delivery/delivery",
             'id' => 'id_delivery',
             'group' => 'delivery',
@@ -114,5 +115,95 @@ class DeliveryController extends Controller
 
         
         return redirect()->route('delivery.index');
+    }
+
+    public function show($id){
+
+        $data = Delivery::select('id_delivery', 'ids_invoices', 'deliveries.id_worker',  'id_caletero', 'guide_delivery', 'date_delivery', 'name_zone', 'state_delivery')
+        ->join('zones', 'zones.id_zone', '=', 'deliveries.id_zone')
+        ->where('id_delivery', '=', $id)
+        ->get()[0];
+
+        $caletero = Workers::find($data->id_caletero);
+        $chofer = Workers::find($data->id_worker);
+
+        $clientes = [];
+        $facturas = [];
+        $obj = json_decode($data->ids_invoices, true);
+        for($i = 0; $i < count($obj); $i++){
+            $facturas[$i] = Invoicing::find($obj[$i]);
+            $clientes[$i] = Client::find($facturas[$i]['id_client']);
+            // echo $i;
+        }
+
+
+        
+        $conf = [
+            'title-section' => 'Guía: '.$data->guide_delivery,
+            'group' => 'delivery',
+            'back' => 'delivery.index',
+            'url' => '#'
+        ];
+
+
+        // return $data;
+
+
+        return view('delivery.delivery.show', compact('data', 'caletero', 'chofer', 'clientes', 'conf', 'facturas'));
+    }
+
+
+    public function edit($id){
+
+
+        $data = Delivery::select('id_delivery', 'ids_invoices', 'deliveries.id_worker',  'id_caletero', 'guide_delivery', 'date_delivery', 'name_zone', 'state_delivery')
+        ->join('zones', 'zones.id_zone', '=', 'deliveries.id_zone')
+        ->where('id_delivery', '=', $id)
+        ->get()[0];
+
+        $invoices = Invoicing::select('invoicings.*', 'clients.name_client')
+                                ->join('clients', 'clients.id_client', '=', 'invoicings.id_client')
+                                ->where('id_order_state', '=', 4)
+                                ->where('state_delivery', '=', 0)->get();
+        $zone = Zone::whereEnabledZone(1)->pluck('name_zone', 'id_zone');
+
+        $driver = Workers::where('name_group_worker', '=', 'CHOFER')
+                        ->join('group_workers', 'group_workers.id_group_worker', '=', 'workers.id_group_worker')->get();
+        
+        $caletero = Workers::where('name_group_worker', '=', 'CALETERO')
+        ->join('group_workers', 'group_workers.id_group_worker', '=', 'workers.id_group_worker')->get();
+
+        $conf = [
+            'title-section' => 'Guía: '.$data->guide_delivery,
+            'group' => 'delivery',
+            'back' => 'delivery.index',
+            'url' => '#'
+        ];
+    }
+
+
+    public function aprove($id){
+
+        Delivery::whereIdDelivery($id)->update([ 'state_delivery' => 2]);
+    
+        $message = [
+            'type' => 'success',
+            'message' => 'Se aprovo el despacho con éxito',
+        ];
+                        
+            return redirect()->route('delivery.show', $id)->with('message', $message);
+        }
+
+    public function cancel($id){
+
+        Delivery::whereIdDelivery($id)->update([ 'state_delivery' => 4]);
+    
+        $message = [
+            'type' => 'danger',
+            'message' => 'Se anulo el despacho con éxito',
+        ];
+                        
+            return redirect()->route('delivery.show', $id)->with('message', $message);
+        
     }
 }
