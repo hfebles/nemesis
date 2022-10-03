@@ -71,9 +71,9 @@ class MenusTableSeeder extends Seeder
 
         //PRODUCCION:
         Menu::create(['id' => 35, 'name' => 'Ordenes de produccion', 'slug' => 'production-order.index', 'grupo' => 'production-order', 'icono' => 'fa-solid fa-user-tie', 'parent' => '8', 'order' => '0', 'href' => '0', ]);
-        Menu::create(['id' => 36, 'name' => 'Lista de materiales', 'slug' => 'material-list.index', 'grupo' => 'production-material-list', 'icono' => 'fa-solid fa-clipboard-user', 'parent' => '8', 'order' => '1', 'href' => '0', ]);
+        Menu::create(['id' => 36, 'name' => 'Lista de materiales', 'slug' => 'material-list.index', 'grupo' => 'production-material', 'icono' => 'fa-solid fa-clipboard-user', 'parent' => '8', 'order' => '1', 'href' => '0', ]);
 
-        Menu::create(['id' => 37, 'name' => 'Lista de despachos', 'slug' => 'delivery.index', 'grupo' => 'delivery-list', 'icono' => 'fa-solid fa-clipboard-user', 'parent' => '9', 'order' => '1', 'href' => '0', ]);
+        Menu::create(['id' => 37, 'name' => 'Lista de despachos', 'slug' => 'delivery.index', 'grupo' => 'delivery', 'icono' => 'fa-solid fa-clipboard-user', 'parent' => '9', 'order' => '1', 'href' => '0', ]);
 
     }
 
