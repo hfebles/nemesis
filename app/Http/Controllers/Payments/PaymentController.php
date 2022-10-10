@@ -43,16 +43,16 @@ class PaymentController extends Controller
                 'text-center align-middle',
                 'text-center align-middle',
                 'text-center align-middle',],
-            'tds' => ['date_payment', 'name_client', 'ref_name_sales_order', 'name_bank', 'amount_payment'],
+            'tds' => ['date_payment', 'name_client', 'ref_name_invoicing', 'name_bank', 'amount_payment'],
             'switch' => false,
             'edit' => false,
             'edit_modal' => false,  
-            'show' => false,
+            'show' => true,
             'url' => "/accounting/payments",
             'id' => 'id_payment',
-            'data' => Payments::select('date_payment', 'name_client', 'ref_name_sales_order', 'name_bank', 'amount_payment')
+        'data' => Payments::select('id_payment','date_payment', 'name_client', 'ref_name_invoicing', 'name_bank', 'amount_payment')
                                 ->join('banks', 'banks.id_bank', '=', 'payments.id_bank')
-                                ->join('sales_orders', 'sales_orders.id_sales_order', '=', 'payments.id_invoice')
+                                ->join('invoicings', 'invoicings.id_invoicing', '=', 'payments.id_invoice')
                                 ->join('clients', 'clients.id_client', '=', 'payments.id_client')
                                 ->paginate(10),
             'i' => (($request->input('page', 1) - 1) * 5),
@@ -60,7 +60,7 @@ class PaymentController extends Controller
 
 
 
-
+        
 
         return view('accounting.payments.index', compact('conf', 'table'));
     }
@@ -87,14 +87,35 @@ class PaymentController extends Controller
         if($invoce->residual_amount_invoicing == $payment->amount_payment){
             Invoicing::whereIdInvoicing($payment->id_invoice)->update(['residual_amount_invoicing' => 0.00, 'id_order_state' => 5]);
             $payment->save();
+        }
+        elseif($invoce->residual_amount_invoicing > $payment->amount_payment){
         }else{
             $resto = $payment->amount_payment-$invoce->residual_amount_invoicing;
-            Invoicing::whereIdInvoicing($payment->id_invoice)->update(['residual_amount_invoicing' => $resto]);
+            Invoicing::whereIdInvoicing($payment->id_invoice)->update(['residual_amount_invoicing' => $resto, 'id_order_state' => 5]);
             $payment->save();
         }
 
         return redirect()->route('invoicing.show', $data['id_invoice']);
             
         
+    }
+
+    public function show($id){
+        $conf = [
+            'title-section' => 'Pago: ',
+            'group' => 'sales-invoicing',
+            'back' => 'payments.index',
+        ];
+
+        $data = Payments::select('date_payment', 'name_client', 'ref_name_invoicing', 'name_bank', 'amount_payment')
+        ->join('banks', 'banks.id_bank', '=', 'payments.id_bank')
+        ->join('invoicings', 'invoicings.id_invoicing', '=', 'payments.id_invoice')
+        ->join('clients', 'clients.id_client', '=', 'payments.id_client')
+        ->whereIdPayment($id)
+        ->get()[0];
+
+        // return $data;
+
+        return view('accounting.payments.show', compact('data', 'conf'));
     }
 }

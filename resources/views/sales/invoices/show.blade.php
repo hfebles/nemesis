@@ -184,6 +184,11 @@
                             <td width="19%" class="text-end">Pendiente por cobrar: </td>
                             <td width="10%" class="text-end"><label class="text-danger">Bs. {{number_format($data->residual_amount_invoicing, '2', ',', '.')}}</label></td>
                         </tr>
+                        @else
+                        <tr><td width="43%" class="text-end">Saldo a favor: </td>
+                            <td width="7.5%"class="text-end"><label class="text-success">$ {{number_format($data->residual_amount_invoicing/$data->amount_exchange, '2', ',', '.')}}</label></td>
+                            <td width="19%" class="text-end">Saldo a favor: </td>
+                            <td width="10%" class="text-end"><label class="text-success">Bs. {{number_format($data->residual_amount_invoicing, '2', ',', '.')}}</label></td>
                     @endif
                         <tr>
                             <td colspan="4" class="text-end">Pagos recibidos</td>
@@ -192,7 +197,7 @@
                     
                         @foreach ($payments as $k => $pago)
                         <tr>
-                            <td  colspan="4" class="text-end fst-italic text-muted">#{{$pago->ref_payment}} | {{$pago->name_bank}} | {{date('d-m-Y', strtotime($pago->date_payment))}} | Bs. {{number_format($pago->amount_payment, '2', ',', '.')}}</td>
+                            <td  colspan="4" class="text-end fst-italic text-muted"><a href="{{ route('payments.show', $pago->id_payment) }}">#{{$pago->ref_payment}} | {{$pago->name_bank}} | {{date('d-m-Y', strtotime($pago->date_payment))}} | Bs. {{number_format($pago->amount_payment, '2', ',', '.')}}</a></td>
                         </tr>
                         @endforeach
         </tfoot>

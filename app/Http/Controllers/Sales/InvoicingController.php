@@ -22,6 +22,7 @@ use App\Models\Sales\SalesOrder;
 use App\Models\Sales\SalesOrderDetails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class InvoicingController extends Controller
 {
@@ -285,6 +286,9 @@ class InvoicingController extends Controller
         LEFT OUTER JOIN workers AS w ON w.id_worker = i.id_worker
         WHERE i.id_invoicing = $id")[0];
 
+
+    // return $data;
+
         $conf = [
             'title-section' => 'Factura: '.$data->ref_name_invoicing,
             'group' => 'sales-invoicing',
@@ -303,6 +307,22 @@ class InvoicingController extends Controller
         ->join('banks', 'banks.id_bank', '=', 'payments.id_bank')
         ->whereIdInvoice($id)
         ->get();
+
+        $a = DB::select("SELECT  sum(total_amount_invoicing) as suma1
+                            FROM invoicings 
+                            WHERE invoicings.id_client = $data->id_client");
+
+        
+
+        $b = DB::select("SELECT  sum(amount_payment) as suma2
+                            FROM payments 
+                            WHERE payments.id_client = $data->id_client");
+
+                            // return [
+                            //         'cliente' => $data->id_client,
+                            //         'suma1'=> $a[0]->suma1,
+                            //         'suma2' => $b[0]->suma2,
+                            //         'total' => $b[0]->suma2-$a[0]->suma1,];
 
         
 
@@ -360,7 +380,7 @@ class InvoicingController extends Controller
 
         //return $data;
         
-        $pdf = \PDF::loadView('sales.reportes.facturas', compact('data', 'dataProducts', 'obj', 'dataGeneral'));
+        $pdf = \PDF::loadView('sales.reportes.facturas2', compact('data', 'dataProducts', 'obj', 'dataGeneral'));
         return $pdf->stream('ejemplo.pdf');
     }
 
