@@ -10,19 +10,10 @@
 
 <div class="row">
     <x-cards>
-        
-            
-        
+             
         <div class="row g-3">
-            
-            @if ($data->id_order_state == 3)
-            <span class="text-danger text-center fs-3">FACTURA CANCELADA</span>
-            @elseif ($data->id_order_state == 5)
-            <span class="text-info text-center fs-3">PAGADA</span>
-             @else
             <div class="col-sm-12 d-flex">
-                
-                <a target="_blank" href="{{ route('sales.invoices-print', $data->id_invoicing) }}" class="btn btn-sm btn-info btn-icon-split ml-auto">
+                <a target="_blank" href="{{ route('sales.invoices-print', ['id'=>$data->id_invoicing, "type"=>2]) }}" class="btn btn-sm btn-info btn-icon-split ml-auto">
                     <span class="icon text-white-50">
                         <i class="fas fa-print"></i>
                     </span>
@@ -31,15 +22,12 @@
                 @if ($data->id_order_state != 5 && Gate::check('payment-create'))
                 <a data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-sm btn-success btn-icon-split ml-3">
                     <span class="icon text-white-50">
-                    <i class="fas fa-check-circle"></i>
+                        <i class="fas fa-check-circle"></i>
                     </span>
                     <span class="text">Pagar</span>
                 </a> 
                 @endif
-                
                 @if (Gate::check($conf['group'].'-delete'))
-                    
-                
                 <a href="{{ route('sales.cancel-invoices', $data->id_invoicing) }}" class="btn btn-sm btn-danger btn-icon-split ml-3">
                     <span class="icon text-white-50">
                         <i class="fas fa-times-circle"></i>
@@ -47,8 +35,7 @@
                     <span class="text">Anular</span>
                 </a>
                 @endif
-                </div>
-                @endif
+        </div>
 
 
     <div class="col-sm-12">
@@ -223,7 +210,7 @@
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="title-modal">Validar pedido</h5>
+        <h5 class="modal-title" id="title-modal">Cargar pago</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
         <div class="modal-body">
@@ -263,6 +250,7 @@
                 <x-btns-save side="false" />
                 {!! Form::hidden('id_invoice', $data->id_invoicing) !!}
                 {!! Form::hidden('id_client', $data->id_client) !!}
+                {!! Form::hidden('type_pay', 1) !!}
             {!! Form::close() !!}
 
         <div class="modal-footer mt-3">

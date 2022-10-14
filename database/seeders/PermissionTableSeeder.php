@@ -46,6 +46,7 @@ class PermissionTableSeeder extends Seeder
             'sales-order-conf-list', 'sales-order-conf-create', 'sales-order-conf-edit', 'sales-order-conf-delete',
             'sales-invoices-list', 'sales-invoices-create', 'sales-invoices-edit', 'sales-invoices-delete',
             'sales-invoices-conf-list', 'sales-invoices-conf-create', 'sales-invoices-conf-edit', 'sales-invoices-conf-delete',
+            'sales-deliveries-notes-list', 'sales-deliveries-notes-create', 'sales-deliveries-notes-edit', 'sales-deliveries-notes-delete',
 
             'warehouse-warehouse-list', 'warehouse-warehouse-create', 'warehouse-warehouse-edit', 'warehouse-warehouse-delete',
 

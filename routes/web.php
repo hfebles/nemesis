@@ -50,6 +50,7 @@ use App\Http\Controllers\Delivery\DeliveryController;
 use App\Http\Controllers\Payments\PaymentController;
 use App\Http\Controllers\Production\MaterialsListController;
 use App\Http\Controllers\Production\ProductionOrderController;
+use App\Http\Controllers\Sales\DeliveryNotesController;
 use App\Http\Controllers\Sales\InvoicingController;
 
 Auth::routes();
@@ -175,8 +176,13 @@ Route::group(['middleware' => ['auth']], function() {
     // Facturacion
     Route::get('/sales/invoicing/validate/{id}', [InvoicingController::class, 'validarPedido'])->name('sales.invoices-validate');
     Route::resource('/sales/invoicing', InvoicingController::class);
-    Route::get('/sales/invoicing/print/{id}', [InvoicingController::class, 'imprimirFactura'])->name('sales.invoices-print');
+    Route::get('/sales/invoicing/print/{id}/{type}', [InvoicingController::class, 'imprimirFactura'])->name('sales.invoices-print');
     Route::get('/sales/cancel-invoicing/{id}', [InvoicingController::class, 'anularFactura'])->name('sales.cancel-invoices');
+
+    Route::resource('/sales/deliveries-notes', DeliveryNotesController::class);
+    Route::get('/sales/deliveries-notes/validate/{id}', [DeliveryNotesController::class, 'validarPedido'])->name('sales.deliveries-notes-validate');
+    
+
     
 
 

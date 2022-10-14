@@ -34,5 +34,13 @@ class SalesStatesSeeder extends Seeder
         OrderState::create([
             'name_order_state' => 'Pagado'
         ]);
+
+        OrderState::create([
+            'name_order_state' => 'Nota de entrega'
+        ]);
+
+        OrderState::create([
+            'name_order_state' => 'Nota de entrega pagada'
+        ]);
     }
 }

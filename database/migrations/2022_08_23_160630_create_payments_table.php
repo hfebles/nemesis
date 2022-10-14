@@ -17,10 +17,13 @@ return new class extends Migration
             $table->id('id_payment');
             $table->integer('id_client')->nullable();
             $table->integer('id_invoice')->nullable();
+            $table->integer('id_delivery_note')->nullable();
+            $table->integer('type_pay')->nullable();
             $table->float('amount_payment', 8, 2);
             $table->string('ref_payment');
             $table->date('date_payment');
             $table->integer('id_bank')->nullable();
+            $table->boolean('enabled_payment')->default(1);
             $table->timestamps();
         });
     }

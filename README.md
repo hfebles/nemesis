@@ -163,6 +163,7 @@ php
             'sales-order-list', 'sales-order-create', 'sales-order-edit', 'sales-order-delete',
             'sales-order-conf-list', 'sales-order-conf-create', 'sales-order-conf-edit', 'sales-order-conf-delete',
             'sales-invoices-list', 'sales-invoices-create', 'sales-invoices-edit', 'sales-invoices-delete',
+            'sales-deliveries-notes-list', 'sales-deliveries-notes-create', 'sales-deliveries-notes-edit', 'sales-deliveries-notes-delete',
 
             // Warehouse
             'warehouse-warehouse-list', 'warehouse-warehouse-create', 'warehouse-warehouse-edit', 'warehouse-warehouse-delete',

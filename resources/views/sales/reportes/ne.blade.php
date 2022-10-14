@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <title>{!! date('dmY', strtotime($data->date_invoicing))."_".$data->ref_name_invoicing."_".$data->name_client !!}</title>
+    <title>{!! date('dmY', strtotime($data->date_delivery_note))."_".$data->ref_name_delivery_note !!}</title>
     <style>
         *{
             font-size: 11pt;
@@ -55,11 +55,11 @@
             </tr>
             <tr>
                 <td class="text-end"><strong>Factura Nro:</strong></td>
-                <td width="20%" class="text-end">{{ $data->ref_name_invoicing }}</td>
+                <td width="20%" class="text-end">{{ $data->ref_name_delivery_note }}</td>
             </tr>
             <tr>
                 <td class="text-end"><strong>Fecha:</strong></td>
-                <td class="text-end">{{ date('d/m/Y', strtotime($data->date_invoicing)) }}</td>
+                <td class="text-end">{{ date('d/m/Y', strtotime($data->date_delivery_note)) }}</td>
             </tr>
             <tr>
                 <td class="text-end"><strong>Condición de pago:</strong></td>
@@ -142,45 +142,34 @@
             </tr>
             <tr>
                 <td width="45%" class="text-end">BASE IMPONIBLE:</td>
-                <td width="10%" class="text-end">$ {{number_format($data->no_exempt_amout_invoicing/$data->amount_exchange, 2, ',', '.')}}
+                <td width="10%" class="text-end">$ {{number_format($data->no_exempt_amout_delivery_note/$data->amount_exchange, 2, ',', '.')}}
                 </td>
 
                 <td width="25%" class="text-end">BASE IMPONIBLE:</td>
                 <td class="text-end">
-                    Bs. {{number_format($data->no_exempt_amout_invoicing, 2, ',', '.')}}
+                    Bs. {{number_format($data->no_exempt_amout_delivery_note, 2, ',', '.')}}
                 </td>
             </tr>
             <tr>
                 <td class="text-end">EXENTO:</td>
                 <td width="15%" class="text-end">
-                    $ {{number_format($data->exempt_amout_invoicing/$data->amount_exchange, 2, ',', '.')}}
+                    $ {{number_format($data->exempt_amout_delivery_note/$data->amount_exchange, 2, ',', '.')}}
                 </td>
 
                 <td class="text-end">EXENTO:</td>
                 <td class="text-end">
-                    Bs. {{number_format($data->exempt_amout_invoicing, 2, ',', '.')}}
-                </td>
-            </tr>
-            <tr>
-                <td class="text-end">IVA:</td>
-                <td class="text-end">
-                    $ {{number_format($data->total_amount_tax_invoicing/$data->amount_exchange, 2, ',', '.')}}
-                </td>
-
-                <td class="text-end">IVA:</td>
-                <td class="text-end">
-                    Bs. {{number_format($data->total_amount_tax_invoicing, 2, ',', '.')}}
+                    Bs. {{number_format($data->exempt_amout_delivery_note, 2, ',', '.')}}
                 </td>
             </tr>
             <tr>
                 <td class="text-end">TOTAL A PAGAR:</td>
                 <td class="text-end">
-                    $ {{number_format($data->total_amount_invoicing/$data->amount_exchange, 2, ',', '.')}}
+                    $ {{number_format(($data->total_amount_delivery_note)/$data->amount_exchange, 2, ',', '.')}}
                 </td>
 
                 <td class="text-end">TOTAL A PAGAR:</td>
                 <td class="text-end">
-                    Bs. {{number_format($data->total_amount_invoicing, 2, ',', '.')}}
+                    Bs. {{number_format(($data->total_amount_delivery_note), 2, ',', '.')}}
                 </td>
             </tr>
         </table>

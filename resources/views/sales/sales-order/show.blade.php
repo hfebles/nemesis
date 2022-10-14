@@ -23,45 +23,53 @@
         
         <div class="row g-3">
             
-            @if ($data->id_order_state == 3)
-           <span class="text-danger text-center fs-3">ORDEN CANCELADA</span>
-           @elseif ($data->id_order_state == 2)
-           <span class="text-info text-center fs-3">FACTURADA</span>
-            @else
+
             <div class="col-sm-12 d-flex">
-                <a href="{{ route('sales.invoices-print', $data->id_sales_order) }}" class="btn btn-sm btn-info btn-icon-split ml-auto">
+                <a href="{{ route('sales.invoices-print', ['id'=>$data->id_sales_order, "type"=>1]) }}" class="btn btn-sm btn-info btn-icon-split ml-auto">
                     <span class="icon text-white-50">
                         <i class="fas fa-print"></i>
                     </span>
                     <span class="text">Imprimir</span>
                 </a>
+             
+                
+                
+                @if ($data->id_order_state != 2 && $data->id_order_state != 6)
+                    @if (Gate::check('sales-invoices-create') || Gate::check('adm-create'))
+                    <div class="dropdown  ml-3">
+                        <button class="btn btn-sm btn-success dropdown-toggle " type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                          Acciones
+                        </button>
+                        <ul class="dropdown-menu">
+                          <li><a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#exampleModal">Facturar</a></li>
+                          <li><a class="dropdown-item" href="{{route('sales.deliveries-notes-validate', $data->id_sales_order)}}">Nota de entrega</a></li>
+                        </ul>
+                      </div>
+                    @endif
+                @endif 
+                @if ($data->id_order_state != 2 && $data->id_order_state != 6)
+                    @if (Gate::check($conf['group'].'-edit') || Gate::check('adm-edit'))
+                    <a href="{{route('sales-order.edit', $data->id_sales_order)}}" class="btn btn-sm btn-warning btn-icon-split ml-3">
+                        <span class="icon text-white-50">
+                            <i class="fas fa-edit"></i>
+                        </span>
+                        <span class="text">Editar</span>
+                    </a>
+                    @endif
+                @endif
+                @if (Gate::check('sales-invoices-delete') || Gate::check('adm-delete'))
                 <a href="/sales/cancel/{{$data->id_sales_order}}" class="btn btn-sm btn-danger btn-icon-split ml-3">
                     <span class="icon text-white-50">
                         <i class="fas fa-times-circle"></i>
                     </span>
                     <span class="text">Anular</span>
                 </a>
-                @if (Gate::check($conf['group'].'-edit') || Gate::check('adm-edit'))
-                <a href="{{route('sales-order.edit', $data->id_sales_order)}}" class="btn btn-sm btn-warning btn-icon-split ml-3">
-                    <span class="icon text-white-50">
-                        <i class="fas fa-edit"></i>
-                    </span>
-                    <span class="text">Editar</span>
-                </a>
                 @endif
                 
-                @if (Gate::check('sales-invoices-create') || Gate::check('adm-edit'))
-                    <a data-bs-toggle="modal" data-bs-target="#exampleModal" class="btn btn-sm btn-success btn-icon-split ml-3">
-                        <span class="icon text-white-50">
-                        <i class="fas fa-check-circle"></i>
-                        </span>
-                        <span class="text">Facturar</span>
-                    </a>
-                @endif
-                
+                  
                 
                 </div>
-         @endif
+
          
 
     <div class="col-sm-12">

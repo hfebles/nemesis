@@ -75,6 +75,7 @@ class MenusTableSeeder extends Seeder
 
         Menu::create(['id' => 37, 'name' => 'Lista de despachos', 'slug' => 'delivery.index', 'grupo' => 'delivery', 'icono' => 'fa-solid fa-clipboard-user', 'parent' => '9', 'order' => '1', 'href' => '0', ]);
 
+        Menu::create(['id' => 38, 'name' => 'Notas de entrega', 'slug' => 'deliveries-notes.index', 'grupo' => 'sales-deliveries-notes', 'icono' => 'fa-solid fa-receipt', 'parent' => '2', 'order' => '0', 'href' => '0', ]);
     }
 
 }
