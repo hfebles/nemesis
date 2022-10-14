@@ -133,7 +133,7 @@ class PaymentController extends Controller
 
     public function show($id){
         $conf = [
-            'title-section' => 'Pago: ',
+            'title-section' => 'Pago',
             'group' => 'sales-invoicing',
             'back' => 'payments.index',
         ];
@@ -143,14 +143,14 @@ class PaymentController extends Controller
         //return $data1;
 
         if ($data1->type_pay == 1) {
-            $data = Payments::select('date_payment', 'name_client', 'ref_name_invoicing', 'name_bank', 'amount_payment')
+            $data = Payments::select('id_payment','date_payment', 'name_client', 'ref_name_invoicing', 'name_bank', 'amount_payment')
             ->join('banks', 'banks.id_bank', '=', 'payments.id_bank')
             ->join('invoicings', 'invoicings.id_invoicing', '=', 'payments.id_invoice')
             ->join('clients', 'clients.id_client', '=', 'payments.id_client')
             ->whereIdPayment($id)
             ->get()[0];
         }else{
-            $data = Payments::select('date_payment', 'name_client', 'ref_name_delivery_note', 'name_bank', 'amount_payment')
+            $data = Payments::select('id_payment','date_payment', 'name_client', 'ref_name_delivery_note', 'name_bank', 'amount_payment')
             ->join('banks', 'banks.id_bank', '=', 'payments.id_bank')
             ->join('delivery_notes', 'delivery_notes.id_delivery_note', '=', 'payments.id_delivery_note')
             ->join('clients', 'clients.id_client', '=', 'payments.id_client')
@@ -164,4 +164,58 @@ class PaymentController extends Controller
 
         return view('accounting.payments.show', compact('data', 'conf'));
     }
+
+    public function imprimirGeneral(){
+
+
+        $data = Payments::select('id_payment', 'type_pay', 'date_payment', 'name_client', 'ref_name_invoicing', 'ref_name_delivery_note', 'name_bank', 'amount_payment')
+        ->join('banks', 'banks.id_bank', '=', 'payments.id_bank')
+        ->join('invoicings', 'invoicings.id_invoicing', '=', 'payments.id_invoice', 'left')
+        ->join('delivery_notes', 'delivery_notes.id_delivery_note', '=', 'payments.id_delivery_note', 'left')
+        ->join('clients', 'clients.id_client', '=', 'payments.id_client')
+        ->where('enabled_payment', '=', 1)
+        ->orderBy('id_payment', 'ASC')
+        ->orderBy('date_payment', 'ASC')
+        ->get();
+
+
+        $pdf = \PDF::setOption(['dpi' => 150, 'defaultFont' => 'lucida-console']);
+        $pdf = \PDF::loadView('accounting.payments.reportes.general', compact('data'))->setPaper('a4', 'landscape');
+                return $pdf->stream(date('dmY').'_pagos_general.pdf');
+                
+    }
+
+
+    
+
+    public function imprimirPago($id){
+
+
+        $data1 = Payments::select('type_pay')->find($id); 
+
+        //return $data1;
+
+        if ($data1->type_pay == 1) {
+            $data = Payments::select('id_payment','date_payment', 'name_client', 'ref_name_invoicing', 'name_bank', 'amount_payment')
+            ->join('banks', 'banks.id_bank', '=', 'payments.id_bank')
+            ->join('invoicings', 'invoicings.id_invoicing', '=', 'payments.id_invoice')
+            ->join('clients', 'clients.id_client', '=', 'payments.id_client')
+            ->whereIdPayment($id)
+            ->get()[0];
+        }else{
+            $data = Payments::select('id_payment', 'date_payment', 'name_client', 'ref_name_delivery_note', 'name_bank', 'amount_payment')
+            ->join('banks', 'banks.id_bank', '=', 'payments.id_bank')
+            ->join('delivery_notes', 'delivery_notes.id_delivery_note', '=', 'payments.id_delivery_note')
+            ->join('clients', 'clients.id_client', '=', 'payments.id_client')
+            ->whereIdPayment($id)
+            ->get()[0];
+        }
+
+
+
+        $pdf = \PDF::loadView('accounting.payments.reportes.pagos', compact('data'))->setPaper('a4', 'portrait');
+                return $pdf->stream(date('dmY').'_pagos_general.pdf');
+                
+    }
 }
+

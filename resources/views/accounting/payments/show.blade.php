@@ -11,13 +11,23 @@
 
 <div class="row">
     <x-cards size="12">
-    <table class="table table-sm table-bordered">
+    <div class="mb-3 d-flex">
+
+        <a target="_blank" href="{{ route('payments.payment-print', $data->id_payment) }}" class="btn btn-sm btn-info btn-icon-split ml-auto">
+            <span class="icon text-white-50">
+                <i class="fas fa-print"></i>
+            </span>
+            <span class="text">Imprimir</span>
+        </a>
+        
+    </div>
+    <table class="table table-sm table-bordered mb-0">
         <tr>
             <td colspan="2">Fecha del pago: {{ date('d/m/Y', strtotime($data->date_payment)) }}</td>
         </tr>
         <tr>
             <td>Cliente: {{$data->name_client}}</td>
-            <td>Factura: {{$data->ref_name_invoicing}}</td>
+            <td>Factura: {{$data->ref_name_invoicing ?? $data->ref_name_delivery_note}}</td>
         </tr>
         <tr>
             <td>Banco: {{$data->name_bank}}</td>
