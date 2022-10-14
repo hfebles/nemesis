@@ -14,10 +14,10 @@ class MaterialsListController extends Controller
 {
     function __construct()
     {
-         $this->middleware('permission:production-material-list-list|adm-list', ['only' => ['index']]);
-         $this->middleware('permission:adm-create| production-material-list-create', ['only' => ['create','store']]);
-         $this->middleware('permission:adm-edit| production-material-list-edit', ['only' => ['edit','update']]);
-         $this->middleware('permission:adm-delete| production-material-list-delete', ['only' => ['destroy']]);
+         $this->middleware('permission:production-material-list|adm-list', ['only' => ['index']]);
+         $this->middleware('permission:adm-create|production-material-create', ['only' => ['create','store']]);
+         $this->middleware('permission:adm-edit|production-material-edit', ['only' => ['edit','update']]);
+         $this->middleware('permission:adm-delete|production-material-delete', ['only' => ['destroy']]);
     }
 
 
@@ -25,7 +25,7 @@ class MaterialsListController extends Controller
         
         $conf = [
             'title-section' => 'Lista de materiales',
-            'group' => 'production-material-list',
+            'group' => 'production-material',
             'create' => ['route' =>'material-list.create', 'name' => 'Nueva lista', ],
         ];
 
@@ -45,7 +45,7 @@ class MaterialsListController extends Controller
             'edit' => false,
             'edit_modal' => false,  
             'show' => true,
-            'url' => "/production/material-list",
+            'url' => "/production/material",
             'id' => 'id_materials_list',
             'group' => '/production-material-list',
             'data' => MaterialsList::select('id_materials_list', 'name_materials_list', 'qty_product', 'name_unit_product')
@@ -67,7 +67,7 @@ class MaterialsListController extends Controller
 
         $conf = [
             'title-section' => 'Crear una nueva lista de materiales',
-            'group' => 'production-material-list',
+            'group' => 'production-material',
             'back' => 'material-list.index',
             'url' => '#'
         ];
@@ -108,7 +108,7 @@ class MaterialsListController extends Controller
 
 
         $message = [
-            'type' => 'danger',
+            'type' => 'success',
             'message' => 'Se registro la lista de materiales con éxito',
         ];
                         
@@ -143,7 +143,7 @@ class MaterialsListController extends Controller
 
         $conf = [
             'title-section' => 'Lista',
-            'group' => 'production-material-list',
+            'group' => 'production-material',
             'back' => 'material-list.index',
             'url' => '#',
             'edit' => ['route' => 'material-list.edit', 'id' => $data->id_materials_list],
@@ -181,7 +181,7 @@ class MaterialsListController extends Controller
 
         $conf = [
             'title-section' => 'Lista',
-            'group' => 'production-material-list',
+            'group' => 'production-material',
             'back' => 'material-list.index',
             'url' => '#',
             'delete' => ['name' => 'Eliminar lista'],

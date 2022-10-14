@@ -58,7 +58,7 @@ class PermissionTableSeeder extends Seeder
             'rrhh-worker-list', 'rrhh-worker-create', 'rrhh-worker-edit', 'rrhh-worker-delete',
             'rrhh-group-worker-list', 'rrhh-group-worker-create', 'rrhh-group-worker-edit', 'rrhh-group-worker-delete',
           
-            'production-material-list-list', 'production-material-list-create', 'production-material-list-edit', 'production-material-list-delete',
+            'production-material-list', 'production-material-create', 'production-material-edit', 'production-material-delete',
             'production-order-list', 'production-order-create', 'production-order-edit', 'production-order-delete',
 
             'user-profile-list', 'user-profile-create', 'user-profile-edit', 'user-profile-delete',

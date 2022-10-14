@@ -17,12 +17,12 @@
             <tbody id="body-table">
             @for ($o = 0; $o < count($conf['data']); $o++)
             @if ($conf['show'] == true)
-                <tr onclick="window.location='..{{$conf['url']}}/{{$conf['data'][$o][$conf['id']]}}';">
+                <tr onclick="window.location='{{$conf['url']}}/{{$conf['data'][$o][$conf['id']]}}';">
             
             @elseif ($conf['edit'] == true)
                 @if (Gate::check($conf['group'].'-edit') || Gate::check('adm-edit'))
                 
-                    <tr onclick="window.location='..{{$conf['url']}}/{{$conf['data'][$o][$conf['id']]}}/edit';">
+                    <tr onclick="window.location='{{$conf['url']}}/{{$conf['data'][$o][$conf['id']]}}/edit';">
                 @endif
             @else
                 <tr>

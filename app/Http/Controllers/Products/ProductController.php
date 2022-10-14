@@ -41,7 +41,7 @@ class ProductController extends Controller
         $conf = [
             'title-section' => 'Productos',
             'group' => 'product-product',
-            'create' => ['route' =>'product.create', 'name' => 'Nueva producto'],
+            'create' => ['route' =>'product.create', 'name' => 'Nuevo producto'],
             'url' => '/products/product'
         ];
 
@@ -280,18 +280,18 @@ class ProductController extends Controller
 
         
 
-        if($data['qty_product'] != $dataSave->qty_product|| $data['price_product'] != $dataSave->price_product){
+        // if($data['qty_product'] != $dataSave->qty_product|| $data['price_product'] != $dataSave->price_product){
             
-            $save = new ProductHistory();
-            $save->id_product = $id;
-            $save->date_product_history = date('Y-m-d');
-            $save->price_product_history = $dataSave->price_product;
-            $save->qty_product_history = $dataSave->qty_product;
-            $save->save();
-        }
+        //     $save = new ProductHistory();
+        //     $save->id_product = $id;
+        //     $save->date_product_history = date('Y-m-d');
+        //     $save->price_product_history = $dataSave->price_product;
+        //     $save->qty_product_history = $dataSave->qty_product;
+        //     $save->save();
+        // }
         
 
-        Product::whereIdProduct($id)->update($data);  
+        // Product::whereIdProduct($id)->update($data);  
         
 
 

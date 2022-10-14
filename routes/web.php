@@ -223,6 +223,7 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::resource('/accounting/payments', PaymentController::class);
     Route::get('/accounting/general-print', [PaymentController::class, 'imprimirGeneral'])->name('payments.general-print');
+    Route::get('/accounting/general-prints/{id}/{type}', [PaymentController::class, 'imprimirTipos'])->name('payments.general-prints');
     Route::get('/accounting/payment-print/{id}', [PaymentController::class, 'imprimirPago'])->name('payments.payment-print');
     
     /**

@@ -12,10 +12,10 @@
 
     </div>
     <div class="col-md-12">
-        <label class="form-label">Nombre de la unidad</label>
+        <label class="form-label">Abreviatura</label>
         {!! Form::text('short_unit_product', null, array( 'autocomplete' => 'off','required', 'placeholder' => 'Ingrese el nombre de la unidad','class' => 'form-control form-control-sm')) !!}
         <div  class="invalid-feedback">
-            Para guardar debe ingresar el nombre de la unidad
+            Para guardar debe ingresar la Abreviatura de la unidad
         </div>
 
 </div>
