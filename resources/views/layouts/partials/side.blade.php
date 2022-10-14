@@ -4,9 +4,9 @@
 <!-- Sidebar - Brand -->
 <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
     <div class="sidebar-brand-icon">
-        <img src="{{asset('img/logo-nemesis.svg')}}" class="img-fluid" width="70%"  />
+        <img src="{{asset('img/DONHIELO.svg')}}" class="img-fluid" width="50%"  />
     </div>
-    <div class="sidebar-brand-text mx-3">{{ config('app.name', 'Laravel') }}</div>
+    <div class="sidebar-brand-text mx-3">Don Hielo</div>
 </a>
 
 <!-- Divider -->

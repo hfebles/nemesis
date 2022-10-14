@@ -33,7 +33,7 @@
         </div>
     </li>
 
-    <!-- Nav Item - Alerts -->
+    {{-- <!-- Nav Item - Alerts -->
     <li class="nav-item dropdown no-arrow mx-1">
         <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -82,8 +82,8 @@
             </a>
             <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
         </div>
-    </li>
-
+    </li> --}}
+{{-- 
     <!-- Nav Item - Messages -->
     <li class="nav-item dropdown no-arrow mx-1">
         <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
@@ -148,7 +148,7 @@
             </a>
             <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a>
         </div>
-    </li>
+    </li> --}}
 
     <div class="topbar-divider d-none d-sm-block"></div>
 
@@ -164,7 +164,7 @@
             aria-labelledby="userDropdown">
             <a class="dropdown-item" href="{{ route('users.profile', Auth::user()->id)}}">
                 <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                Profile
+                Perfil
             </a>
             {{-- <a class="dropdown-item" href="#">
                 <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
@@ -177,7 +177,7 @@
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                 <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                Logout
+                Cerrar sesión
             </a>
         </div>
     </li>
