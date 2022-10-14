@@ -152,7 +152,7 @@ class PaymentController extends Controller
         }else{
             $data = Payments::select('date_payment', 'name_client', 'ref_name_delivery_note', 'name_bank', 'amount_payment')
             ->join('banks', 'banks.id_bank', '=', 'payments.id_bank')
-            ->join('delivery_notes', 'delivery_notes.id_delivery_note', '=', 'payments.id_invoice')
+            ->join('delivery_notes', 'delivery_notes.id_delivery_note', '=', 'payments.id_delivery_note')
             ->join('clients', 'clients.id_client', '=', 'payments.id_client')
             ->whereIdPayment($id)
             ->get()[0];
@@ -160,7 +160,7 @@ class PaymentController extends Controller
 
         
 
-        return $data;
+       // return $data;
 
         return view('accounting.payments.show', compact('data', 'conf'));
     }

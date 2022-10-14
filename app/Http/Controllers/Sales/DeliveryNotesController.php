@@ -172,7 +172,7 @@ class DeliveryNotesController extends Controller
 
         $payments = Payments::select('payments.*', 'name_bank')
             ->join('banks', 'banks.id_bank', '=', 'payments.id_bank')
-            ->whereIdInvoice($id)
+            ->where('id_delivery_note', '=', $id)
             ->where('type_pay', '=', 2)
             ->get();
         

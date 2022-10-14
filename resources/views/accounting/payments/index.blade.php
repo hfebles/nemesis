@@ -25,7 +25,7 @@
                 @foreach ($table['data'] as $tabla)
                     @switch($tabla->type_pay)
                         @case(1)
-                            <tr>
+                        <tr onclick="window.location='{{$table['url']}}/{{$tabla->id_payment}}';">
                                 <td class="text-center align-middle">{{++$table['i']}}</td>
                                 <td class="text-center align-middle">{{$tabla->date_payment}}</td>
                                 <td class="text-center align-middle">{{$tabla->name_client}}</td>
@@ -39,7 +39,7 @@
                             @break
                     
                         @default
-                        <tr>
+                        <tr onclick="window.location='{{$table['url']}}/{{$tabla->id_payment}}';">
                             <td class="text-center align-middle">{{++$table['i']}}</td>
                             <td class="text-center align-middle">{{$tabla->date_payment}}</td>
                             <td class="text-center align-middle">{{$tabla->name_client}}</td>

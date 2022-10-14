@@ -23,14 +23,14 @@ class CreateAdminUserSeeder extends Seeder
         ]);
 
         $user2 = User::create([
-            'name' => 'Test', 
-            'email' => 'test@1.com',
+            'name' => 'Maria Eugenia Lemus', 
+            'email' => 'm.lemus@donhielo.com',
             'password' => bcrypt('12345678')
         ]);
 
         $user3 = User::create([
-            'name' => 'Test2', 
-            'email' => 'test2@1.com',
+            'name' => 'Milton Torres', 
+            'email' => 'm.torres@donhielo.com',
             'password' => bcrypt('12345678')
         ]);
     
