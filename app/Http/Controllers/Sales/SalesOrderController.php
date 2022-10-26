@@ -18,8 +18,10 @@ use App\Models\Conf\Exchange;
 
 use App\Models\Conf\Sales\SaleOrderConfiguration;
 use App\Models\Conf\Tax;
+use App\Models\Payments\Payments;
 use App\Models\Sales\DeliveryNotes;
 use App\Models\Sales\DeliveryNotesDetails;
+use Illuminate\Support\Facades\DB;
 
 class SalesOrderController extends Controller
 {
@@ -143,7 +145,7 @@ class SalesOrderController extends Controller
 
         $taxes = Tax::where('billable_tax', '=', 1)->get();
 
-        $dataWorkers = \DB::select("SELECT workers.id_worker, workers.firts_name_worker, workers.last_name_worker, group_workers.name_group_worker
+        $dataWorkers = DB::select("SELECT workers.id_worker, workers.firts_name_worker, workers.last_name_worker, group_workers.name_group_worker
                                     FROM workers
                                     INNER JOIN group_workers ON group_workers.id_group_worker = workers.id_group_worker
                                     WHERE name_group_worker = 'VENDEDORES'");
@@ -221,7 +223,7 @@ class SalesOrderController extends Controller
             'message' => 'Se registro el pedido con éxito',
         ];
 
-        return redirect()->route('sales-order.index')->with('message', $message);
+        return redirect()->route('sales-order.show', $saveSalesOrder->id_sales_order)->with('message', $message);
     }
 
     public function show($id)
@@ -229,7 +231,7 @@ class SalesOrderController extends Controller
 
 
 
-        $data =  \DB::select("SELECT so.*, c.address_client, c.phone_client, c.idcard_client, c.name_client, w.firts_name_worker, w.last_name_worker, e.amount_exchange, e.date_exchange
+        $data =  DB::select("SELECT so.*, c.address_client, c.phone_client, c.idcard_client, c.name_client, w.firts_name_worker, w.last_name_worker, e.amount_exchange, e.date_exchange
                                 FROM sales_orders as so
                                 INNER JOIN clients AS c ON c.id_client = so.id_client
                                 INNER JOIN exchanges AS e ON e.id_exchange = so.id_exchange
@@ -249,7 +251,7 @@ class SalesOrderController extends Controller
         $obj = json_decode($dataSalesOrderDetails->details_order_detail, true);
 
         for ($i = 0; $i < count($obj['id_product']); $i++) {
-            $dataProducts[$i] =  \DB::select("SELECT products.*, p.name_presentation_product, u.name_unit_product, u.short_unit_product
+            $dataProducts[$i] =  DB::select("SELECT products.*, p.name_presentation_product, u.name_unit_product, u.short_unit_product
                                                 FROM products 
                                                 INNER JOIN presentation_products AS p ON p.id_presentation_product = products.id_presentation_product
                                                 INNER JOIN unit_products AS u ON u.id_unit_product = products.id_unit_product
@@ -265,7 +267,7 @@ class SalesOrderController extends Controller
     public function edit($id)
     {
 
-        $data =  \DB::select("SELECT so.*, c.address_client, c.phone_client, c.idcard_client, c.name_client, w.firts_name_worker, w.last_name_worker, e.amount_exchange, e.date_exchange
+        $data =  DB::select("SELECT so.*, c.address_client, c.phone_client, c.idcard_client, c.name_client, w.firts_name_worker, w.last_name_worker, e.amount_exchange, e.date_exchange
         FROM sales_orders as so
         INNER JOIN clients AS c ON c.id_client = so.id_client
         INNER JOIN exchanges AS e ON e.id_exchange = so.id_exchange
@@ -311,7 +313,7 @@ class SalesOrderController extends Controller
             //return $obj;
 
             for ($i = 0; $i < count($obj['id_product']); $i++) {
-                $dataProducts[$i] =  \DB::select("SELECT products.*, p.name_presentation_product, u.name_unit_product, u.short_unit_product
+                $dataProducts[$i] =  DB::select("SELECT products.*, p.name_presentation_product, u.name_unit_product, u.short_unit_product
                             FROM products 
                             INNER JOIN presentation_products AS p ON p.id_presentation_product = products.id_presentation_product
                             INNER JOIN unit_products AS u ON u.id_unit_product = products.id_unit_product
@@ -326,11 +328,9 @@ class SalesOrderController extends Controller
 
     public function update(Request $request, $id)
     {
-        //return $id;
-
-        //return $request;
 
         $data = $request->except('_token', '_method');
+
         $saleOrderData = SalesOrder::whereIdSalesOrder($id)->get()[0];
         $dataSalesOrderDetails = salesOrderDetails::whereIdSalesOrder($id)->get()[0];
         $obj = json_decode($dataSalesOrderDetails->details_order_detail, true);
@@ -343,23 +343,10 @@ class SalesOrderController extends Controller
 
 
 
-        $dataDetails = $request->except(
-            '_token',
-            'id_client',
-            'type_payment_sales_order',
-            'subFac',
-            'exento',
-            'total_taxes',
-            'total_con_tax',
-            'noExento',
-            'subtotal',
-            'exempt_product',
-            'subtotal_exento',
-            'id_worker',
-            'id_exchange',
-            'ref_name_sales_order',
-            'ctrl_num'
-        );
+        $dataDetails = $request->except('_token', 'id_client', 'type_payment_sales_order', 'subFac', 'exento', 'total_taxes', 'total_con_tax', 'noExento', 'subtotal', 'exempt_product', 'subtotal_exento', 'id_worker', 'id_exchange', 'ref_name_sales_order', 'ctrl_num');
+
+
+
 
         salesOrder::whereIdSalesOrder($id)->update([
             'type_payment' => $data['type_payment_sales_order'],
@@ -378,7 +365,6 @@ class SalesOrderController extends Controller
         for ($i = 0; $i < count($data['id_product']); $i++) {
             $restar =  Product::select('qty_product')->whereIdProduct($data['id_product'][$i])->get();
             $operacion = $restar[0]->qty_product - $data['cantidad'][$i];
-
             Product::whereIdProduct($data['id_product'][$i])->update(['qty_product' => $operacion]);
         }
 
@@ -386,25 +372,40 @@ class SalesOrderController extends Controller
         $deliveryNote = DeliveryNotes::where('ref_name_delivery_note', '=', $saleOrderData->ref_name_sales_order)->get();
 
         if (count($deliveryNote) > 0) {
-
             $total = $data['subFac'] + $data['exento'];
+            $payments = Payments::where('id_delivery_note', '=', $deliveryNote[0]->id_delivery_note)->get();
+            if (count($payments) > 0) {               
+                $pagos = 0;
+                foreach($payments as $pay){
+                    $pagos = $pagos+$pay->amount_payment;
+                }
+                $state = ($pagos>$total) ? 7 : 6 ;
 
-            DeliveryNotes::where('id_delivery_note', '=', $deliveryNote[0]->id_delivery_note)->update([
-                'type_payment' => $saleOrderData->type_payment,
-                'id_client' => $saleOrderData->id_client,
-                'id_exchange' => $saleOrderData->id_exchange,
-                'ctrl_num' => $saleOrderData->ctrl_num,
-                'ref_name_delivery_note' => $saleOrderData->ref_name_sales_order,
-                'residual_amount_delivery_note' => $total,
-                'total_amount_delivery_note' => $total,
-                'exempt_amout_delivery_note' => $data['exento'],
-                'id_order_state' => 6,
-                'no_exempt_amout_delivery_note' => $data['subFac'],
-                'date_delivery_note' => date('Y-m-d'),]);
-        
-                DeliveryNotesDetails::where('id_delivery_note', '=', $deliveryNote[0]->id_delivery_note)->update(
-                    ['id_delivery_note' => $deliveryNote[0]->id_delivery_note,
-            'details_delivery_notes' => json_encode($dataDetails),]);
+                DeliveryNotes::where('id_delivery_note', '=', $deliveryNote[0]->id_delivery_note)
+                    ->update(
+                        [
+                            'type_payment' => $saleOrderData->type_payment,
+                            'id_client' => $saleOrderData->id_client,
+                            'id_exchange' => $saleOrderData->id_exchange,
+                            'ctrl_num' => $saleOrderData->ctrl_num,
+                            'ref_name_delivery_note' => $saleOrderData->ref_name_sales_order,
+                            'residual_amount_delivery_note' => $pagos-$total,
+                            'total_amount_delivery_note' => $total,
+                            'exempt_amout_delivery_note' => $data['exento'],
+                            'id_order_state' => $state,
+                            'no_exempt_amout_delivery_note' => $data['subFac'],
+                            'date_delivery_note' => date('Y-m-d'),
+                        ]
+                    );
+
+                DeliveryNotesDetails::where('id_delivery_note', '=', $deliveryNote[0]->id_delivery_note)
+                    ->update(
+                        [
+                            'id_delivery_note' => $deliveryNote[0]->id_delivery_note,
+                            'details_delivery_notes' => json_encode($dataDetails),
+                        ]
+                    );
+            }
         }
 
 
@@ -445,7 +446,7 @@ class SalesOrderController extends Controller
 
         if ($request->texto == 'clientes') {
             if (isset($request->param)) {
-                $dataClientes =  \DB::select("SELECT * 
+                $dataClientes =  DB::select("SELECT * 
                                                 FROM clients 
                                                 WHERE name_client LIKE '%" . $request->param . "%' 
                                                 OR idcard_client LIKE '%" . $request->param . "%'");
@@ -474,7 +475,7 @@ class SalesOrderController extends Controller
                 $request->param = "";
             }
             if ($request->param != "") {
-                $dataProductos =  \DB::select("SELECT products.*, p.name_presentation_product, u.name_unit_product, u.short_unit_product
+                $dataProductos =  DB::select("SELECT products.*, p.name_presentation_product, u.name_unit_product, u.short_unit_product
                                                 FROM products 
                                                 INNER JOIN presentation_products AS p ON p.id_presentation_product = products.id_presentation_product
                                                 INNER JOIN unit_products AS u ON u.id_unit_product = products.id_unit_product
@@ -498,7 +499,7 @@ class SalesOrderController extends Controller
                 );
             } else {
 
-                $dataProductos =  \DB::select("SELECT products.*, p.name_presentation_product, u.name_unit_product, u.short_unit_product
+                $dataProductos =  DB::select("SELECT products.*, p.name_presentation_product, u.name_unit_product, u.short_unit_product
                                                 FROM products 
                                                 INNER JOIN presentation_products AS p ON p.id_presentation_product = products.id_presentation_product
                                                 INNER JOIN unit_products AS u ON u.id_unit_product = products.id_unit_product

@@ -377,8 +377,7 @@
                     input2.setAttribute("name", "subtotal_exento[]");
                     document.getElementById("tds_" + y).appendChild(input2);
                     document.getElementById("td_" + y).appendChild(input);
-                    document.getElementById('name_product' + y).innerHTML = x.code_product + " " + x.name_product + " " + x
-                        .short_unit_product + " " + x.name_presentation_product + " (E)"
+                    document.getElementById('name_product' + y).innerHTML = x.code_product + " " + x.name_product + " (E)"
                     if (x.product_usd_product == 0) {
                         document.getElementById('precio_productos_' + y).innerHTML = 'Bs. ' + x.price_product
                         document.getElementById('price_product_' + y).value = x.price_product
@@ -393,8 +392,7 @@
 
                     document.getElementById("td_" + y).appendChild(input3);
                     document.getElementById("tds_" + y).appendChild(input2);
-                    document.getElementById('name_product' + y).innerHTML = x.code_product + " " + x.name_product + " " + x
-                        .short_unit_product + " " + x.name_presentation_product
+                    document.getElementById('name_product' + y).innerHTML = x.code_product + " " + x.name_product
                     if (x.product_usd_product == 0) {
                         document.getElementById('precio_productos_' + y).innerHTML = 'Bs. ' + x.price_product
                         document.getElementById('price_product_' + y).value = x.price_product

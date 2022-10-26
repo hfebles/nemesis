@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Conf\Bank;
 use App\Models\Conf\Sales\InvoicingConfigutarion;
 use App\Models\Payments\Payments;
+use App\Models\Payments\Surplus;
 use App\Models\Sales\DeliveryNotes;
 use App\Models\Sales\DeliveryNotesDetails;
 use App\Models\Sales\SalesOrder;
@@ -167,17 +168,23 @@ class DeliveryNotesController extends Controller
         ];
 
 
-        $dataSalesOrderDetails = DeliveryNotesDetails::whereIdDeliveryNote($id)->get()[0];
-        $dataBanks = Bank::where('enabled_bank', '=', 1)->pluck('name_bank', 'id_bank');
+
+        $dataBanks = Bank::whereEnabledBank(1)->pluck('name_bank', 'id_bank');
 
         $payments = Payments::select('payments.*', 'name_bank')
             ->join('banks', 'banks.id_bank', '=', 'payments.id_bank')
             ->where('id_delivery_note', '=', $id)
             ->where('type_pay', '=', 2)
             ->get();
+
+            $surplus = Surplus::select('amount_surplus', 'payments.id_payment', 'payments.ref_payment', 'payments.date_payment')
+                    ->join('payments', 'payments.id_payment', '=', 'surpluses.id_payment')
+                    ->where('surpluses.id_client', '=', $data->id_client)
+                    ->where('used_surplus', '=', 1)
+                    ->get();
         
 
-        $obj = json_decode($dataSalesOrderDetails->details_delivery_notes, true);
+        $obj = json_decode(DeliveryNotesDetails::whereIdDeliveryNote($id)->get()[0]->details_delivery_notes, true);
 
         for($i = 0; $i<count($obj['id_product']); $i++){
             $dataProducts[$i] =  \DB::select("SELECT products.*, p.name_presentation_product, u.name_unit_product, u.short_unit_product
@@ -187,7 +194,13 @@ class DeliveryNotesController extends Controller
                                                 WHERE products.id_product =".$obj['id_product'][$i]);
         }
 
-        return view('sales.deliveries-notes.show', compact('conf', 'data', 'dataProducts', 'obj', 'dataBanks', 'payments'));
+        return view('sales.deliveries-notes.show', compact('conf', 'data', 'dataProducts', 'obj', 'dataBanks', 'payments', 'surplus'));
+    }
+
+
+    public function getDataDN($id){
+
+        return DeliveryNotes::whereIdDeliveryNote($id)->get()[0];
     }
     
 

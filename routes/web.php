@@ -52,6 +52,7 @@ use App\Http\Controllers\Production\MaterialsListController;
 use App\Http\Controllers\Production\ProductionOrderController;
 use App\Http\Controllers\Sales\DeliveryNotesController;
 use App\Http\Controllers\Sales\InvoicingController;
+use App\Models\Payments\Surplus;
 
 Auth::routes();
 
@@ -143,9 +144,9 @@ Route::group(['middleware' => ['auth']], function() {
 
     // MOVIMIENTOS 
 
-    Route::resource('/accounting/moves/', MovesAccountsController::class);
+    Route::resource('/acounting/moves/', MovesAccountsController::class);
     Route::get('/accounting/moves/moves-show/{id}', [MovesAccountsController::class, 'verMovimientos'])->name('moves.moves-show');
-
+    
     /**
      * 
      * FIN CONTABILIDAD
@@ -223,8 +224,14 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::resource('/accounting/payments', PaymentController::class);
     Route::get('/accounting/general-print', [PaymentController::class, 'imprimirGeneral'])->name('payments.general-print');
-    Route::get('/accounting/general-prints/{id}/{type}', [PaymentController::class, 'imprimirTipos'])->name('payments.general-prints');
+    Route::get('/accounting/general-prints/{id}', [PaymentController::class, 'imprimirTipos'])->name('payments.general-prints');
     Route::get('/accounting/payment-print/{id}', [PaymentController::class, 'imprimirPago'])->name('payments.payment-print');
+    Route::post('/accounting/search/payment-print-date', [PaymentController::class, 'imprimirPagoFechas'])->name('payments.payment-print-date');
+
+    Route::get('/accounting/register-pay-sur/{id}/{invoice}/{type}', [PaymentController::class, 'registerPayBySurplus'])->name('payments.register-pay-sur');
+    
+    Route::resource('/acounting/surplus/', Surplus::class);
+
     
     /**
     * 

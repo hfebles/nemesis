@@ -9,7 +9,7 @@
 @section('content')
     <div class="row">
         @if ($message = Session::get('message'))
-            <x-cards size="12" :message="$message" />
+            <x-cards :message="$message" />
         @endif
         <x-cards>
             <div class="mb-3 d-flex">
@@ -19,8 +19,8 @@
                         Acciones
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" onclick="abreModal()">Pagos por cliente</a></li>
-                        <li><a class="dropdown-item" onclick="abreModal2()">Pagos por fechas</a></li>
+                        <li><a class="dropdown-item" onclick="abreModal('cliente')">Pagos por cliente</a></li>
+                        <li><a class="dropdown-item" onclick="abreModal('fechas')">Pagos por fechas</a></li>
                         <li><a class="dropdown-item" href="{{ route('payments.general-print') }}">Todos los pagos</a></li>
                     </ul>
                 </div>
@@ -33,44 +33,25 @@
                     <th class="text-center align-middle">#</th>
                     <th class="text-center align-middle">Fecha</th>
                     <th class="text-center align-middle">Cliente</th>
-                    <th class="text-center align-middle">Factura</th>
-                    <th class="text-center align-middle">Pedido</th>
+                    <th class="text-center align-middle">Factura/Pedido</th>
                     <th class="text-center align-middle">Banco</th>
+                    <th class="text-center align-middle">Referencia</th>
                     <th class="text-center align-middle">Monto</th>
                 </tr>
                 @foreach ($table['data'] as $tabla)
-                    @switch($tabla->type_pay)
-                        @case(1)
-                            <tr style="cursor:pointer;" onclick="window.location='{{ $table['url'] }}/{{ $tabla->id_payment }}';">
-                                <td class="text-center align-middle">{{ ++$table['i'] }}</td>
-                                <td class="text-center align-middle">{{ $tabla->date_payment }}</td>
-                                <td class="text-center align-middle">{{ $tabla->name_client }}</td>
-                                <td class="text-center align-middle">{{ $tabla->ref_name_invoicing }}</td>
-                                <td class="text-center align-middle">N/A</td>
-                                <td class="text-center align-middle">{{ $tabla->name_bank }}</td>
-                                <td class="text-center align-middle">{{ $tabla->amount_payment }}</td>
-
-                            </tr>
-                        @break
-
-                        @default
-                            <tr onclick="window.location='{{ $table['url'] }}/{{ $tabla->id_payment }}';">
-                                <td class="text-center align-middle">{{ ++$table['i'] }}</td>
-                                <td class="text-center align-middle">{{ $tabla->date_payment }}</td>
-                                <td class="text-center align-middle">{{ $tabla->name_client }}</td>
-                                <td class="text-center align-middle">N/A</td>
-                                <td class="text-center align-middle">{{ $tabla->ref_name_delivery_note }}</td>
-                                <td class="text-center align-middle">{{ $tabla->name_bank }}</td>
-                                <td class="text-center align-middle">{{ $tabla->amount_payment }}</td>
-
-                            </tr>
-                    @endswitch
+                    <tr style="cursor:pointer;" onclick="window.location='{{ $table['url'] }}/{{ $tabla->id_payment }}';">
+                        <td class="text-center align-middle">{{ ++$table['i'] }}</td>
+                        <td class="text-center align-middle">{{ date('d-m-Y', strtotime($tabla->date_payment)) }}</td>
+                        <td class="text-center align-middle">{{ $tabla->name_client }}</td>
+                        <td class="text-center align-middle">{{ $tabla->ref_name_invoicing ?? $tabla->ref_name_delivery_note }}</td>
+                        <td class="text-center align-middle">{{ $tabla->name_bank }}</td>
+                        <td class="text-end align-middle">#{{  $tabla->ref_payment }}</td>
+                        <td class="text-center align-middle">{{ number_format($tabla->amount_payment, '2', ',', '.') }}</td>
+                    </tr>
                 @endforeach
-
             </table>
+             {!! $table['data']->render() !!}      
         </x-cards>
-
-
     </div>
 
 
@@ -80,7 +61,7 @@
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="title-modal">Pagos por cliente</h5>
+                    <h5 class="modal-title" id="title-modal"></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -98,44 +79,32 @@
                 </div>
             </div>
         </div>
-        <!-- Modal -->
-        <div class="modal fade" id="exampleModal2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-            aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="title-modal">Pagos por rango de fechas</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-12 g-3">
 
+    @endsection
 
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        @endsection
+    @section('js')
 
-        @section('js')
+        <script>
+            var myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
 
-            <script>
-                var myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
-                var myModal2 = new bootstrap.Modal(document.getElementById('exampleModal2'));
+            function abreModal(tipo) {
+                var col = document.getElementById('divsito');
+                linea2 = ""
+                const csrfToken = "{{ csrf_token() }}";
 
+                if (tipo == 'cliente') {
+                    document.getElementById('title-modal').innerHTML = "Pagos por cliente"
 
-                function abreModal() {
+                    col.innerHTML = "";
                     myModal.show()
-                    creaBusqueda('clientes', "");
-                    linea2 = ""
-                    const csrfToken = "{{ csrf_token() }}";
+                    creaBusqueda('clientes', '');
+
+                    
                     fetch('/sales/search', {
                         method: 'POST',
                         body: JSON.stringify({
                             texto: 'clientes',
-                            param: ''
+                            param: ""
                         }),
                         headers: {
                             'content-type': 'application/json',
@@ -144,7 +113,6 @@
                     }).then(response => {
                         return response.json();
                     }).then(data => {
-                        var col = document.getElementById('divsito');
                         document.getElementById('title-modal').innerHTML = data.title;
                         var a = "";
                         var b = "";
@@ -175,38 +143,81 @@
                         col.innerHTML = linea2
                     });
 
-                }
-
-                function seleccionarCliente(x) {
-                    window.location.href = '/accounting/general-prints/'+x+'/1';
-                    myModal.hide()
-                }
+                } else {
+                    col.innerHTML = "";
+                    document.getElementById('title-modal').innerHTML = "Pagos por rango de fechas"
+                    myModal.show()
 
 
-                function abreModal2() {
-                    myModal2.show()
-                }
 
+                    linea2 += `<div class="container px-5 my-5">`;
+                    linea2 += `<form method="POST" action="{{ route('payments.payment-print-date') }}" accept-charset="UTF-8" novalidate class="needs-validation" id="myForm">`;
+                    linea2 += `<input name="_token" type="hidden" value="${csrfToken}">`
+                    linea2 += `<div class="form-floating mb-3">`;
+                    linea2 += `<input class="form-control form-control-sm" autocomplete='off' name="fechaDesde" type="date" placeholder="Fecha desde" required />`;
+                    linea2 += `<label for="fechaDesde">Fecha desde</label>`;
+                    linea2 += `<div class="invalid-feedback">Fecha desde is requerido.</div>`;
+                    linea2 += `</div>`;
+                    linea2 += `<div class="form-floating mb-3">`;
+                    linea2 += `<input class="form-control form-control-sm"  autocomplete='off' name="fechaHasta" type="date" placeholder="Fecha hasta" required />`;
+                    linea2 += `<label for="fechaHasta">Fecha hasta</label>`;
+                    linea2 += `<div class="invalid-feedback">Fecha hasta is required.</div>`;
+                    linea2 += `</div>`;
+                    linea2 += `<div class="d-grid">`;
+                    linea2 += `<button class="btn btn-primary btn-lg " id="submitButton" type="submit">Submit</button>`;
+                    linea2 += `</div>`;
+                    linea2 += `</form>`;
+                    linea2 += `</div>`;
 
-                function creaBusqueda(tipo, valorActual = "") {
-                    document.getElementById('buscar').innerHTML =
-                        '<input class="form-control" placeholder="Buscar" type="text" id="searchModal" onkeyup="seleccionar(\'' +
-                        tipo + '\', this.value);" />'
-                    const input = document.getElementById('searchModal')
-                    if (valorActual != "") {
-                        input.value = valorActual
-                    } else if (isNaN(valorActual)) {
-                        input.value = ""
-                    } else {
-                        input.value = ""
-                    }
-                    const end = input.value.length;
-                    input.setSelectionRange(end, end);
-                    input.focus();
-
+                    col.innerHTML = linea2
 
                 }
-            </script>
+
+            }
+
+            function seleccionarCliente(x) {
+                window.location.href = '/accounting/general-prints/'+x ;
+                myModal.hide()
+            }
 
 
-        @endsection
+            function creaBusqueda(tipo, valorActual = "") {
+                document.getElementById('buscar').innerHTML =
+                    '<input class="form-control" placeholder="Buscar" type="text" autocomplete="off" id="searchModal" onkeyup="seleccionar(\'' + tipo + '\', this.value);" />'
+                const input = document.getElementById('searchModal')
+                if (valorActual != "") {
+                    input.value = valorActual
+                } else if (isNaN(valorActual)) {
+                    input.value = ""
+                } else {
+                    input.value = ""
+                }
+                const end = input.value.length;
+                input.setSelectionRange(end, end);
+                input.focus();
+
+
+            }
+
+
+
+
+            (function() {
+                'use strict'
+                var forms = document.querySelectorAll('.needs-validation')
+                Array.prototype.slice.call(forms)
+                    .forEach(function(form) {
+                        form.addEventListener('submit', function(event) {
+                            if (!form.checkValidity()) {
+                                event.preventDefault()
+                                event.stopPropagation()
+                            }
+
+                            form.classList.add('was-validated')
+                        }, false)
+                    })
+            })()
+        </script>
+
+
+    @endsection

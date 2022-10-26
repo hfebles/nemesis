@@ -17,21 +17,23 @@
             <tbody id="body-table">
             @for ($o = 0; $o < count($conf['data']); $o++)
             @if ($conf['show'] == true)
-                <tr onclick="window.location='{{$conf['url']}}/{{$conf['data'][$o][$conf['id']]}}';">
+                <tr style="cursor:pointer;" onclick="window.location='{{$conf['url']}}/{{$conf['data'][$o][$conf['id']]}}';">
             
             @elseif ($conf['edit'] == true)
                 @if (Gate::check($conf['group'].'-edit') || Gate::check('adm-edit'))
                 
-                    <tr onclick="window.location='{{$conf['url']}}/{{$conf['data'][$o][$conf['id']]}}/edit';">
+                    <tr style="cursor:pointer;" onclick="window.location='{{$conf['url']}}/{{$conf['data'][$o][$conf['id']]}}/edit';">
                 @endif
             @else
                 <tr>
-            @endif    
+            @endif   
                     <td class="{{$conf['c_ths'][0]}}" >{{++$conf['i']}}</td>
                     @for ($oa = 0; $oa < count($conf['tds']); $oa++)
                         <td class="{{$conf['c_ths'][$oa+1]}}" >
-                        @if(is_numeric($conf['data'][$o][$conf['tds'][$oa]]) == true)
+                        @if(is_string($conf['data'][$o][$conf['tds'][$oa]]) == false && is_null($conf['data'][$o][$conf['tds'][$oa]]) == false)
                             {{ number_format($conf['data'][$o][$conf['tds'][$oa]], '2', ',', '.')  }}
+                        @elseif(is_null($conf['data'][$o][$conf['tds'][$oa]]) == true)
+                            {{$conf['data'][$o][$conf['tds'][$oa]] ?? 'N/A'}}
                         @elseif(DateTime::createFromFormat('Y-m-d', $conf['data'][$o][$conf['tds'][$oa]]) == true)
                             {{date('d-m-Y', strtotime($conf['data'][$o][$conf['tds'][$oa]]))}}
                         @else

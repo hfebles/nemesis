@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Conf\Bank;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 class AnotherConfigsSeeder extends Seeder
@@ -14,9 +15,11 @@ class AnotherConfigsSeeder extends Seeder
     public function run()
     {
 
+        Bank::create(['name_bank' => 'BDV', 'account_number_bank' => '11111111111111111111']);
+
         DB::insert("INSERT INTO taxes(
             name_tax, amount_tax, billable_tax)
-            VALUES ('iva', 16, 1);");
+            VALUES ('IVA', 16, 1);");
             
 
 

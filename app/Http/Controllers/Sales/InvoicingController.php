@@ -14,6 +14,7 @@ use App\Models\Conf\Exchange;
 use App\Models\Conf\Sales\InvoicingConfigutarion;
 use App\Models\Conf\Tax;
 use App\Models\Payments\Payments;
+use App\Models\Payments\Surplus;
 use App\Models\Products\Product;
 use App\Models\Sales\Client;
 use App\Models\Sales\DeliveryNotesDetails;
@@ -215,7 +216,7 @@ class InvoicingController extends Controller
             'message' => 'Se registro con éxito',
         ];
 
-        return redirect()->route('invoicing.index')->with('message', $message);
+        return redirect()->route('invoicing.show', $saveInvoice->id_invoicing);
     }
 
 
@@ -285,6 +286,8 @@ class InvoicingController extends Controller
 
     public function show($id)
     {
+
+        
         $data =  \DB::select("SELECT i.*, c.address_client, c.phone_client, c.idcard_client, c.name_client, w.firts_name_worker, w.last_name_worker, e.amount_exchange, e.date_exchange
         FROM invoicings as i
         INNER JOIN clients AS c ON c.id_client = i.id_client
@@ -293,21 +296,17 @@ class InvoicingController extends Controller
         WHERE i.id_invoicing = $id")[0];
 
 
-        // return $data;
+        //return $data;
 
         $conf = [
-            'title-section' => 'Factura: ' . $data->ref_name_invoicing,
+            'title-section' => 'Factura: '.$data->ref_name_invoicing,
             'group' => 'sales-invoices',
             'back' => 'invoicing.index',
         ];
 
 
-
-        $dataDetails = InvoicingDetails::whereIdInvoicing($id)->get()[0];
-
-        $obj = json_decode($dataDetails->details_invoicing_detail, true);
-
-        $dataBanks = Bank::where('enabled_bank', '=', 1)->pluck('name_bank', 'id_bank');
+        $obj = json_decode(InvoicingDetails::whereIdInvoicing($id)->get()[0]->details_invoicing_detail, true);
+        $dataBanks = Bank::whereEnabledBank(1)->pluck('name_bank', 'id_bank');
 
         $payments = Payments::select('payments.*', 'name_bank')
             ->join('banks', 'banks.id_bank', '=', 'payments.id_bank')
@@ -315,21 +314,15 @@ class InvoicingController extends Controller
             ->whereTypePay(1)
             ->get();
 
-        // $a = DB::select("SELECT  sum(total_amount_invoicing) as suma1
-        //                     FROM invoicings 
-        //                     WHERE invoicings.id_client = $data->id_client");
+        $surplus = Surplus::select('amount_surplus', 'payments.id_payment', 'payments.ref_payment', 'payments.date_payment')
+                    ->join('payments', 'payments.id_payment', '=', 'surpluses.id_payment')
+                    ->where('surpluses.id_client', '=', $data->id_client)
+                    ->where('used_surplus', '=', 1)
+                    ->get();
 
+    //    return $surplus;
 
-
-        // $b = DB::select("SELECT  sum(amount_payment) as suma2
-        //                     FROM payments 
-        //                     WHERE payments.id_client = $data->id_client");
-
-        // return [
-        //         'cliente' => $data->id_client,
-        //         'suma1'=> $a[0]->suma1,
-        //         'suma2' => $b[0]->suma2,
-        //         'total' => $b[0]->suma2-$a[0]->suma1,];
+        
 
 
 
@@ -343,7 +336,7 @@ class InvoicingController extends Controller
         }
 
 
-        return view('sales.invoices.show', compact('conf', 'data', 'dataProducts', 'obj', 'dataBanks', 'payments'));
+        return view('sales.invoices.show', compact('conf', 'data', 'dataProducts', 'obj', 'dataBanks', 'payments', 'surplus'));
     }
 
 
@@ -493,5 +486,11 @@ class InvoicingController extends Controller
         Payments::whereIdInvoice($id)->where('type_pay', '=', 1)->update(['enabled_payment' => 0]);
 
         return redirect()->route('invoicing.show', $id);
+    }
+
+
+    public function getDataInv($id){
+
+        return Invoicing::whereIdInvoicing($id)->get()[0];
     }
 }
