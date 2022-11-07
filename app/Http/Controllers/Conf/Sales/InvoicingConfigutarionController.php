@@ -65,4 +65,11 @@ class InvoicingConfigutarionController extends Controller
         InvoicingConfigutarion::whereIdInvoicingConfigutarion($id)->update($data);
         return redirect()->route('invoices-config.index');
     }
+
+
+
+    public function getInvConf(){
+
+        return InvoicingConfigutarion::all()[0];
+    }
 }

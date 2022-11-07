@@ -36,6 +36,56 @@
 @endsection
 @section('js')
 <script>
+function selectSubAccount(type, location){
+    
+        
+
+        const csrfToken = "{{ csrf_token() }}";
+
+
+    if(location == 'c'){
+        var div = document.getElementById('subcuenta');
+        div.style.display = "";
+
+        var select = document.getElementById('subcuentas');
+        var opts ="";
+    }else{
+            var select = document.getElementById('subcuentas_m');
+        }
+
+    
+    
+
+    fetch('/accounting/ledger-account/search-ledgers', {
+        method: 'POST',
+        body: JSON.stringify({type: type,}),
+        headers: {
+            'content-type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+        } 
+    }).then(response => {
+        return response.json();
+    }).then( data => {
+        select.innerHTML = ""
+
+        for (i in data){
+           //console.log(data[i] )
+            opts += `<option value="${data[i].id_ledger_account}">${data[i].code_ledger_account} - ${data[i].name_ledger_account}</option>`
+        }
+
+        
+        select.innerHTML = opts;
+
+    });
+
+    
+    
+    }
+
+
+
+
+
 
 var myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
 
@@ -47,7 +97,7 @@ function editModal(id){
 
     //console.log(id)
     myModal.show() 
-    $('#title-modal').html('test');
+    $('#title-modal').html('Editar banco');
     var div = document.getElementById('divsito');
     var linea2 ="";
     const csrfToken = "{{ csrf_token() }}";
@@ -61,8 +111,6 @@ function editModal(id){
     }).then(response => {
         return response.json();
     }).then( data => {
-        console.log(data)
-        
         linea2 += `<form method="POST" action="/mantenice/banks/${id}" accept-charset="UTF-8" novalidate="" class="needs-validation" id="myForm">`
             linea2 +=`<input name="_method" type="hidden" value="PATCH">`
             linea2 +=`<input name="_token" type="hidden" value="${csrfToken}">`
@@ -81,16 +129,26 @@ function editModal(id){
                     linea2 += `<textarea class="form-control form-control-sm" type="text" name="description_bank" id="description_bank">${data.data.description_bank}</textarea>`
                     linea2+= `<div  class="invalid-feedback">Para guardar debe ingresar el procentaje</div>`
                 linea2 +=`</div>`
-                // linea2 +=`<div class="col-12">`
-                //     linea2 += `<label class="form-label">Cuenta contable asociada</label>`
-                //     linea2 +=`<select name="id_sub_ledger_account" id="id_sub_ledger_account" required class="form-select form-select-sm">`
-                //         linea2 +=`<option value="${data.data.id_sub_ledger_account}">${data.data.name_sub_ledger_account}</option>`
-                //         for(let i in data.accs){
-                //             linea2 +=`<option value="${data.accs[i].id_sub_ledger_account}">${data.accs[i].name_sub_ledger_account}</option>`
-                //         }
-                //     linea2 +=`</select>`
-                //     linea2+= `<div  class="invalid-feedback">Para guardar debe ingresar el procentaje</div>`
-                // linea2 +=`</div>`
+                linea2 +=`<div class="col-12">`
+                    linea2 += `<label class="form-label">Tipo de cuenta contable asociada</label>`
+                    linea2 +=`<select onchange="selectSubAccount(this.value, 'm')" required class="form-select form-select-sm">`
+                        linea2 +=`<option value="${data.dataGroupLedgerBank.id_ledger_account}">${data.dataGroupLedgerBank.code_ledger_account} - ${data.dataGroupLedgerBank.name_ledger_account}</option>`
+                        for(let i in data.groupLedgers){
+                            linea2 +=`<option value="${i}">${i} - ${data.groupLedgers[i]}</option>`
+                        }
+                    linea2 +=`</select>`
+                    linea2+= `<div  class="invalid-feedback">Para guardar debe ingresar el procentaje</div>`
+                linea2 +=`</div>`
+                linea2 +=`<div class="col-12">`
+                    linea2 += `<label class="form-label">Tipo de cuenta contable asociada</label>`
+                    linea2 +=`<select name="id_ledger_account" id="subcuentas_m" required class="subcuentas form-select form-select-sm">`
+                        linea2 +=`<option value="${data.dataTypeLedgerBank.id_ledger_account}">${data.dataTypeLedgerBank.code_ledger_account} - ${data.dataTypeLedgerBank.name_ledger_account}</option>`
+                        for(let i in data.typesLedgers){
+                            linea2 +=`<option value="${data.typesLedgers[i].id_ledger_account}">${data.typesLedgers[i].code_ledger_account} - ${data.typesLedgers[i].name_ledger_account}</option>`
+                        }
+                    linea2 +=`</select>`
+                    linea2+= `<div  class="invalid-feedback">Para guardar debe ingresar el procentaje</div>`
+                linea2 +=`</div>`
             linea2 +=`</div>`
             linea2 +=`<div class="col-12 text-center">`
                 linea2 += `<button class="btn btn-success my-3" type="submit">Actualizar</button>`

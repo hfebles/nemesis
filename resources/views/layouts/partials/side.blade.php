@@ -4,9 +4,9 @@
 <!-- Sidebar - Brand -->
 <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
     <div class="sidebar-brand-icon">
-        <img src="{{asset('img/DONHIELO.svg')}}" class="img-fluid" width="50%"  />
+        <img src="{{asset('img/DONHILO.svg')}}" class="img-fluid" width="50%"  />
     </div>
-    <div class="sidebar-brand-text mx-3">Don Hielo</div>
+    <div class="sidebar-brand-text mx-3">Tu sistema.com </div>
 </a>
 
 <!-- Divider -->

@@ -129,6 +129,10 @@ Route::group(['middleware' => ['auth']], function() {
 
     // PLAN CONTABLE
     Route::resource('accounting/ledger-account', LedgerAccountController::class);
+
+    Route::post('accounting/ledger-account/search-ledgers', [LedgerAccountController::class, 'searchLedgers'])->name('accounting.search-ledgers');
+
+
     Route::resource('accounting/sub-ledger-account', SubLedgerAccountController::class);
     Route::resource('accounting/sub-group-accounting', SubGroupController::class);
     Route::resource('accounting/group-accounting', GroupController::class);
@@ -144,8 +148,10 @@ Route::group(['middleware' => ['auth']], function() {
 
     // MOVIMIENTOS 
 
-    Route::resource('/acounting/moves/', MovesAccountsController::class);
-    Route::get('/accounting/moves/moves-show/{id}', [MovesAccountsController::class, 'verMovimientos'])->name('moves.moves-show');
+    Route::resource('/accounting/moves', MovesAccountsController::class);
+    //Route::get('/accounting/moves/moves-show/{id}', [MovesAccountsController::class, 'verMovimientos'])->name('moves.moves-show');
+
+    Route::get('/accounting/reports/{id}', [MovesAccountsController::class, 'reports'])->name('moves.reports');
     
     /**
      * 

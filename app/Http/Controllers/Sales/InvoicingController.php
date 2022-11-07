@@ -209,6 +209,13 @@ class InvoicingController extends Controller
             Product::whereIdProduct($dataInvoice['id_product'][$i])->update(['qty_product' => $operacion]);
         }
 
+        $move = (new MovesAccountsController)->createMoves($saveInvoice->id_invoicing, $saveInvoice->date_invoicing, 1);                       
+
+
+
+        $result = (new AccountingEntriesController)->saveEntriesSales($move, $saveInvoice->id_invoicing);
+        
+      //return $result;
 
 
         $message = [

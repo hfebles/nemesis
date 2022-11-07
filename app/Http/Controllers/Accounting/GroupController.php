@@ -22,10 +22,9 @@ class GroupController extends Controller
         while (($data = fgetcsv($csvFile, 2000, ",")) !== FALSE) {
             var_dump($data[0]);
             if (!$firstline) {
-                Group::create([
-                    "id_group" => $data[0],
-                    "code_group" => $data[1],
-                    "name_group" => $data[2],
+                LedgerAccount::create([
+                    "code_ledger_account" => $data[1],
+                    "name_ledger_account" => $data[2],
                     "id_type_ledger_account" => $data[3],
                 ]);            
             }

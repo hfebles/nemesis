@@ -91,22 +91,33 @@ class PaymentController extends Controller
         $payment->type_pay = $data['type_pay'];
 
 
+        
+
+
         if ($data['type_pay'] == 1) {
 
             $invoice = (new InvoicingController)->getDataInv($data['id_invoice']);
             if ($invoice->residual_amount_invoicing == $payment->amount_payment) {
-                Invoicing::whereIdInvoicing($data['id_invoice'])->update(['residual_amount_invoicing' => 0.00, 'id_order_state' => 5]);
-                $payment->id_invoice = $data['id_invoice'];
+                Invoicing::whereIdInvoicing($invoice->id_invoicing)->update(['residual_amount_invoicing' => 0.00, 'id_order_state' => 5]);
+                $payment->id_invoice = $invoice->id_invoicing;
                 $payment->save();
-            } elseif ($invoice->residual_amount_invoicing > $payment->amount_payment) {
+        
+                $move = (new MovesAccountsController)->createMoves($invoice->id_invoicing, $payment->date_payment, 3);                       
+                $result = (new AccountingEntriesController)->saveEntriesPayments($move, $invoice->id_invoicing, $payment->amount_payment);
+
+    } elseif ($invoice->residual_amount_invoicing > $payment->amount_payment) {
                 $resto = $invoice->residual_amount_invoicing - $payment->amount_payment;
                 Invoicing::whereIdInvoicing($data['id_invoice'])->update(['residual_amount_invoicing' => $resto,]);
                 $payment->id_invoice = $data['id_invoice'];
                 $payment->save();
+                $move = (new MovesAccountsController)->createMoves($invoice->id_invoicing, $payment->date_payment, 3);                       
+                $result = (new AccountingEntriesController)->saveEntriesPayments($move, $invoice->id_invoicing, $payment->amount_payment);  
             } else {
                 $resto = $payment->amount_payment - $invoice->residual_amount_invoicing;
                 $payment->id_invoice = $data['id_invoice'];
                 $payment->save();
+                $move = (new MovesAccountsController)->createMoves($invoice->id_invoicing, $payment->date_payment, 3);                       
+                $result = (new AccountingEntriesController)->saveEntriesPayments($move, $invoice->id_invoicing, $payment->amount_payment);
 
                 Surplus::create([
                     'amount_surplus' => $resto,

@@ -15,11 +15,11 @@ class AnotherConfigsSeeder extends Seeder
     public function run()
     {
 
-        Bank::create(['name_bank' => 'BDV', 'account_number_bank' => '11111111111111111111']);
+        Bank::create(['name_bank' => 'BDV', 'account_number_bank' => '11111111111111111111', 'id_ledger_account' => 8]);
 
         DB::insert("INSERT INTO taxes(
-            name_tax, amount_tax, billable_tax)
-            VALUES ('IVA', 16, 1);");
+            name_tax, amount_tax, billable_tax, id_ledger_account)
+            VALUES ('IVA', 16, 1, 76);");
             
 
 
@@ -82,11 +82,11 @@ class AnotherConfigsSeeder extends Seeder
 ('INVERSIONES POPULAR II', 'J404981845', 'AV BERMUDEZ ESTE ENTRE CALLE INDEPENDENCIA Y BOYACA NRO 01-04', 4),
 ('INVERSIONES LUNA SOL', 'J405047968', 'CALLE INDEPENDENCIA NRO 104-23-10', 4);");
 
-DB::insert("INSERT INTO sale_order_configurations (print_name_sale_order_configuration, correlative_sale_order_configuration, control_number_sale_order_configuration, id_sub_ledger_account, enabled_sale_order_configuration) VALUES ('pb', 'PV', '1', NULL, '1');");
+DB::insert("INSERT INTO sale_order_configurations (print_name_sale_order_configuration, correlative_sale_order_configuration, control_number_sale_order_configuration, id_ledger_account, enabled_sale_order_configuration) VALUES ('pb', 'PV', '1', NULL, '1');");
 
-DB::insert("INSERT INTO type_ledger_accounts (name_type_ledger_account, enabled_type_ledger_account) VALUES ('ACTIVO', '1' ), ('PASIVO', '1');");
+DB::insert("INSERT INTO type_ledger_accounts (name_type_ledger_account, enabled_type_ledger_account) VALUES ('ACTIVO', '1' ), ('PASIVO', '1'), ('PATRIMONIO', '1'), ('INGRESOS', '1'), ('COSTOS', '1'), ('GASTOS', '1');");
 
-DB::insert("INSERT INTO invoicing_configutarions (print_name_invoicing_configutarion, correlative_invoicing_configutarion, control_number_invoicing_configutarion) VALUES ('12', '12', '0');");
+DB::insert("INSERT INTO invoicing_configutarions (print_name_invoicing_configutarion, correlative_invoicing_configutarion, control_number_invoicing_configutarion, id_ledger_account) VALUES ('12', '12', '0', '112');");
 
 
     }

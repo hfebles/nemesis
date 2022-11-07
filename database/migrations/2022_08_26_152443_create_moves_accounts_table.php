@@ -15,7 +15,8 @@ return new class extends Migration
     {
         Schema::create('moves_accounts', function (Blueprint $table) {
             $table->id('id_moves_account');
-            $table->integer('ref_moves_account');
+            $table->integer('id_invocing');
+            $table->date('date_moves_account');
             $table->boolean('type_moves_account')->default(0);
             $table->timestamps();
         });

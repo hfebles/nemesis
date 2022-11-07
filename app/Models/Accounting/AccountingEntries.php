@@ -9,14 +9,14 @@ class AccountingEntries extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'id_moves_account',
+        'date_accounting_entries',
+        'amount_accounting_entries',
         'id_ledger_account',
         'description_accounting_entries',
-        'date_accounting_entries',
-        'amount_debe_accounting_entries',
-        'amount_haber_accounting_entries',
+        'id_moves_account',
+        'id_invocing',
 
     ];
 
-    protected $primaryKey = 'id_moves_account';
+    protected $primaryKey = 'id_accounting_entries';
 }

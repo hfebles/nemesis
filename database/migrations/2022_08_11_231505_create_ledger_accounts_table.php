@@ -15,7 +15,6 @@ return new class extends Migration
     {
         Schema::create('ledger_accounts', function (Blueprint $table) {
             $table->id('id_ledger_account');
-            $table->integer('id_sub_group');
             $table->string('code_ledger_account');
             $table->string('name_ledger_account');
             $table->integer('id_type_ledger_account')->nullable();

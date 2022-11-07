@@ -39,7 +39,7 @@ class MenusTableSeeder extends Seeder
         Menu::create(['id' => 14, 'name' => 'Facturas', 'slug' => 'invoicing.index', 'grupo' => 'sales-invoices', 'icono' => 'fa-solid fa-receipt', 'parent' => '2', 'order' => '0', 'href' => '0', ]);
         
         //CONTABILIDAD 
-        Menu::create(['id' => 15, 'name' => 'Asientos contables', 'slug' => 'accounting-records.index', 'grupo' => 'accounting-records', 'icono' => 'fa-regular fa-address-book', 'parent' => '3', 'order' => '0', 'href' => '0', ]);
+        Menu::create(['id' => 15, 'name' => 'Asientos contables', 'slug' => 'moves.index', 'grupo' => 'accounting-records', 'icono' => 'fa-regular fa-address-book', 'parent' => '3', 'order' => '0', 'href' => '0', ]);
         Menu::create(['id' => 16, 'name' => 'Pagos Recibidos', 'slug' => 'payments.index', 'grupo' => 'payment', 'icono' => 'fa-sharp fa-solid fa-cash-register', 'parent' => '3', 'order' => '1', 'href' => '0', ]);
         Menu::create(['id' => 17, 'name' => 'Plan Contable', 'slug' => 'ledger-account.index', 'grupo' => 'accounting-ledger', 'icono' => 'fa-sharp fa-solid fa-table-list', 'parent' => '3', 'order' => '2', 'href' => '0', ]);
 

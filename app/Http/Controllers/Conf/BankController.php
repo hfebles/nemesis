@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Conf;
 
 use App\Http\Controllers\Controller;
+use App\Models\Accounting\LedgerAccount;
 use Illuminate\Http\Request;
 
 use App\Models\Conf\Bank;
-use App\Models\Accounting\SubLedgerAccount;
+
 
 class BankController extends Controller
 {
@@ -23,10 +24,12 @@ class BankController extends Controller
         $conf = [
             'title-section' => 'Bancos',
             'group' => 'banks',
-            'create' => ['route' =>'taxes.create', 'name' => 'Nuevo banco', 'btn_type' => 2,],
+            'create' => ['route' =>'banks.create', 'name' => 'Nuevo banco', 'btn_type' => 2,],
         ];
 
-        $dataSubAcc = SubLedgerAccount::where('enabled_sub_ledger_account', '=', '1')->pluck('name_sub_ledger_account', 'id_sub_ledger_account');
+        
+
+        $typeLedger = LedgerAccount::whereRaw('LENGTH(code_ledger_account) <= 2')->pluck('name_ledger_account', 'id_type_ledger_account');
 
         $table = [
             'c_table' => 'table table-bordered table-hover mb-0 text-uppercase',
@@ -48,7 +51,7 @@ class BankController extends Controller
             'data' => Bank::whereEnabledBank(1)->paginate(10),
             'i' => (($request->input('page', 1) - 1) * 5),
         ];
-        return view('conf.banks.index', compact('conf', 'table', 'dataSubAcc'));
+        return view('conf.banks.index', compact('conf', 'table', 'typeLedger'));
 
     }
 
@@ -56,12 +59,13 @@ class BankController extends Controller
 
         $data = $request->except('_token');
 
+      //  return $data;
         $save = new Bank();
         
         $save->name_bank = strtoupper($data['name_bank']);
         $save->description_bank = strtoupper($data['description_bank']);
         $save->account_number_bank = $data['account_number_bank'];
-        //$save->id_sub_ledger_account = $data['id_sub_ledger_account'];
+        $save->id_ledger_account = $data['id_ledger_account'];
         $save->save();
         
         $message = [
@@ -75,13 +79,26 @@ class BankController extends Controller
 
     public function editModal(Request $request){
         
-        // $response =[
-        //     'accs' => $dataSubAcc = SubLedgerAccount::where('enabled_sub_ledger_account', '=', '1')->get(),
-        //     'data' => Bank::select('name_bank', 'description_bank', 'name_sub_ledger_account', 'account_number_bank', 'banks.id_sub_ledger_account')->join('sub_ledger_accounts as sla', 'sla.id_sub_ledger_account', '=', 'banks.id_sub_ledger_account')->whereIdBank($request->id)->get()[0],
-        // ];
+        $typeLedger = LedgerAccount::whereRaw('LENGTH(code_ledger_account) <= 2')->pluck('name_ledger_account', 'id_type_ledger_account');
+        $data = Bank::select('name_bank', 'description_bank', 'account_number_bank', 'id_ledger_account')->whereIdBank($request->id)->get()[0];
+        //return $data;
+
+        $id_type = LedgerAccount::select('id_type_ledger_account')->where('id_ledger_account', '=', $data->id_ledger_account)->get()[0]->id_type_ledger_account;
+        $dataBankLedgers = LedgerAccount::where('id_ledger_account', '=', $data->id_ledger_account)->get()[0];
+
+      
+
+
+       
+        
 
         $response =[
-            'data' => Bank::select('name_bank', 'description_bank', 'account_number_bank')->whereIdBank($request->id)->get()[0],
+            'data' => $data,
+            'dataGroupLedgerBank' =>  LedgerAccount::whereRaw('LENGTH(code_ledger_account) <= 2')->where('id_type_ledger_account', '=', $id_type)->get()[0],
+            'dataTypeLedgerBank' => LedgerAccount::where('id_ledger_account', '=', $data->id_ledger_account)->get()[0],
+            
+            'groupLedgers' => LedgerAccount::whereRaw('LENGTH(code_ledger_account) <= 2')->pluck('name_ledger_account', 'id_type_ledger_account'),
+            'typesLedgers' => LedgerAccount::where('id_type_ledger_account', '=', $id_type)->get()
         ];
         
         return $response;
@@ -93,7 +110,7 @@ class BankController extends Controller
 
         
         $data = $request->except('_token', '_method');
-        $tax = Bank::whereIdBank($id);
+        $bank = Bank::whereIdBank($id);
 
         //return $data;
         
@@ -107,7 +124,7 @@ class BankController extends Controller
         //     $data['id_sub_ledger_account'] = $data['id_sub_ledger_account'];
         //  }
 
-        $tax->update($data);
+        $bank->update($data);
 
         
         $message = [

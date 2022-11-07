@@ -21,18 +21,10 @@
     @foreach ($data as $d)
     <tr>
         <td class="text-center">{{ date('d-m-Y', strtotime($d->date_accounting_entries)) }}</td>
-        @if ($d->id_type_ledger_account == 1 )
             <td colspan="2">{{ $d->description_accounting_entries }}</td>
-            <td class="text-end">{{ number_format($d->amount_accounting_entries, '2', ',', '.') ?? 0,00 }}</td>
-            <td></td>
-            
-        @endif
-        @if ($d->id_type_ledger_account == 2 || $d->id_type_ledger_account == 4)
-            <td colspan="2">{{ $d->description_accounting_entries }}</td>
-            <td></td>
-            <td class="text-end">{{ number_format($d->amount_accounting_entries, '2', ',', '.') ?? 0,00 }}</td>
-        @endif
-</tr>
+            <td class="text-end">{{ number_format($d->monto_debe, '2', ',', '.') ?? 0,00 }}</td>          
+            <td class="text-end">{{ number_format($d->monto_haber, '2', ',', '.') ?? 0,00 }}</td>
+    </tr>
 
 @endforeach
 <tr>

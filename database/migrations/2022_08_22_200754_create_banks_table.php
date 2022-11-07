@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name_bank');
             $table->string('description_bank')->nullable();
             $table->string('account_number_bank');
-            $table->integer('id_sub_ledger_account')->nullable();
+            $table->integer('id_ledger_account')->nullable();
             $table->integer('id_company')->nullable();
             $table->boolean('enabled_bank')->default(1);
             $table->timestamps();
