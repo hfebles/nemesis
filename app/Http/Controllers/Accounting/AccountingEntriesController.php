@@ -101,11 +101,13 @@ class AccountingEntriesController extends Controller
 
     }
 
-    public function saveEntriesPayments($move, $invocing, $amount)
+    public function saveEntriesPayments($move, $invocing, $amount, $bank)
     {
 
         $invoice = (new InvoicingController)->getDataInv($invocing);
         $conf = (new InvoicingConfigutarionController)->getInvConf();
+
+        $banco = Bank::find($bank)->id_ledger_account;
 
         /*HACER MEJOR */
 
@@ -118,7 +120,7 @@ class AccountingEntriesController extends Controller
         AccountingEntries::create([
             'date_accounting_entries' => $invoice->date_invoicing,
             'amount_accounting_entries' => $amount,
-            'id_ledger_account' => 8,
+            'id_ledger_account' => $banco,
             'description_accounting_entries' => 'Pago del cliente:'.$client->name_client.', a la factura: '.$invoice->ref_name_invoicing,
             'id_moves_account' => $move,
             'id_invocing' => $invocing,

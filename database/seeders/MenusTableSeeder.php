@@ -20,13 +20,13 @@ class MenusTableSeeder extends Seeder
     {
         Menu::create(['id' => 1, 'name' => 'Ventas', 'slug' => '/', 'grupo' => 'sales', 'icono' => 'fa-solid fa-file-invoice', 'parent' => '0', 'order' => '0', 'href' => '0',]);
         Menu::create(['id' => 2, 'name' => 'Facturación', 'slug' => '/', 'grupo' => 'invoices', 'icono' => 'fa-solid fa-file-invoice', 'parent' => '0', 'order' => '1', 'href' => '1', ]);
-        Menu::create(['id' => 3, 'name' => 'Contabilidad', 'slug' => '/', 'grupo' => 'accounting', 'icono' => 'fa-sharp fa-solid fa-book', 'parent' => '0', 'order' => '2', 'href' => '0',]);
-        Menu::create(['id' => 4, 'name' => 'Almacen', 'slug' => '/', 'grupo' => 'warehouse', 'icono' => 'fa-sharp fa-solid fa-warehouse', 'parent' => '0', 'order' => '3', 'href' => '0',]);
-        Menu::create(['id' => 5, 'name' => 'Nomina', 'slug' => '/', 'grupo' => '', 'icono' => '', 'parent' => '0', 'order' => '5', 'href' => '0', 'enabled' => 0]);
-        Menu::create(['id' => 6, 'name' => 'RRHH', 'slug' => '/', 'grupo' => 'rrhh', 'icono' => 'fa-sharp fa-solid fa-address-card', 'parent' => '0', 'order' => '6', 'href' => '1', ]);
-        Menu::create(['id' => 7, 'name' => 'Configuraciones','slug' => '/','grupo' => 'mantenice','icono' => 'fa-solid fa-screwdriver-wrench','parent' => '0','order' => '9','href' => '0',]);
-        Menu::create(['id' => 8, 'name' => 'Producción','slug' => '/','grupo' => 'production','icono' => 'fa-solid fa-screwdriver-wrench','parent' => '0','order' => '7','href' => '0',]);
-        Menu::create(['id' => 9, 'name' => 'Despachos','slug' => '/','grupo' => 'delivery','icono' => 'fa-solid fa-screwdriver-wrench','parent' => '0','order' => '4','href' => '0',]);
+        Menu::create(['id' => 3, 'name' => 'Contabilidad', 'slug' => '/', 'grupo' => 'accounting', 'icono' => 'fa-sharp fa-solid fa-book', 'parent' => '0', 'order' => '3', 'href' => '0',]);
+        Menu::create(['id' => 4, 'name' => 'Almacen', 'slug' => '/', 'grupo' => 'warehouse', 'icono' => 'fa-sharp fa-solid fa-warehouse', 'parent' => '0', 'order' => '4', 'href' => '0',]);
+        Menu::create(['id' => 5, 'name' => 'Nomina', 'slug' => '/', 'grupo' => '', 'icono' => '', 'parent' => '0', 'order' => '6', 'href' => '0', 'enabled' => 0]);
+        Menu::create(['id' => 6, 'name' => 'RRHH', 'slug' => '/', 'grupo' => 'rrhh', 'icono' => 'fa-sharp fa-solid fa-address-card', 'parent' => '0', 'order' => '7', 'href' => '1', ]);
+        Menu::create(['id' => 7, 'name' => 'Configuraciones','slug' => '/','grupo' => 'mantenice','icono' => 'fa-solid fa-screwdriver-wrench','parent' => '0','order' => '10','href' => '0',]);
+        Menu::create(['id' => 8, 'name' => 'Producción','slug' => '/','grupo' => 'production','icono' => 'fa-solid fa-screwdriver-wrench','parent' => '0','order' => '8','href' => '0',]);
+        Menu::create(['id' => 9, 'name' => 'Despachos','slug' => '/','grupo' => 'delivery','icono' => 'fa-solid fa-screwdriver-wrench','parent' => '0','order' => '5','href' => '0',]);
 
 
         //VENTAS
@@ -76,6 +76,11 @@ class MenusTableSeeder extends Seeder
         Menu::create(['id' => 37, 'name' => 'Lista de despachos', 'slug' => 'delivery.index', 'grupo' => 'delivery', 'icono' => 'fa-solid fa-clipboard-user', 'parent' => '9', 'order' => '1', 'href' => '0', ]);
 
         Menu::create(['id' => 38, 'name' => 'Notas de entrega', 'slug' => 'deliveries-notes.index', 'grupo' => 'sales-deliveries-notes', 'icono' => 'fa-solid fa-receipt', 'parent' => '2', 'order' => '0', 'href' => '0', ]);
+
+        Menu::create(['id' => 39, 'name' => 'Compras', 'slug' => '/', 'grupo' => 'purchase', 'icono' => 'fa-solid fa-receipt', 'parent' => '0', 'order' => '2', 'href' => '0', ]);
+        Menu::create(['id' => 40, 'name' => 'Ordenes de Compras', 'slug' => 'purchase-order.index', 'grupo' => 'purchase-order', 'icono' => 'fa-solid fa-receipt', 'parent' => '39', 'order' => '0', 'href' => '0', ]);
+        Menu::create(['id' => 41, 'name' => 'Proveedores', 'slug' => 'supplier.index', 'grupo' => 'purchase-supplier', 'icono' => 'fa-solid fa-receipt', 'parent' => '39', 'order' => '2', 'href' => '0', ]);
+        Menu::create(['id' => 42, 'name' => 'Compras', 'slug' => 'purchase.index', 'grupo' => 'purchase-purchase', 'icono' => 'fa-solid fa-receipt', 'parent' => '39', 'order' => '1', 'href' => '0', ]);
     }
 
 }

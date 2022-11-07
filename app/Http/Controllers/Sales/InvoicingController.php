@@ -47,7 +47,7 @@ class InvoicingController extends Controller
             'create' => ['route' => 'invoicing.create', 'name' => 'Nueva factura'],
         ];
 
-        $data = Invoicing::select('id_invoicing', 'residual_amount_invoicing', 'ref_name_invoicing', 'date_invoicing', 'name_client', 'total_amount_invoicing', 'os.name_order_state', 'c.name_client')
+        $data = Invoicing::select('id_invoicing', 'residual_amount_invoicing', 'ref_name_invoicing', 'date_invoicing', 'total_amount_invoicing', 'os.name_order_state', 'c.name_client')
             ->join('clients as c', 'c.id_client', '=', 'invoicings.id_client', 'left outer')
             ->join('order_states as os', 'os.id_order_state', '=', 'invoicings.id_order_state', 'left outer')
             ->whereEnabledInvoicing(1)

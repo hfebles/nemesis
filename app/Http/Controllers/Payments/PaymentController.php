@@ -103,7 +103,7 @@ class PaymentController extends Controller
                 $payment->save();
         
                 $move = (new MovesAccountsController)->createMoves($invoice->id_invoicing, $payment->date_payment, 3);                       
-                $result = (new AccountingEntriesController)->saveEntriesPayments($move, $invoice->id_invoicing, $payment->amount_payment);
+                $result = (new AccountingEntriesController)->saveEntriesPayments($move, $invoice->id_invoicing, $payment->amount_payment, $payment->id_bank);
 
     } elseif ($invoice->residual_amount_invoicing > $payment->amount_payment) {
                 $resto = $invoice->residual_amount_invoicing - $payment->amount_payment;
@@ -111,13 +111,13 @@ class PaymentController extends Controller
                 $payment->id_invoice = $data['id_invoice'];
                 $payment->save();
                 $move = (new MovesAccountsController)->createMoves($invoice->id_invoicing, $payment->date_payment, 3);                       
-                $result = (new AccountingEntriesController)->saveEntriesPayments($move, $invoice->id_invoicing, $payment->amount_payment);  
+                $result = (new AccountingEntriesController)->saveEntriesPayments($move, $invoice->id_invoicing, $payment->amount_payment, );  
             } else {
                 $resto = $payment->amount_payment - $invoice->residual_amount_invoicing;
                 $payment->id_invoice = $data['id_invoice'];
                 $payment->save();
                 $move = (new MovesAccountsController)->createMoves($invoice->id_invoicing, $payment->date_payment, 3);                       
-                $result = (new AccountingEntriesController)->saveEntriesPayments($move, $invoice->id_invoicing, $payment->amount_payment);
+                $result = (new AccountingEntriesController)->saveEntriesPayments($move, $invoice->id_invoicing, $payment->amount_payment, $payment->id_bank);
 
                 Surplus::create([
                     'amount_surplus' => $resto,

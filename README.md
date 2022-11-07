@@ -183,6 +183,16 @@ php
 
             // USER PROFILE
             'user-profile-list', 'user-profile-create', 'user-profile-edit', 'user-profile-delete',
+
+
+            //compras
+            'purchase-list', 'purchase-create', 'purchase-edit', 'purchase-delete',
+            'purchase-purchase-list', 'purchase-purchase-create', 'purchase-purchase-edit', 'purchase-purchase-delete',
+
+
+
+
+
         ];
 
 

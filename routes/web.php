@@ -50,6 +50,9 @@ use App\Http\Controllers\Delivery\DeliveryController;
 use App\Http\Controllers\Payments\PaymentController;
 use App\Http\Controllers\Production\MaterialsListController;
 use App\Http\Controllers\Production\ProductionOrderController;
+use App\Http\Controllers\Purchase\PurchaseController;
+use App\Http\Controllers\Purchase\PurchaseOrderController;
+use App\Http\Controllers\Purchase\SupplierController;
 use App\Http\Controllers\Sales\DeliveryNotesController;
 use App\Http\Controllers\Sales\InvoicingController;
 use App\Models\Payments\Surplus;
@@ -326,6 +329,25 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/delivery/delivery/cancel/{id}', [DeliveryController::class, 'cancel'])->name('delivery.cancel');
     Route::get('/delivery/delivery/aprove/{id}', [DeliveryController::class, 'aprove'])->name('delivery.aprove');
      
+
+    /**
+     * 
+     * COMPRAS
+     * 
+     */
+
+    
+    Route::resource('/purchase/purchase-order', PurchaseOrderController::class);
+    Route::resource('/purchase/purchase', PurchaseController::class);
+    Route::resource('/purchase/supplier', SupplierController::class);
+
+    Route::post('/purchase/search', [PurchaseOrderController::class, 'listar'])->name('purchase.search');
+
+     /**
+     * 
+     * FIN COMPRAS
+     * 
+     */
      
 
 });

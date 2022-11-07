@@ -42,17 +42,13 @@ class SalesOrderController extends Controller
             'create' => ['route' => 'sales-order.create', 'name' => 'Nuevo pedido'],
         ];
 
-        $data = SalesOrder::select('id_sales_order', 'date_sales_order', 'ref_name_sales_order', 'name_client', 'total_amount_sales_order', 'os.name_order_state', 'c.name_client')
+        $data = SalesOrder::select('id_sales_order', 'date_sales_order', 'ref_name_sales_order', 'total_amount_sales_order', 'os.name_order_state', 'c.name_client')
             ->join('clients as c', 'c.id_client', '=', 'sales_orders.id_client', 'left outer')
             ->join('order_states as os', 'os.id_order_state', '=', 'sales_orders.id_order_state', 'left outer')
             ->whereEnabledSalesOrder(1)
-
             ->orderBy('date_sales_order', 'DESC')
             ->orderBy('sales_orders.id_order_state', 'ASC')
             ->orderBy('id_sales_order', 'DESC')
-
-
-
             ->paginate(15);
 
         // return $data;

@@ -11,29 +11,6 @@ use Illuminate\Http\Request;
 class MovesAccountsController extends Controller
 {
 
-
-    /**
-     * 
-     * 
-     * monto / amount_moves_account
-     * cuenta /id_ledger_account
-     * tipo / type_moves_account
-     * factura / id_invocing
-     * Fecha / date_moves_account
-     * 
-     * 
-     */
-    public function createMoves($invoicing, $date, $type){
-
-        $move = new MovesAccounts();
-        $move->id_invocing = $invoicing;
-        $move->type_moves_account = $type;
-        $move->date_moves_account = $date;
-        $move->save();
-
-        return  $move->id_moves_account;
-    }
-
     public function index(Request $request){
         $conf = [
             'title-section' => 'Asientos contables',
@@ -90,15 +67,23 @@ class MovesAccountsController extends Controller
 
 
         if($type_moves_account == 1){
-            return $data;
+            for ($i=0; $i < count($data); $i++) { 
+                if($data[$i]->id_ledger_account == 11 && $type_moves_account == 1){
+                    $data[$i]->monto_debe = $data[$i]->amount_accounting_entries;
+                    $debe = $debe+$data[$i]->monto_debe;
+                }else{
+                    $data[$i]->monto_haber = $data[$i]->amount_accounting_entries;
+                    $haber = $haber+$data[$i]->monto_haber;
+                }
+            }
         }elseif($type_moves_account == 3){
             for ($i=0; $i < count($data); $i++) { 
                 if($data[$i]->id_ledger_account == 11 && $type_moves_account == 3){
                     $data[$i]->monto_haber = $data[$i]->amount_accounting_entries;
-                    $debe = $debe+$data[$i]->monto_haber;
+                    $haber = $haber+$data[$i]->monto_haber;
                 }else{
                     $data[$i]->monto_debe = $data[$i]->amount_accounting_entries;
-                    $haber = $haber+$data[$i]->monto_debe;
+                    $debe = $debe+$data[$i]->monto_debe;
                 }
             }
         }
@@ -107,18 +92,18 @@ class MovesAccountsController extends Controller
 
 
         
-        // for ($i=0; $i < count($data); $i++) { 
-        //     $data[$i]->id_type_ledger_account = LedgerAccount::select('id_type_ledger_account')->where('id_ledger_account', '=', $data[$i]->id_ledger_account)->get()[0]->id_type_ledger_account;
+    //     for ($i=0; $i < count($data); $i++) { 
+    //         $data[$i]->id_type_ledger_account = LedgerAccount::select('id_type_ledger_account')->where('id_ledger_account', '=', $data[$i]->id_ledger_account)->get()[0]->id_type_ledger_account;
 
-        //     if($data[$i]->id_type_ledger_account == 1 && $data[$i]->id_ledger_account == 8){
-        //         $debe = $debe+$data[$i]->amount_accounting_entries;
-        //     }else{
-        //         $haber = $haber+$data[$i]->amount_accounting_entries;
-        //     }
-        // }
+    //         if($data[$i]->id_type_ledger_account == 1 && $data[$i]->id_ledger_account == 8){
+    //             $debe = $debe+$data[$i]->amount_accounting_entries;
+    //         }else{
+    //             $haber = $haber+$data[$i]->amount_accounting_entries;
+    //         }
+    //     }
 
          $totales = ['debe' => $debe, 'haber' => $haber];
-        return $data;
+    //   //  return $data;
        
 
         
@@ -138,9 +123,10 @@ class MovesAccountsController extends Controller
 
     public function reports($id){
    
+        $nameLedger = LedgerAccount::find($id)->name_ledger_account;
 
         $conf = [
-            'title-section' => 'Asientos contables',
+            'title-section' => $nameLedger,
             'group' => 'sales-invoices',
             'create' => ['route' => 'invoicing.create', 'name' => 'Nuevo asiento'],
         ];
@@ -163,15 +149,30 @@ class MovesAccountsController extends Controller
         }
 
         $totales = ['debe' => $debe, 'haber' => $haber];
-
-        
-
-
         return view('accounting.moves-account.reportes.mayor', compact('data', 'conf','totales'));
 
-        
+    }
 
 
+    /**
+     * 
+     * 
+     * monto / amount_moves_account
+     * cuenta /id_ledger_account
+     * tipo / type_moves_account
+     * factura / id_invocing
+     * Fecha / date_moves_account
+     * 
+     * 
+     */
+    public function createMoves($invoicing, $date, $type){
 
+        $move = new MovesAccounts();
+        $move->id_invocing = $invoicing;
+        $move->type_moves_account = $type;
+        $move->date_moves_account = $date;
+        $move->save();
+
+        return  $move->id_moves_account;
     }
 }

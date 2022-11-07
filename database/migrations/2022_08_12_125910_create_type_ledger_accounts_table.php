@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::create('type_ledger_accounts', function (Blueprint $table) {
             $table->id('id_type_ledger_account');
             $table->string('name_type_ledger_account');
+            $table->boolean('debe_type_ledger_account');
+            $table->boolean('haber_type_ledger_account');
             $table->boolean('enabled_type_ledger_account')->default(1);
             $table->timestamps();
         });
