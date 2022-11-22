@@ -21,6 +21,13 @@ class RoleController extends Controller
     public function index(Request $request)
     {
 
+
+        
+
+
+
+        
+
         $roles = Role::where('name', '<>', 'Super-Admin')->orderBy('id','ASC')->paginate(5);
 
         $table = [
@@ -53,7 +60,7 @@ class RoleController extends Controller
     public function create()
     {
         $permission = Permission::where('name', 'not like', '%adm%')->get();
-        return view('conf.roles.create',compact('permission'));
+        return view('conf.roles.create', compact('permission'));
     }
 
     public function store(Request $request)
@@ -65,14 +72,8 @@ class RoleController extends Controller
     
         $role = Role::create(['name' => $request->input('name')]);
         $role->syncPermissions($request->input('permission'));
-
-
-        $message = [
-            'type' => 'success',
-            'message' => 'Permisologia creada con éxito',
-        ];
-                        
-        return redirect()->route('roles.index')->with('message', $message);
+                       
+        return redirect()->route('roles.index')->with('message', 'Permisologia creada con éxito');
     }
 
     public function show($id)
@@ -89,9 +90,10 @@ class RoleController extends Controller
     {
         $role = Role::find($id);
         $permission = Permission::where('name', 'not like', '%adm%')->get();
-        $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id",$id)
+        $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id", $id)
             ->pluck('role_has_permissions.permission_id','role_has_permissions.permission_id')
             ->all();
+
             
     
         return view('conf.roles.edit',compact('role','permission','rolePermissions'));
@@ -109,26 +111,17 @@ class RoleController extends Controller
         $role->save();
     
         $role->syncPermissions($request->input('permission'));
-
-
-        $message = [
-            'type' => 'warning',
-            'message' => 'Permisologia editada con éxito',
-        ];
                         
-        return redirect()->route('roles.index')->with('message', $message);
+        return redirect()->route('roles.index')->with('message', 'Permisologia editada con éxito');
     
     }
 
     public function destroy($id)
     {
         DB::table("roles")->where('id',$id)->delete();
-        $message = [
-            'type' => 'danger',
-            'message' => 'Permisologia eliminada con éxito',
-        ];
+
                         
-        return redirect()->route('roles.index')->with('message', $message);
+        return redirect()->route('roles.index')->with('error', 'Permisologia eliminada con éxito');
 
     }
     

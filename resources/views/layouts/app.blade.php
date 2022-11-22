@@ -15,9 +15,12 @@
     <link href="{{ url('/css/app.css') }}" rel="stylesheet">    
     <link href="{{ url('/themes/css/sb-admin-2.css') }}" rel="stylesheet">
     <link href="{{ url('/fontawesome/css/all.css') }}" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{{ url('/css/toastr.min.css') }}">
     
     <script  src="{{ url('/themes/vendor/jquery/jquery.min.js') }}" type="text/javascript"></script>
     <script  src="{{ url('/themes/vendor/bootstrap/js/bootstrap.bundle.min.js') }}" type="text/javascript"></script>
+	<script src="{{ url('/js/toastr.min.js') }}"></script>
+
 
 
 
@@ -116,6 +119,47 @@
     <!-- Page level custom scripts 
     <script src="/themes/js/demo/chart-area-demo.js"></script>
     <script src="/themes/js/demo/chart-pie-demo.js"></script>-->
-
+    
+<script>
+    @if( Session::has('message') )
+    toastr.options =
+    {
+        "closeButton" : true,
+        "progressBar" : true,
+        "positionClass": "toast-bottom-right",
+    }
+            toastr.success("{{ session('message') }}");
+    @endif
+  
+    @if(Session::has('error'))
+    toastr.options =
+    {
+        "closeButton" : true,
+        "progressBar" : true,
+        "positionClass": "toast-bottom-right",
+    }
+            toastr.error("{{ session('error') }}");
+    @endif
+  
+    @if(Session::has('info'))
+    toastr.options =
+    {
+        "closeButton" : true,
+        "progressBar" : true,
+        "positionClass": "toast-bottom-right",
+    }
+            toastr.info("{{ session('info') }}");
+    @endif
+  
+    @if(Session::has('warning'))
+    toastr.options =
+    {
+        "closeButton" : true,
+        "progressBar" : true,
+        "positionClass": "toast-bottom-right",
+    }
+            toastr.warning("{{ session('warning') }}");
+    @endif
+  </script>
 </body>
 </html>

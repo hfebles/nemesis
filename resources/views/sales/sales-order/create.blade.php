@@ -123,13 +123,17 @@
                     </td>
                 </tr>
                 <tr>
-                    <th width="85%" scope="col" class="text-end align-middle">IMPUESTO:
-                        <select id="taxt" class="form-select" onchange="calculate();">
-                            @foreach ($taxes as $tax)
-                                <option value="{{ $tax->amount_tax }}">{{ $tax->name_tax }} {{ $tax->amount_tax }}%
-                                </option>
-                            @endforeach
-                        </select>
+
+                    <th width="85%" scope="col" class="text-end align-middle">IMPUESTOS:
+                        @foreach ($taxes as $tax)
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" onchange="calculateTaxes({{ $tax->amount_tax }})"
+                                    value="{{ $tax->amount_tax }}" type="checkbox" id="taxt_{{ $tax->amount_tax }}">
+                                <label class="form-check-label" for="">{{ $tax->name_tax }}
+                                    {{ $tax->amount_tax }}%</label>
+                            </div>
+                        @endforeach
+
                     </th>
                     <td class="text-end align-middle">
                         <p class='align-middle mb-0' id="totalIVaas"></p><input type="hidden" id="totalIVa"
@@ -296,18 +300,17 @@
                             }
                             // sumado = Math.round(sumaNo * 100) / 100
 
-                            var taxt = document.getElementById('taxt').value
 
-                            IvaCalculado = (taxt / 100) * sumaNo
                             document.getElementById('subFacs').innerHTML = 'Bs. ' + sumaNo.toFixed(2)
                             document.getElementById('exentos').innerHTML = 'Bs. ' + suma.toFixed(2)
-                            document.getElementById('totalIVaas').innerHTML = 'Bs. ' + IvaCalculado.toFixed(2);
-                            document.getElementById('totalTotals').innerHTML = 'Bs. ' + ((sumaNo + IvaCalculado) + suma)
-                                .toFixed(2);
                             document.getElementById('subFac').value = sumaNo.toFixed(2)
                             document.getElementById('exento').value = suma.toFixed(2)
-                            document.getElementById('totalIVa').value = IvaCalculado.toFixed(2);
-                            document.getElementById('totalTotal').value = ((sumaNo + IvaCalculado) + suma).toFixed(2);
+
+                            if (document.getElementById('taxt_16').checked == true) {
+                                calculateTaxes(16)
+                            }
+
+
                         } else {
                             alert('Intruduce una cantidad valida o mayor a la cantidad actual que es: ' + data.cantid)
                             cc.value = ""
@@ -317,6 +320,26 @@
                     alert('Intruduce una cantidad valida o mayor a 0')
                     cc.value = ""
                 }
+            }
+
+            function calculateTaxes(valueTax) {
+
+                var subFac = document.getElementById('subFac').value
+                var exento = document.getElementById('exento').value
+
+                if (valueTax == 16) {
+                    if (document.getElementById('taxt_' + valueTax).checked == true) {
+                        IvaCalculado = (parseFloat(valueTax) / 100) * parseFloat(subFac)
+                    } else {
+                        IvaCalculado = 0.00;
+                    }
+                    totalTotalito = ((parseFloat(subFac) + IvaCalculado) + parseFloat(exento))
+                    document.getElementById('totalIVaas').innerHTML = 'Bs. ' + IvaCalculado.toFixed(2);
+                    document.getElementById('totalTotals').innerHTML = 'Bs. ' + totalTotalito.toFixed(2)
+                    document.getElementById('totalIVa').value = IvaCalculado.toFixed(2);
+                    document.getElementById('totalTotal').value = totalTotalito;
+                }
+
             }
 
             function borrarRow(x) {

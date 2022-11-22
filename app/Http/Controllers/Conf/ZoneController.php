@@ -40,8 +40,8 @@ class ZoneController extends Controller
             'switch' => false,
             'edit' => false,
             'edit_modal' => false,  
-            'show' => false,
-            'url' => "/mantenice/zone",
+            'show' => true,
+            'url' => "/mantenice/zones",
             'id' => 'id_zone',
             'group' => 'zone',
             'data' => Zone::whereEnabledZone(1)->paginate(10),
@@ -72,15 +72,69 @@ class ZoneController extends Controller
 
         $zone = new Zone();
 
-        $zone->name_zone = $data['name_zone'];
+        $zone->name_zone = strtoupper($data['name_zone']);
         $zone->ids_estados = json_encode($data['ids_estados']);
         $zone->save();
-        
-        $message = [
-            'type' => 'success',
-            'message' => 'Se registro la zona con éxito',
+                
+        return redirect()->route('zones.index')->with('message', 'Se registro la zona con éxito');
+    }
+
+    public function show($id){
+
+        $data = Zone::find($id);
+        $obj = json_decode($data->ids_estados, true);      
+        $dataEstados = [];
+
+        for ($i = 0; $i < count($obj); $i++) {
+           $dataEstados[$i] =  Estados::find($obj[$i]);
+        }
+
+       $conf = [
+        'title-section' => 'Zona: '.$data->name_zone,
+        'group' => 'zone',
+        'back' => 'zones.index',
+        'url' => '#',
+        'edit' => ['route' => 'zones.edit', 'id' => $data->id_zone],
+    ];
+
+        return view('conf.zones.show', compact('dataEstados', 'data', 'conf'));
+    }
+
+    public function edit($id){
+
+        $data = Zone::find($id);
+        $obj = json_decode($data->ids_estados, true);      
+        $dataEstados = [];
+
+
+        $conf = [
+            'title-section' => 'Zona: '.$data->name_zone,
+            'group' => 'zone',
+            'back' => 'zones.index',
+            'url' => '#',
         ];
+
+        $dataEstado = Estados::whereNotIn('id_estado', $obj)->orderBy('estado', 'ASC')->get();
+
+        return Estados::statesPlucks();
+
+        for ($i = 0; $i < count($obj); $i++) {
+           $dataEstados[$i] = Estados::find($obj[$i]);
+        }
         
-        return redirect()->route('zones.index')->with('message', $message);
+        return view('conf.zones.edit', compact('dataEstados', 'dataEstado', 'conf', 'data'));
+    }
+
+    public function update(Request $request, $id){
+
+
+        
+
+        return redirect()->route('zones.index')->with('warning', 'Se registro la zona con éxito');
+    }
+
+    public function destroy($id){
+
+        return redirect()->route('zones.index')->with('error', 'Se registro la zona con éxito');
     }
 }

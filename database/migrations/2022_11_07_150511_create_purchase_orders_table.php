@@ -33,6 +33,12 @@ class CreatePurchaseOrdersTable extends Migration
             $table->integer('id_worker')->nullable();
             $table->integer('id_purchase')->nullable();
             $table->boolean('enabled_purchase_order')->default(1);
+
+
+
+            /* Ajustes de tabla */
+            $table->string('ref_supplier_order')->nullable();
+            
             $table->timestamps();
         });
     }

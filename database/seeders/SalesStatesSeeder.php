@@ -16,31 +16,55 @@ class SalesStatesSeeder extends Seeder
     public function run()
     {
         OrderState::create([
-            'name_order_state' => 'Pedido por facturar'
+            'name_order_state' => strtoupper('Pedido por facturar'),
         ]);
 
         OrderState::create([
-            'name_order_state' => 'Facturado'
+            'name_order_state' => strtoupper('Facturado'),
         ]);
 
         OrderState::create([
-            'name_order_state' => 'Cancelado'
+            'name_order_state' => strtoupper('Cancelado'),
         ]);
 
         OrderState::create([
-            'name_order_state' => 'Abierta'
+            'name_order_state' => strtoupper('Abierta'),
         ]);
 
         OrderState::create([
-            'name_order_state' => 'Pagado'
+            'name_order_state' => strtoupper('Pagado'),
+        ]);
+
+        // Notas de entregas
+
+        OrderState::create([
+            'name_order_state' => strtoupper('Nota de entrega'),
         ]);
 
         OrderState::create([
-            'name_order_state' => 'Nota de entrega'
+            'name_order_state' => strtoupper('Nota de entrega pagada'),
+        ]);
+
+        // COMPRAS
+
+        OrderState::create([
+            'name_order_state' => strtoupper('Pendiente de aprobacion'),
         ]);
 
         OrderState::create([
-            'name_order_state' => 'Nota de entrega pagada'
+            'name_order_state' => strtoupper('Aprobada'),
+        ]);
+
+        OrderState::create([
+            'name_order_state' => strtoupper('Cancelada'),
+        ]);
+
+        OrderState::create([
+            'name_order_state' => strtoupper('Pendiente de recepcion'),
+        ]);
+
+        OrderState::create([
+            'name_order_state' => strtoupper('Recibida'),
         ]);
     }
 }

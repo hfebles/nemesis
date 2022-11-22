@@ -36,20 +36,14 @@
 
 
                     @if ($data->id_order_state != 2 && $data->id_order_state != 6)
-                        @if (Gate::check('sales-invoices-create') || Gate::check('adm-create'))
-                            <div class="dropdown  ml-3">
-                                <button class="btn btn-sm btn-success dropdown-toggle " type="button"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                    Acciones
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" data-bs-toggle="modal"
-                                            data-bs-target="#exampleModal">Facturar</a></li>
-                                    <li><a class="dropdown-item"
-                                            href="">Nota
-                                            de entrega</a></li>
-                                </ul>
-                            </div>
+                        @if (Gate::check('purchase-purchase-create') || Gate::check('adm-create'))
+                        <a href="{{ route('purchase-order.validate', $data->id_purchase_order) }}"
+                            class="btn btn-sm btn-success btn-icon-split ml-3">
+                            <span class="icon text-white-50">
+                                <i class="fas fa-check"></i>
+                            </span>
+                            <span class="text">Procesar</span>
+                        </a>
                         @endif
                     @endif
                     @if ($data->id_order_state != 2 && $data->id_order_state != 7)

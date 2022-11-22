@@ -1,6 +1,6 @@
 
 
-@if (isset($message))
+{{-- @if (isset($message))
 <div class="col-md-{{ $size ?? 12 }} mb-3">
     <div class="card">
         <div class="card-body">
@@ -13,7 +13,7 @@
         </div>
     </div>
 </div>
-@endif
+@endif --}}
 
 <div class="col-md-{{$size ?? 12}}">
     <div class="card card-frame">

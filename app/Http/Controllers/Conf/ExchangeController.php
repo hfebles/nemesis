@@ -63,12 +63,6 @@ class ExchangeController extends Controller
         $save->amount_exchange = $data['amount_exchange'];
         $save->save();
 
-
-        $message = [
-            'type' => 'success',
-            'message' => 'Se registro la tasa con éxito',
-        ];           
-
-        return redirect()->route('exchange.index')->with('message', $message);
+        return redirect()->route('exchange.index')->with('message', 'Se registro la tasa con éxito');
     }
 }

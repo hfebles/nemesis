@@ -19,11 +19,11 @@
 
             <table class="table table-sm table-bordered mb-0">
                 <tr>
-                    <td class="text-end align-middle">Compra número:</td>
+                    <td class="text-end align-middle">Orden de compra número:</td>
                     <td width="15%" class="text-end">
                         <span class="fs-4">{{ str_pad($config, 6, '0', STR_PAD_LEFT) }}</span>
                         <input type="hidden" value="{{ $config }}" name="ctrl_num" />
-                        <input type="hidden" value="-{{ $config }}" name="ref_name_purchase" />
+                        <input type="hidden" value="-{{ $config }}" name="ref_name_purchase_order" />
                     </td>
 
                 </tr>
@@ -32,9 +32,15 @@
                     <td width="15%" class="text-end">
                         <span class="fs-4">{{ str_pad($config, 6, '0', STR_PAD_LEFT) }}</span>
                         <input type="hidden" value="{{ $config }}" name="ctrl_num" />
-                        <input type="hidden" value="{{ $config }}" name="ref_name_purchase" />
+                        <input type="hidden" value="{{ $config }}" name="ref_name_purchase_order" />
                     </td>
+                </tr>
 
+                <tr>
+                    <td class="text-end align-middle">Factura proveedor:</td>
+                    <td width="15%" class="text-end">
+                        <input type="text" class='form-control form-control-sm' name="supplier_order" />
+                    </td>
                 </tr>
             </table>
 
@@ -69,29 +75,17 @@
                         <span id="direccion"></span>
                     </td>
                 </tr>
-                <tr>
+                {{-- <tr>
                     <td class="align-middle" width="25%">Tipo de Pago: </td>
                     <td>
-                        <select class="form-select form-control-sm" name="type_payment_purchase">
+                        <select class="form-select form-control-sm" required name="type_payment_purchase_order">
+                            <option value="">Seleccione</option>
                             <option value="1">Contado</option>
                             <option value="2">Credito</option>
                         </select>
                     </td>
-                </tr>
-                <tr>
-                    <td class="align-middle" width="25%">Vendedor: </td>
-                    <td>
-                        <select class="form-select form-control-sm" name="id_worker">
+                </tr> --}}
 
-
-
-                            @foreach ($dataWorkers as $worker)
-                                <option value="{{ $worker->id_worker }}">{{ $worker->firts_name_worker }}
-                                    {{ $worker->last_name_worker }}</option>
-                            @endforeach
-                        </select>
-                    </td>
-                </tr>
             </table>
             <table class="table table-sm border-dark table-bordered mb-4" id="myTable">
                 <tr>
@@ -119,12 +113,15 @@
                 </tr>
                 <tr>
                     <th width="85%" scope="col" class="text-end align-middle">IMPUESTO:
-                        <select id="taxt" class="form-select" onchange="calculate();">
-                            @foreach ($taxes as $tax)
-                                <option value="{{ $tax->amount_tax }}">{{ $tax->name_tax }} {{ $tax->amount_tax }}%
-                                </option>
-                            @endforeach
-                        </select>
+                        @foreach ($taxes as $tax)
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" onchange="calculateTaxes({{ $tax->amount_tax }})"
+                                    value="{{ $tax->amount_tax }}" type="checkbox" id="taxt_{{ $tax->amount_tax }}">
+                                <label class="form-check-label" for="">{{ $tax->name_tax }}
+                                    {{ $tax->amount_tax }}%</label>
+                            </div>
+                        @endforeach
+
                     </th>
                     <td class="text-end align-middle">
                         <p class='align-middle mb-0' id="totalIVaas"></p><input type="hidden" id="totalIVa"
@@ -230,8 +227,8 @@
                         "' type='number' name='cantidad[]'>";
                     cell4.className = "text-center align-middle"
 
-                    cell5.innerHTML = "<p class='align-middle  mb-0' id='precio_productos_" + i +
-                        "'></p><input type='hidden' name='precio_producto[]' id='price_product_" + i + "'>";
+                    cell5.innerHTML = "<input type='text' name='precio_producto[]' onkeyup='calculate("+i+
+                        ",this.value)' class='form-control' autocomplete='off' id='price_product_" + i + "'>";
                     cell5.className = "text-center align-middle"
 
                     cell6.innerHTML = "<p class='align-middle  mb-0' id='subtotals_" + i + "'></p>";
@@ -252,13 +249,13 @@
 
 
 
-            function calculate(x = "", y = "", xx = "") {
+            function calculate(x = "", y = "", xx = "", precio) {
                 var id_product = document.getElementById('id_product_' + x).value
                 var cc = document.getElementById('cant_' + x)
 
-                if (y > 0) {
+     
                     const csrfToken = "{{ csrf_token() }}";
-                    fetch('/sales/availability', {
+                    fetch('/purchase/availability', {
                         method: 'POST',
                         body: JSON.stringify({
                             cantidad: y,
@@ -298,27 +295,45 @@
                             }
                             // sumado = Math.round(sumaNo * 100) / 100
 
-                            var taxt = document.getElementById('taxt').value
 
-                            IvaCalculado = (taxt / 100) * sumaNo
+
                             document.getElementById('subFacs').innerHTML = 'Bs. ' + sumaNo.toFixed(2)
                             document.getElementById('exentos').innerHTML = 'Bs. ' + suma.toFixed(2)
-                            document.getElementById('totalIVaas').innerHTML = 'Bs. ' + IvaCalculado.toFixed(2);
-                            document.getElementById('totalTotals').innerHTML = 'Bs. ' + ((sumaNo + IvaCalculado) + suma)
-                                .toFixed(2);
+
+
                             document.getElementById('subFac').value = sumaNo.toFixed(2)
                             document.getElementById('exento').value = suma.toFixed(2)
-                            document.getElementById('totalIVa').value = IvaCalculado.toFixed(2);
-                            document.getElementById('totalTotal').value = ((sumaNo + IvaCalculado) + suma).toFixed(2);
+
+                            if (document.getElementById('taxt_16').checked == true) {
+                                calculateTaxes(16)
+                            }
+
                         } else {
                             alert('Intruduce una cantidad valida o mayor a la cantidad actual que es: ' + data.cantid)
                             cc.value = ""
                         }
                     });
-                } else {
-                    alert('Intruduce una cantidad valida o mayor a 0')
-                    cc.value = ""
+       
+            }
+
+            function calculateTaxes(valueTax) {
+
+                var subFac = document.getElementById('subFac').value
+                var exento = document.getElementById('exento').value
+
+                if (valueTax == 16) {
+                    if (document.getElementById('taxt_' + valueTax).checked == true) {
+                        IvaCalculado = (parseFloat(valueTax) / 100) * parseFloat(subFac)
+                    } else {
+                        IvaCalculado = 0.00;
+                    }
+                    totalTotalito = ((parseFloat(subFac) + IvaCalculado) + parseFloat(exento))
+                    document.getElementById('totalIVaas').innerHTML = 'Bs. ' + IvaCalculado.toFixed(2);
+                    document.getElementById('totalTotals').innerHTML = 'Bs. ' + totalTotalito.toFixed(2)
+                    document.getElementById('totalIVa').value = IvaCalculado.toFixed(2);
+                    document.getElementById('totalTotal').value = totalTotalito;
                 }
+
             }
 
             function borrarRow(x) {
@@ -381,32 +396,13 @@
                     document.getElementById("tds_" + y).appendChild(input2);
                     document.getElementById("td_" + y).appendChild(input);
                     document.getElementById('name_product' + y).innerHTML = x.code_product + " " + x.name_product + " (E)"
-                    if (x.product_usd_product == 0) {
-                        document.getElementById('precio_productos_' + y).innerHTML = 'Bs. ' + x.price_product
-                        document.getElementById('price_product_' + y).value = x.price_product
-
-                    } else {
-                        document.getElementById('precio_productos_' + y).innerHTML = 'Bs. ' + (x.price_product * exchangeRate)
-                            .toFixed(2)
-                        document.getElementById('price_product_' + y).value = (x.price_product * exchangeRate).toFixed(2)
-                    }
                 } else {
                     input2.setAttribute("name", "subtotal[]");
 
                     document.getElementById("td_" + y).appendChild(input3);
                     document.getElementById("tds_" + y).appendChild(input2);
                     document.getElementById('name_product' + y).innerHTML = x.code_product + " " + x.name_product
-                    if (x.product_usd_product == 0) {
-                        document.getElementById('precio_productos_' + y).innerHTML = 'Bs. ' + x.price_product
-                        document.getElementById('price_product_' + y).value = x.price_product
-                        input3.setAttribute("value", x.price_product);
-                    } else {
-                        document.getElementById('precio_productos_' + y).innerHTML = 'Bs. ' + (x.price_product * exchangeRate)
-                            .toFixed(2)
-                        document.getElementById('price_product_' + y).value = (x.price_product * exchangeRate).toFixed(2)
-                        input3.setAttribute("value", (x.price_product * exchangeRate).toFixed(2));
 
-                    }
                 }
                 document.getElementById('search_productos_' + y).style.display = 'none'
                 document.getElementById("td_" + y).colSpan = "2";
@@ -513,7 +509,21 @@
                 });
             }
 
+            (function() {
+                'use strict'
+                var forms = document.querySelectorAll('.needs-validation')
+                Array.prototype.slice.call(forms)
+                    .forEach(function(form) {
+                        form.addEventListener('submit', function(event) {
+                            if (!form.checkValidity()) {
+                                event.preventDefault()
+                                event.stopPropagation()
+                            }
 
+                            form.classList.add('was-validated')
+                        }, false)
+                    })
+            })()
 
             (function() {
 

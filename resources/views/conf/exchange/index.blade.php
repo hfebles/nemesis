@@ -8,6 +8,7 @@
 
 @section('content')
 <div class="row">
+
     @if ($message = Session::get('message'))
         <x-cards size="12" :table="$table" :message="$message" />
     @else
@@ -18,3 +19,5 @@
 @endsection
 
 @include('conf.exchange.create')
+
+

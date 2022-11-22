@@ -113,6 +113,9 @@ class PurchaseOrderController extends Controller
 
 
     public function store(Request $request){
+
+       // return $request;
+
         $dataConfiguration = SaleOrderConfiguration::all()[0];
         $dataSalesOrder = $request->except('_token');
         $dataDetails = $request->except(
@@ -130,12 +133,15 @@ class PurchaseOrderController extends Controller
             'id_worker',
             'id_exchange',
             'ref_name_purchase_order',
-            'ctrl_num'
+            'ctrl_num',
+            'supplier_order'
         );
+
+      //  return $dataDetails;
 
         $saveSalesOrder = new PurchaseOrder();
 
-        $saveSalesOrder->type_payment = $dataSalesOrder['type_payment_purchase_order'];
+        //$saveSalesOrder->type_payment = $dataSalesOrder['type_payment_purchase_order'];
         $saveSalesOrder->id_supplier = $dataSalesOrder['id_supplier'];
         $saveSalesOrder->id_exchange = $dataSalesOrder['id_exchange'];
         $saveSalesOrder->ctrl_num = $dataSalesOrder['ctrl_num'];
@@ -152,6 +158,7 @@ class PurchaseOrderController extends Controller
         $saveSalesOrder->no_exempt_amout_purchase_order = $dataSalesOrder['subFac'];
         $saveSalesOrder->total_amount_tax_purchase_order = $dataSalesOrder['total_taxes'];
         $saveSalesOrder->date_purchase_order = date('Y-m-d');
+        $saveSalesOrder->id_order_state = 8;
         $saveSalesOrder->save();
 
         $saveDetails = new PurchaseOrderDetails();
@@ -159,13 +166,12 @@ class PurchaseOrderController extends Controller
         $saveDetails->details_purchase_order_detail = json_encode($dataDetails);
         $saveDetails->save();
 
-        $message = [
-            'type' => 'success',
-            'message' => 'Se registro la orden con éxito',
-        ];
 
-        return redirect()->route('purchase-order.show', $saveSalesOrder->id_purchase_order)->with('message', $message);
+        return redirect()->route('purchase-order.show', $saveSalesOrder->id_purchase_order)->with('message', 'Se registro la orden con éxito');
     }
+
+
+    
 
     public function show($id){
 

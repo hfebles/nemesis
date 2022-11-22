@@ -23,19 +23,17 @@
                     <table class="table table-sm table-bordered">
                         <tr>
                             <td width="80%" class="text-end">Fecha:</td>
-                            <td width="10%" class="text-start">
-                                <span>{{ date('d-m-Y', strtotime($data->date_purchase_order)) }}</span>
-                            </td>
+                            <td width="10%" class="text-start"><span>{{ date('d-m-Y', strtotime($data->date_purchase_order)) }}</span></td>
                         </tr>
                         <tr>
                             <td class="text-end">Nro control:</td>
-                            <td class="text-start">
-                                <span>{{ $data->ref_name_purchase_order }}</span>
-                            </td>
+                            <td class="text-start"><span>{{ $data->ref_name_purchase_order }}</span></td>
+                        <tr>
+                            <td class="text-end align-middle">Factura proveedor:</td>
+                            <td width="15%" class="text-end"><input value="{{ $data->supplier_order ?? '' }}" type="text" class='form-control form-control-sm' name="supplier_order" /></td>
                         </tr>
                     </table>
                     <table class="table table-sm table-bordered mb-4">
-
                         <tr>
                             <td width="100%" class="d-flex justify-content-between">
                                 <span>Razón social: </span>
@@ -49,53 +47,40 @@
                         </tr>
                         <tr>
                             <td width="25%">Cédula ó R.I.F.:</td>
-                            <td>
-                                <span id="dni">{{ $data->idcard_supplier }}</span>
-                            </td>
+                            <td><span id="dni">{{ $data->idcard_supplier }}</span></td>
                         </tr>
                         <tr>
                             <td width="25%">Teléfono: </td>
-                            <td>
-                                <span id="telefono">{{ $data->phone_supplier }}</span>
-                            </td>
+                            <td><span id="telefono">{{ $data->phone_supplier }}</span></td>
                         </tr>
                         <tr>
                             <td width="25%">Dirección: </td>
-                            <td>
-                                <span id="direccion">{{ $data->address_supplier }}</span>
-                            </td>
+                            <td><span id="direccion">{{ $data->address_supplier }}</span></td>
                         </tr>
-                        <tr>
+                        {{-- <tr>
                             <td class="align-middle" width="25%">Tipo de Pago: </td>
                             <td>
-
                                 <select class="form-select form-control-sm" name="type_payment_purchase_order">
                                     @switch($data->type_payment)
                                         @case(1)
                                             <option value="1">Contado</option>
                                             <option value="2">Credito</option>
                                         @break
-
                                         @case(2)
                                             <option value="2">Credito</option>
                                             <option value="1">Contado</option>
                                         @break
                                     @endswitch
-
                                 </select>
-
                             </td>
-                        </tr>
+                        </tr> --}}
                         <tr>
                             <td width="25%">Vendedor: </td>
-                            <td>
-                                <span>{{ $data->firts_name_worker }} {{ $data->last_name_worker }}</span>
-                            </td>
+                            <td><span>{{ $data->firts_name_worker }} {{ $data->last_name_worker }}</span></td>
                         </tr>
                     </table>
                     <table class="table table-sm  table-bordered border-dark mb-4" id="myTable">
                         <tr>
-
                             <th scope="col" colspan="2" class="align-middle">DESCRIPCIÓN</th>
                             <th scope="col" class="text-center align-middle" width="10%">CANTIDAD</th>
                             <th scope="col" class="text-center align-middle" width="10%">P/U</th>
@@ -121,27 +106,18 @@
                                     </td>
 
                                     <td class="text-center align-middle" width="10%">
-
-
-                                        <input type='hidden' name='id_product[]' id='id_product_{{ $i }}'
-                                            value="{{ $obj['id_product'][$i] }}" />
-                                        <input onkeyup='calculate("{{ $i }}", this.value)'
-                                            value="{{ $obj['cantidad'][$i] }}" class='form-control' autocomplete='off'
-                                            id='cant_{{ $i }}' type='number' name='cantidad[]' />
+                                        <input type='hidden' name='id_product[]' id='id_product_{{ $i }}' value="{{ $obj['id_product'][$i] }}" /> 
+                                        <input onkeyup='calculate("{{ $i }}", this.value)' value="{{ $obj['cantidad'][$i] }}" class='form-control' autocomplete='off' id='cant_{{ $i }}' type='number' name='cantidad[]' />
                                     </td>
                                     <td class="text-center align-middle" width="10%">
-
-                                        <p class='align-middle  mb-0' id='precio_productos_{{ $i }}'>Bs.
-                                            {{ number_format($obj['precio_producto'][$i], 2, ',', '.') }}</p>
-                                        <input type='hidden' name='precio_producto[]'
-                                            id='price_product_{{ $i }}'
-                                            value="{{ $obj['precio_producto'][$i] }}">
+                                        <input onkeyup='calculate("{{ $i }}", this.value)' value="{{ $obj['precio_producto'][$i] }}" class='form-control' autocomplete='off' id='precio_productos_{{ $i }}' type='number' name='cantidad[]' />
+                                        
                                     </td>
+
+
                                     <td class="text-center align-middle " width="10%">
                                         <p class='align-middle  mb-0' id='subtotals_{{ $i }}'>
                                             {{ $obj['precio_producto'][$i] * $obj['cantidad'][$i] }}</p>
-                                        <input type="hidden" id="subtotal_{{ $i }}" name="subtotal_exento[]"
-                                            value="{{ $obj['precio_producto'][$i] * $obj['cantidad'][$i] }}">
                                     </td>
                                     <td class="bg-danger"><a onclick="borrarRow(this)"
                                             class="btn btn-block mb-0 btn-danger mb-0"><i
@@ -177,12 +153,15 @@
                         <tr>
 
                             <th width="85%" scope="col" class="text-end align-middle">IMPUESTO:
-                                <select id="taxt" class="form-select" onchange="calculate();">
-                                    @foreach ($taxes as $tax)
-                                        <option value="{{ $tax->amount_tax }}">{{ $tax->name_tax }}
-                                            {{ $tax->amount_tax }}%</option>
-                                    @endforeach
-                                </select>
+                                @foreach ($taxes as $tax)
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" onchange="calculateTaxes({{ $tax->amount_tax }})"
+                                            value="{{ $tax->amount_tax }}" type="checkbox" id="taxt_{{ $tax->amount_tax }}">
+                                        <label class="form-check-label" for="">{{ $tax->name_tax }}
+                                            {{ $tax->amount_tax }}%</label>
+                                    </div>
+                                @endforeach
+        
                             </th>
                             <td class="text-end align-middle">
                                 <p class='align-middle mb-0' id="totalIVaas">Bs.
@@ -273,13 +252,7 @@
                 if (validateClient() == true) {
                     var table = document.getElementById("myTable");
                     var row = table.insertRow(-1);
-
-                    var totalRowCount = table.rows.length;
-                    let counterTR = totalRowCount - 2
-
-                    row.id = 'tr_' + counterTR
-
-
+                    row.id = 'tr_' + i
 
                     var cell2 = row.insertCell(-1);
                     var cell3 = row.insertCell(-1);
@@ -288,30 +261,30 @@
                     var cell6 = row.insertCell(-1);
                     var cell7 = row.insertCell(-1);
 
-                    cell2.innerHTML = '<a id="search_productos_' + counterTR + '" onclick="abreModal(\'producto\', ' +
-                        counterTR + ')" class="btn btn-info btn-block mb-0"><i class="fas fa-search fa-lg"></i></a>';
+                    cell2.innerHTML = '<a id="search_productos_' + i + '" onclick="abreModal(\'producto\', ' + i +
+                        ')" class="btn btn-info btn-block mb-0"><i class="fas fa-search fa-lg"></i></a>';
                     //cell2.id = "td_"+i
                     cell2.className = "align-middle bg-info"
                     cell2.width = "3%"
 
-                    cell3.innerHTML = "<p class='align-middle mb-0' id='name_product" + counterTR + "'></p>";
-                    cell3.id = "td_" + counterTR
+                    cell3.innerHTML = "<p class='align-middle mb-0' id='name_product" + i + "'></p>";
+                    cell3.id = "td_" + i
                     cell3.className = "align-middle"
 
 
-                    cell4.innerHTML = "<input type='hidden' name='id_product[]' id='id_product_" + counterTR +
-                        "'><input onkeyup='calculate(" + counterTR +
-                        ", this.value)' class='form-control' autocomplete='off' id='cant_" + counterTR +
+                    cell4.innerHTML = "<input type='hidden' name='id_product[]' id='id_product_" + i +
+                        "'><input onkeyup='calculate(" + i +
+                        ", this.value)' class='form-control' autocomplete='off' id='cant_" + i +
                         "' type='number' name='cantidad[]'>";
                     cell4.className = "text-center align-middle"
 
-                    cell5.innerHTML = "<p class='align-middle  mb-0' id='precio_productos_" + counterTR +
-                        "'></p><input type='hidden' name='precio_producto[]' id='price_product_" + counterTR + "'>";
+                    cell5.innerHTML = "<input type='text' name='precio_producto[]' onkeyup='calculate("+i+
+                        ",this.value)' class='form-control' autocomplete='off' id='price_product_" + i + "'>";
                     cell5.className = "text-center align-middle"
 
-                    cell6.innerHTML = "<p class='align-middle  mb-0' id='subtotals_" + counterTR + "'></p>";
+                    cell6.innerHTML = "<p class='align-middle  mb-0' id='subtotals_" + i + "'></p>";
                     cell6.className = "text-center align-middle"
-                    cell6.id = "tds_" + counterTR
+                    cell6.id = "tds_" + i
 
                     cell7.innerHTML =
                         '<a onclick="borrarRow(this)" class="btn btn-block mb-0 btn-danger mb-0"><i class="fas fa-minus-circle"></i></a>';
@@ -320,20 +293,20 @@
                     i++
 
                 } else {
-                    alert('Debe seleccionar primero al cliente')
+                    alert('Debe seleccionar primero al proveedor')
                     abreModal('proveedor')
                 }
             }
 
 
 
-            function calculate(x = "", y = "", xx = "") {
+            function calculate(x = "", y = "", xx = "", precio) {
                 var id_product = document.getElementById('id_product_' + x).value
                 var cc = document.getElementById('cant_' + x)
 
-                if (y > 0) {
+     
                     const csrfToken = "{{ csrf_token() }}";
-                    fetch('/sales/availability', {
+                    fetch('/purchase/availability', {
                         method: 'POST',
                         body: JSON.stringify({
                             cantidad: y,
@@ -347,7 +320,6 @@
                         return response.json();
                     }).then(data => {
                         if (data.respuesta == true) {
-
 
                             let precio_unitario = document.getElementById('price_product_' + x).value
                             let cantidad = document.getElementById('cant_' + x).value
@@ -374,27 +346,45 @@
                             }
                             // sumado = Math.round(sumaNo * 100) / 100
 
-                            var taxt = document.getElementById('taxt').value
 
-                            IvaCalculado = (taxt / 100) * sumaNo
+
                             document.getElementById('subFacs').innerHTML = 'Bs. ' + sumaNo.toFixed(2)
                             document.getElementById('exentos').innerHTML = 'Bs. ' + suma.toFixed(2)
-                            document.getElementById('totalIVaas').innerHTML = 'Bs. ' + IvaCalculado.toFixed(2);
-                            document.getElementById('totalTotals').innerHTML = 'Bs. ' + ((sumaNo + IvaCalculado) + suma)
-                                .toFixed(2);
+
+
                             document.getElementById('subFac').value = sumaNo.toFixed(2)
                             document.getElementById('exento').value = suma.toFixed(2)
-                            document.getElementById('totalIVa').value = IvaCalculado.toFixed(2);
-                            document.getElementById('totalTotal').value = ((sumaNo + IvaCalculado) + suma).toFixed(2);
+
+                            if (document.getElementById('taxt_16').checked == true) {
+                                calculateTaxes(16)
+                            }
+
                         } else {
                             alert('Intruduce una cantidad valida o mayor a la cantidad actual que es: ' + data.cantid)
                             cc.value = ""
                         }
                     });
-                } else {
-                    alert('Intruduce una cantidad valida o mayor a 0')
-                    cc.value = ""
+       
+            }
+
+            function calculateTaxes(valueTax) {
+
+                var subFac = document.getElementById('subFac').value
+                var exento = document.getElementById('exento').value
+
+                if (valueTax == 16) {
+                    if (document.getElementById('taxt_' + valueTax).checked == true) {
+                        IvaCalculado = (parseFloat(valueTax) / 100) * parseFloat(subFac)
+                    } else {
+                        IvaCalculado = 0.00;
+                    }
+                    totalTotalito = ((parseFloat(subFac) + IvaCalculado) + parseFloat(exento))
+                    document.getElementById('totalIVaas').innerHTML = 'Bs. ' + IvaCalculado.toFixed(2);
+                    document.getElementById('totalTotals').innerHTML = 'Bs. ' + totalTotalito.toFixed(2)
+                    document.getElementById('totalIVa').value = IvaCalculado.toFixed(2);
+                    document.getElementById('totalTotal').value = totalTotalito;
                 }
+
             }
 
             function borrarRow(x) {

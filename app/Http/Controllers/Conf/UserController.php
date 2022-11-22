@@ -72,8 +72,6 @@ class UserController extends Controller
 
 
         $roles = Role::where('name', '<>', 'Super-Admin')->pluck('name','name')->all();
-
-
         return view('conf.users.create', compact('roles', 'conf'));
     }
 
@@ -91,14 +89,8 @@ class UserController extends Controller
     
         $user = User::create($input);
         $user->assignRole($request->input('roles'));
-
-
-        $message = [
-            'type' => 'success',
-            'message' => 'Usuario creado con éxito',
-        ];
                         
-        return redirect()->route('users.index')->with('message', $message);
+        return redirect()->route('users.index')->with('message', 'Usuario creado con éxito');
 
     }
 
@@ -122,7 +114,6 @@ class UserController extends Controller
     public function show($id)
     {
         $user = User::find($id);
-
         $conf = [
             'title-section' => 'Usuario: '.$user->name,
             'group' => 'user',
@@ -178,30 +169,14 @@ class UserController extends Controller
         $user->update($input);
         DB::table('model_has_roles')->where('model_id',$id)->delete();
     
-        $user->assignRole($request->input('roles'));
-
-
-        $message = [
-            'type' => 'warning',
-            'message' => 'Usuario actualizado con éxito',
-        ];
-                        
-        return redirect()->route('users.index')->with('message', $message);
-    
-
+        $user->assignRole($request->input('roles'));               
+        return redirect()->route('users.index')->with('warning', 'Usuario actualizado con éxito');
     }
 
     public function destroy($id)
     {
-        User::find($id)->delete();
-
-        $message = [
-            'type' => 'danger',
-            'message' => 'Usuario eliminado con éxito',
-        ];
-                        
-        return redirect()->route('users.index')->with('message', $message);
-
+        User::find($id)->delete();                        
+        return redirect()->route('users.index')->with('error', 'Usuario eliminado con éxito');
     }
 
 

@@ -69,6 +69,8 @@ Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 Route::group(['middleware' => ['auth']], function() {
 
+    Route::get('/', [HomeController::class, 'index'])->name('home');
+
 
     /**
      * 
@@ -342,6 +344,9 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('/purchase/supplier', SupplierController::class);
 
     Route::post('/purchase/search', [PurchaseOrderController::class, 'listar'])->name('purchase.search');
+    Route::get('/purchase/validate/{id}', [PurchaseController::class, 'validarOrden'])->name('purchase-order.validate');
+    Route::post('/purchase/receptions', [PurchaseController::class, 'receptions'])->name('purchase.receptions');
+    Route::post('/purchase/availability', [PurchaseController::class, 'disponible'])->name('purchase.check-aviavility');
 
      /**
      * 
