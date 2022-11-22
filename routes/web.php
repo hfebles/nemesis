@@ -91,6 +91,7 @@ Route::group(['middleware' => ['auth']], function() {
 
     // menus
     Route::resource('/mantenice/menu', MenuController::class);
+    Route::get('/mantenice/menu/activate/{id}', [MenuController::class, 'activate'])->name('menu.activate');
 
     // PRODUCTOS
     Route::resource('/mantenice/product/category', ProductCategoryController::class);

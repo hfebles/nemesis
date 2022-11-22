@@ -16,22 +16,18 @@
                 <div class="col-md-12">
                     <p class="h4">Nombre de la zona: <span class="text-info">{{ $data->name_zone }}</span></p>
                 </div>
-
                 <div class="clearfix"></div>
-
                 <div class="col-md-12">
-                    <p class="h3">Estados:</p>
+                    <p class="h4">Estados:</p>
                     <div class="row">
                         @foreach ($dataEstados as $value)
-                            <div class="col-3">
-                                <p class="h4">{{ $value->estado }}</p>
+                            <div class="col-4">
+                                <p class="h5">{{ $value->estado }}</p>
                             </div>
                         @endforeach
                     </div>
                 </div>
         </x-cards>
-
-
     </div>
 
 

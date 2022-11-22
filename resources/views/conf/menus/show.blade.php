@@ -95,20 +95,16 @@
                         <tbody>
                         @foreach ($dataHijos as $hijos)
                             <tr>
-                                <td class="p-1">{{$hijos->name}}</td>
-                                <td class="p-1">{{$hijos->slug}}</td>
-                                <td class="text-center p-1">{{$hijos->order}}</td>
-                                <td class="text-center p-1">
+                                <td class="p-1 align-middle">{{$hijos->name}}</td>
+                                <td class="p-1 align-middle ">{{$hijos->slug}}</td>
+                                <td class="text-center align-middle p-1">{{$hijos->order}}</td>
+                                <td class="text-center align-middle p-1">
                                     @switch($hijos->enabled)
                                         @case(1)
-                                            <div class="form-check form-switch p-0">
-                                                <input class="form-check-input mr-0 ml-1" type="checkbox" checked disabled>
-                                            </div>
+                                        <div ><a href="{{ route('menu.activate', $hijos->id) }}" class="btn btn-sm btn-danger"><i class="fa fa-minus fa-lg"></i></a></div>
                                             @break
                                         @default
-                                            <div class="form-check form-switch p-0">
-                                                <input class="form-check-input ml-0" type="checkbox" disabled>
-                                            </div>
+                                        <div ><a href="{{ route('menu.activate', $hijos->id) }}" class="btn btn-sm btn-success"><i class="fa fa-plus fa-lg"></i></a></div>
                                     @endswitch
                                 </td>
                             </tr>

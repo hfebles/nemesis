@@ -16,7 +16,7 @@ class CreateZonesTable extends Migration
         Schema::create('zones', function (Blueprint $table) {
             $table->id('id_zone');
             $table->string('name_zone');
-            $table->text('ids_estados');
+            $table->json('ids_estados');
             $table->boolean('enabled_zone')->default(1);
             $table->timestamps();
         });
