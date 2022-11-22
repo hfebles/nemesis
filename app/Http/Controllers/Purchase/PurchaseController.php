@@ -44,10 +44,7 @@ class PurchaseController extends Controller
             ->orderBy('id_purchase', 'DESC')
             ->paginate(15);
 
-        // return $data;
-
-
-        $table = [
+            $table = [
             'c_table' => 'table table-bordered table-hover mb-0 text-uppercase',
             'c_thead' => 'bg-dark text-white',
             'ths' => ['#', 'Fecha', 'Pedido', 'Proveedor', 'Estado', 'Total'],
@@ -82,7 +79,6 @@ class PurchaseController extends Controller
             'group' => 'purchase-purchase',
             'back' => 'purchase.index',
         ];
-
         $dataExchange = Exchange::whereEnabledExchange(1)->where('date_exchange', '=', date('Y-m-d'))->orderBy('id_exchange', 'DESC')->get();
         $dataSupplier = Supplier::whereEnabledSupplier(1)->get();
         if (count($dataSupplier) == 0) {
@@ -101,14 +97,11 @@ class PurchaseController extends Controller
         if (count($datax) > 0) {
             $config = ($config == $datax[0]->ctrl_num) ? $datax[0]->ctrl_num + 1 : $datax[0]->ctrl_num + 1;
         }
-
         $taxes = Tax::where('billable_tax', '=', 1)->get();
         $dataWorkers = Workers::select('workers.id_worker', 'workers.firts_name_worker', 'workers.last_name_worker', 'group_workers.name_group_worker')
             ->join('group_workers', 'group_workers.id_group_worker', '=', 'workers.id_group_worker')
             ->where('name_group_worker', '=', 'COMPRAS')
             ->get();
-
-
         return view('purchases.purchase.create', compact('conf', 'dataWorkers', 'dataExchange', 'dataConfiguration', 'config', 'taxes'));
     }
 
@@ -272,7 +265,6 @@ class PurchaseController extends Controller
 
     public function show($id)
     {
-
         $data = Purchase::select('purchases.*',  's.address_supplier', 's.phone_supplier', 's.idcard_supplier', 's.name_supplier', 'w.firts_name_worker', 'w.last_name_worker', 'e.amount_exchange', 'e.date_exchange')
             ->join('suppliers AS s', 's.id_supplier', '=', 'purchases.id_supplier')
             ->join('exchanges AS e', 'e.id_exchange', '=', 'purchases.id_exchange')
@@ -293,7 +285,6 @@ class PurchaseController extends Controller
             'back' => 'purchase.index',
             'edit' => ['route' => 'purchase.edit', 'id' => $id],
         ];
-
         return view('purchases.purchase.show', compact('conf', 'data', 'dataProducts', 'obj', 'dataProdcs'));
     }
 
@@ -334,7 +325,6 @@ class PurchaseController extends Controller
             $taxes = Tax::where('billable_tax', '=', 1)->get();
             $dataExchange = Exchange::whereEnabledExchange(1)->where('date_exchange', '=', date('Y-m-d'))->orderBy('id_exchange', 'DESC')->get()[0];
             $obj = json_decode(PurchaseOrderDetails::whereIdPurchaseOrder($id)->get()[0]->details_purchase_order_detail, true);
-
             for ($i = 0; $i < count($obj['id_product']); $i++) {
                 $dataProducts[$i] = Product::select('products.*', 'p.name_presentation_product', 'u.name_unit_product', 'u.short_unit_product')
                     ->join('presentation_products AS p', 'p.id_presentation_product', '=', 'products.id_presentation_product')
@@ -342,7 +332,6 @@ class PurchaseController extends Controller
                     ->whereIdProduct($obj['id_product'][$i])
                     ->get();
             }
-
             return view('purchases.purchase.edit', compact('conf', 'data', 'dataProducts', 'obj', 'taxes', 'dataExchange'));
         }
     }
@@ -397,10 +386,8 @@ class PurchaseController extends Controller
 
     public function anular($id)
     {
-
         Purchase::whereIdPurchase($id)->update(['id_order_state' => 10]);
         PurchaseOrder::whereIdPurchase($id)->update(['id_order_state' => 10]);
-
         return redirect()->route('purchase.show', $id);
     }
 

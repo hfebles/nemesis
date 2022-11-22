@@ -62,7 +62,8 @@
                     @endif
                     @if ($data->id_order_state != 10 && $data->id_order_state != 9 && $data->id_order_state != 12)
                         @if (Gate::check('sales-invoices-delete') || Gate::check('adm-delete'))
-                            <a href="{{ route('purchase.cancel-purchase', $data->id_purchase) }}" class="btn btn-sm btn-danger btn-icon-split ml-3">
+                            <a href="{{ route('purchase.cancel-purchase', $data->id_purchase) }}"
+                                class="btn btn-sm btn-danger btn-icon-split ml-3">
                                 <span class="icon text-white-50">
                                     <i class="fas fa-times-circle"></i>
                                 </span>
@@ -70,15 +71,8 @@
                             </a>
                         @endif
                     @endif
-
-
-
                 </div>
-
-
-
                 <div class="col-sm-12">
-
                     <table class="table table-sm table-bordered">
                         <tr>
                             <td width="80%" class="text-end">Fecha:</td>
@@ -94,68 +88,37 @@
                         </tr>
                     </table>
                     <table class="table table-sm table-bordered mb-4">
-
                         <tr>
                             <td width="25%">Razón social:</td>
-                            <td>
-                                <span id="razon_social">{{ $data->name_supplier }}</span>
-                            </td>
+                            <td><span id="razon_social">{{ $data->name_supplier }}</span></td>
                         </tr>
                         <tr>
                             <td width="25%">Cédula ó R.I.F.:</td>
-                            <td>
-                                <span id="dni">{{ $data->idcard_supplier }}</span>
-                            </td>
+                            <td><span id="dni">{{ $data->idcard_supplier }}</span></td>
                         </tr>
                         <tr>
                             <td width="25%">Teléfono: </td>
-                            <td>
-                                <span id="telefono">{{ $data->phone_supplier }}</span>
-                            </td>
+                            <td><span id="telefono">{{ $data->phone_supplier }}</span></td>
                         </tr>
                         <tr>
                             <td width="25%">Dirección: </td>
-                            <td>
-                                <span id="direccion">{{ $data->address_supplier }}</span>
-                            </td>
+                            <td><span id="direccion">{{ $data->address_supplier }}</span></td>
                         </tr>
                         <tr>
-                            <td class="align-middle" width="25%">Tipo de Pago: </td>
-                            <td>
-                                <span id="direccion">
-                                    @switch($data->type_payment)
-                                        @case(1)
-                                            Contado
-                                        @break
-
-                                        @default
-                                            Credito
-                                    @endswitch
-                                </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td width="25%">Vendedor: </td>
-                            <td>
-                                <span>{{ $data->firts_name_worker }} {{ $data->last_name_worker }}</span>
-                            </td>
+                            <td width="25%">Responsable: </td>
+                            <td><span>{{ $data->firts_name_worker }} {{ $data->last_name_worker }}</span></td>
                         </tr>
                     </table>
                     <table class="table table-sm  table-bordered border-dark mb-4" id="myTable">
                         <tr>
-
                             <th scope="col" colspan="2" class="align-middle">DESCRIPCIÓN</th>
                             <th scope="col" class="text-center align-middle" width="10%">CANTIDAD</th>
                             <th scope="col" class="text-center align-middle" width="10%">P/U</th>
                             <th scope="col" class="text-center align-middle " width="10%">SUB-TOTAL</th>
                         </tr>
-
                         @for ($i = 0; $i < count($dataProducts); $i++)
-
-
                             @foreach ($dataProducts[$i] as $k => $products)
                                 <tr>
-
                                     <th scope="col" colspan="2" class="align-middle">{{ $products->name_product }}
                                         {{ $products->name_presentation_product }} {{ $products->short_unit_product }}
                                         @if ($products->tax_exempt_product == 1)
@@ -190,7 +153,6 @@
                                     {{ number_format($data->no_exempt_amout_purchase / $data->amount_exchange, 2, ',', '.') }}
                                 </p>
                             </th>
-
                             <th scope="col" class="text-end align-middle">BASE IMPONIBLE: </th>
                             <th scope="col" class="text-end align-middle">
                                 <p class='align-middle mb-0' id="subFacs">Bs.
@@ -204,7 +166,6 @@
                                     {{ number_format($data->exempt_amout_purchase / $data->amount_exchange, 2, ',', '.') }}
                                 </p>
                             </th>
-
                             <th scope="col" class="text-end align-middle">EXENTO: </th>
                             <th scope="col" class="text-end align-middle">
                                 <p class='align-middle mb-0' id="exentos"></p>Bs.
@@ -218,7 +179,6 @@
                                     {{ number_format($data->total_amount_tax_purchase / $data->amount_exchange, 2, ',', '.') }}
                                 </p>
                             </th>
-
                             <th scope="col" class="text-end align-middle">IVA:</th>
                             <th scope="col" class="text-end align-middle">
                                 <p class='align-middle mb-0' id="totalIVaas">Bs.
@@ -232,7 +192,6 @@
                                     {{ number_format($data->total_amount_purchase / $data->amount_exchange, 2, ',', '.') }}
                                 </p>
                             </th>
-
                             <th scope="col" class="text-end align-middle">TOTAL A PAGAR: </th>
                             <th scope="col" class="text-end align-middle">
                                 <p class='align-middle mb-0' id="totalTotals">Bs.
@@ -240,13 +199,10 @@
                             </th>
                         </tr>
                     </table>
-
                 </div>
             </div>
-
         </x-cards>
     </div>
-
 
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -261,13 +217,11 @@
                     <div class="row">
                         <div class="col-12 g-3">
                             <p class="text-center">Desea recibir el pedido:</p>
-
                             <table class="table table-sm table-hover table-borderes">
                                 <tr>
                                     <th>Producto</th>
                                     <th>Solicitado</th>
                                     <th>Recibido</th>
-
                                 </tr>
                                 {!! Form::open([
                                     'route' => 'purchase.receptions',
@@ -277,11 +231,8 @@
                                     'id' => 'myForm',
                                 ]) !!}
                                 @for ($i = 0; $i < count($dataProducts); $i++)
-
-
                                     @foreach ($dataProducts[$i] as $k => $products)
                                         <tr>
-
                                             <td class="align-middle">{{ $products->name_product }}
                                                 {{ $products->name_presentation_product }}
                                                 {{ $products->short_unit_product }}
@@ -290,13 +241,15 @@
                                                 {{ number_format(json_decode($dataProdcs['pendiente'][$i]), 2, ',', '.') ?? '' }}
                                             </td>
                                             <td>
-                                                <input type="hidden" name="id_product[]" value="{{ $products->id_product }}">
-                                                <input type="number" name="cantidad[]" class="form-control form-control-sm"></td>
+                                                <input type="hidden" name="id_product[]"
+                                                    value="{{ $products->id_product }}">
+                                                <input type="number" name="cantidad[]"
+                                                    class="form-control form-control-sm">
+                                            </td>
                                         </tr>
                                     @endforeach
                                 @endfor
                             </table>
-
                         </div>
                         <input type="hidden" name="id_purchase" value="{{ $data->id_purchase }}">
                         <x-btns-save></x-btns-save>
