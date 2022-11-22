@@ -60,9 +60,9 @@
                                 </span></a>
                         @endif
                     @endif
-                    @if ($data->id_order_state != 12)
+                    @if ($data->id_order_state != 10 && $data->id_order_state != 9 && $data->id_order_state != 12)
                         @if (Gate::check('sales-invoices-delete') || Gate::check('adm-delete'))
-                            <a href="" class="btn btn-sm btn-danger btn-icon-split ml-3">
+                            <a href="{{ route('purchase.cancel-purchase', $data->id_purchase) }}" class="btn btn-sm btn-danger btn-icon-split ml-3">
                                 <span class="icon text-white-50">
                                     <i class="fas fa-times-circle"></i>
                                 </span>

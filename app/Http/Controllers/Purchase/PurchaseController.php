@@ -398,17 +398,8 @@ class PurchaseController extends Controller
     public function anular($id)
     {
 
-        $dataSalesOrderDetails = salesOrderDetails::whereIdSalesOrder($id)->get()[0];
-
-        $obj = json_decode($dataSalesOrderDetails->details_order_detail, true);
-
-        for ($i = 0; $i < count($obj['id_product']); $i++) {
-            $sumar =  Product::select('qty_product')->whereIdProduct($obj['id_product'][$i])->get()[0];
-            $operacion = $sumar->qty_product + $obj['cantidad'][$i];
-            Product::whereIdProduct($obj['id_product'][$i])->update(['qty_product' => $operacion]);
-        }
-
-        SalesOrder::whereIdSalesOrder($id)->update(['id_order_state' => 3]);
+        Purchase::whereIdPurchase($id)->update(['id_order_state' => 10]);
+        PurchaseOrder::whereIdPurchase($id)->update(['id_order_state' => 10]);
 
         return redirect()->route('purchase.show', $id);
     }

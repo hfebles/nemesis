@@ -349,6 +349,9 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('/purchase/receptions', [PurchaseController::class, 'receptions'])->name('purchase.receptions');
     Route::post('/purchase/availability', [PurchaseController::class, 'disponible'])->name('purchase.check-aviavility');
 
+    Route::get('/purchase/cancel-order/{id}', [PurchaseOrderController::class, 'anular'])->name('purchase.cancel-order');
+    Route::get('/purchase/cancel-purchase/{id}', [PurchaseController::class, 'anular'])->name('purchase.cancel-purchase');
+
      /**
      * 
      * FIN COMPRAS

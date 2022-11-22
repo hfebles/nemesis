@@ -25,8 +25,7 @@
 
 
                 <div class="col-sm-12 d-flex">
-                    <a href=""
-                        class="btn btn-sm btn-info btn-icon-split ml-auto">
+                    <a href="" class="btn btn-sm btn-info btn-icon-split ml-auto">
                         <span class="icon text-white-50">
                             <i class="fas fa-print"></i>
                         </span>
@@ -35,18 +34,18 @@
 
 
 
-                    @if ($data->id_order_state != 2 && $data->id_order_state != 6)
+                    @if ($data->id_order_state != 9)
                         @if (Gate::check('purchase-purchase-create') || Gate::check('adm-create'))
-                        <a href="{{ route('purchase-order.validate', $data->id_purchase_order) }}"
-                            class="btn btn-sm btn-success btn-icon-split ml-3">
-                            <span class="icon text-white-50">
-                                <i class="fas fa-check"></i>
-                            </span>
-                            <span class="text">Procesar</span>
-                        </a>
+                            <a href="{{ route('purchase-order.validate', $data->id_purchase_order) }}"
+                                class="btn btn-sm btn-success btn-icon-split ml-3">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-check"></i>
+                                </span>
+                                <span class="text">Procesar</span>
+                            </a>
                         @endif
                     @endif
-                    @if ($data->id_order_state != 2 && $data->id_order_state != 7)
+                    @if ($data->id_order_state != 9)
                         @if (Gate::check($conf['group'] . '-edit') || Gate::check('adm-edit'))
                             <a href="{{ route('purchase-order.edit', $data->id_purchase_order) }}"
                                 class="btn btn-sm btn-warning btn-icon-split ml-3">
@@ -57,15 +56,18 @@
                             </a>
                         @endif
                     @endif
-                    @if (Gate::check('sales-invoices-delete') || Gate::check('adm-delete'))
-                        <a href=""
-                            class="btn btn-sm btn-danger btn-icon-split ml-3">
-                            <span class="icon text-white-50">
-                                <i class="fas fa-times-circle"></i>
-                            </span>
-                            <span class="text">Anular</span>
-                        </a>
+                    @if ($data->id_order_state != 10 && $data->id_order_state != 9 && $data->id_order_state != 12)
+                        @if (Gate::check('purchase-purchase-delete') || Gate::check('adm-delete'))
+                            <a href="{{ route('purchase.cancel-order', $data->id_purchase_order) }}"
+                                class="btn btn-sm btn-danger btn-icon-split ml-3">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-times-circle"></i>
+                                </span>
+                                <span class="text">Anular</span>
+                            </a>
+                        @endif
                     @endif
+
 
 
 

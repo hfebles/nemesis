@@ -71,23 +71,25 @@ class PurchaseOrderController extends Controller
         return view('purchases.purchase-order.index', compact('conf', 'table'));
     }
 
-    public function create(){
+    public function create()
+    {
 
         $conf = [
             'title-section' => 'Nueva orden de compra',
             'group' => 'purchase-order',
-            'back' => 'purchase-order.index',];
+            'back' => 'purchase-order.index',
+        ];
 
         $dataExchange = Exchange::whereEnabledExchange(1)->where('date_exchange', '=', date('Y-m-d'))->orderBy('id_exchange', 'DESC')->get();
         $dataSupplier = Supplier::whereEnabledSupplier(1)->get();
 
         if (count($dataSupplier) == 0) {
-            $message = [ 'type' => 'warning', 'message' => 'Debe registrar un proveedor',];
+            $message = ['type' => 'warning', 'message' => 'Debe registrar un proveedor',];
             return redirect()->route('supplier.index')->with('message', $message);
         }
 
         if (count($dataExchange) == 0) {
-            $message = [ 'type' => 'warning', 'message' => 'Debe registrar un tasa de cambio', ];
+            $message = ['type' => 'warning', 'message' => 'Debe registrar un tasa de cambio',];
             return redirect()->route('exchange.index')->with('message', $message);
         } else {
             $dataExchange = $dataExchange[0];
@@ -97,9 +99,9 @@ class PurchaseOrderController extends Controller
         $config = 1;
         $datax = PurchaseOrder::whereEnabledPurchaseOrder(1)->orderBy('id_purchase_order', 'DESC')->get();
 
-        
+
         if (count($datax) > 0) {
-            $config = ($config == $datax[0]->ctrl_num) ? $datax[0]->ctrl_num + 1 : $datax[0]->ctrl_num + 1 ;
+            $config = ($config == $datax[0]->ctrl_num) ? $datax[0]->ctrl_num + 1 : $datax[0]->ctrl_num + 1;
         }
 
         $taxes = Tax::where('billable_tax', '=', 1)->get();
@@ -112,9 +114,10 @@ class PurchaseOrderController extends Controller
     }
 
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {
 
-       // return $request;
+        // return $request;
 
         $dataConfiguration = SaleOrderConfiguration::all()[0];
         $dataSalesOrder = $request->except('_token');
@@ -137,7 +140,7 @@ class PurchaseOrderController extends Controller
             'supplier_order'
         );
 
-      //  return $dataDetails;
+        //  return $dataDetails;
 
         $saveSalesOrder = new PurchaseOrder();
 
@@ -171,30 +174,31 @@ class PurchaseOrderController extends Controller
     }
 
 
-    
 
-    public function show($id){
+
+    public function show($id)
+    {
 
         $data = PurchaseOrder::select('purchase_orders.*', 's.address_supplier', 's.phone_supplier', 's.idcard_supplier', 's.name_supplier', 'w.firts_name_worker', 'w.last_name_worker', 'e.amount_exchange', 'e.date_exchange')
-        ->join('suppliers AS s', 's.id_supplier', '=', 'purchase_orders.id_supplier')
-        ->join('exchanges AS e', 'e.id_exchange', '=', 'purchase_orders.id_exchange')
-        ->join('workers AS w', 'w.id_worker', '=', 'purchase_orders.id_worker', 'left outer')
-        ->where('id_purchase_order', '=', $id)
-        ->get()[0];       
+            ->join('suppliers AS s', 's.id_supplier', '=', 'purchase_orders.id_supplier')
+            ->join('exchanges AS e', 'e.id_exchange', '=', 'purchase_orders.id_exchange')
+            ->join('workers AS w', 'w.id_worker', '=', 'purchase_orders.id_worker', 'left outer')
+            ->where('id_purchase_order', '=', $id)
+            ->get()[0];
 
         $obj = json_decode(PurchaseOrderDetails::whereIdPurchaseOrder($id)->get()[0]->details_purchase_order_detail, true);
 
         for ($i = 0; $i < count($obj['id_product']); $i++) {
             $dataProducts[$i] = Product::select('products.*', 'p.name_presentation_product', 'u.name_unit_product', 'u.short_unit_product')
-                                        ->join('presentation_products AS p', 'p.id_presentation_product', '=', 'products.id_presentation_product')
-                                        ->join('unit_products AS u', 'u.id_unit_product', '=', 'products.id_unit_product')
-                                        ->whereIdProduct($obj['id_product'][$i])
-                                        ->get();
+                ->join('presentation_products AS p', 'p.id_presentation_product', '=', 'products.id_presentation_product')
+                ->join('unit_products AS u', 'u.id_unit_product', '=', 'products.id_unit_product')
+                ->whereIdProduct($obj['id_product'][$i])
+                ->get();
         }
 
 
         $conf = [
-            'title-section' => 'Orden de compra: '.$data->ref_name_purchase_order,
+            'title-section' => 'Orden de compra: ' . $data->ref_name_purchase_order,
             'group' => 'purchase-order',
             'back' => 'purchase-order.index',
             'edit' => ['route' => 'purchase-order.edit', 'id' => $id],
@@ -209,11 +213,11 @@ class PurchaseOrderController extends Controller
     {
 
         $data = PurchaseOrder::select('purchase_orders.*', 's.address_supplier', 's.phone_supplier', 's.idcard_supplier', 's.name_supplier', 'w.firts_name_worker', 'w.last_name_worker', 'e.amount_exchange', 'e.date_exchange')
-        ->join('suppliers AS s', 's.id_supplier', '=', 'purchase_orders.id_supplier')
-        ->join('exchanges AS e', 'e.id_exchange', '=', 'purchase_orders.id_exchange')
-        ->join('workers AS w', 'w.id_worker', '=', 'purchase_orders.id_worker', 'left outer')
-        ->where('id_purchase_order', '=', $id)
-        ->get()[0]; 
+            ->join('suppliers AS s', 's.id_supplier', '=', 'purchase_orders.id_supplier')
+            ->join('exchanges AS e', 'e.id_exchange', '=', 'purchase_orders.id_exchange')
+            ->join('workers AS w', 'w.id_worker', '=', 'purchase_orders.id_worker', 'left outer')
+            ->where('id_purchase_order', '=', $id)
+            ->get()[0];
 
 
         if ($data->id_order_state == 2) {
@@ -222,14 +226,12 @@ class PurchaseOrderController extends Controller
                 'message' => 'No puede editar la orden si ya fue facturada.',
             ];
             return redirect()->route('purchase-order.show', $data->id_sales_order)->with('message', $message);
-        
         } elseif ($data->id_order_state == 3) {
             $message = [
                 'type' => 'danger',
                 'message' => 'No puede editar la orden si ya fue cancelada.',
             ];
             return redirect()->route('purchase-order.show', $data->id_sales_order)->with('message', $message);
-        
         } else {
 
             $conf = [
@@ -245,10 +247,10 @@ class PurchaseOrderController extends Controller
 
             for ($i = 0; $i < count($obj['id_product']); $i++) {
                 $dataProducts[$i] = Product::select('products.*', 'p.name_presentation_product', 'u.name_unit_product', 'u.short_unit_product')
-                                        ->join('presentation_products AS p', 'p.id_presentation_product', '=', 'products.id_presentation_product')
-                                        ->join('unit_products AS u', 'u.id_unit_product', '=', 'products.id_unit_product')
-                                        ->whereIdProduct($obj['id_product'][$i])
-                                        ->get();
+                    ->join('presentation_products AS p', 'p.id_presentation_product', '=', 'products.id_presentation_product')
+                    ->join('unit_products AS u', 'u.id_unit_product', '=', 'products.id_unit_product')
+                    ->whereIdProduct($obj['id_product'][$i])
+                    ->get();
             }
 
             return view('purchases.purchase-order.edit', compact('conf', 'data', 'dataProducts', 'obj', 'taxes', 'dataExchange'));
@@ -257,14 +259,14 @@ class PurchaseOrderController extends Controller
 
 
     public function update(Request $request, $id)
-    {   
+    {
 
-   
+
 
         $data = $request->except('_token', '_method');
 
         $obj = json_decode(PurchaseOrderDetails::whereIdPurchaseOrder($id)->get()[0]->details_purchase_order_detail, true);
-       // return $request;
+        // return $request;
         for ($i = 0; $i < count($obj['id_product']); $i++) {
             $sumar =  Product::select('qty_product')->whereIdProduct($obj['id_product'][$i])->get()[0];
             $operacion = $sumar->qty_product + $obj['cantidad'][$i];
@@ -305,19 +307,7 @@ class PurchaseOrderController extends Controller
 
     public function anular($id)
     {
-
-        $dataSalesOrderDetails = salesOrderDetails::whereIdSalesOrder($id)->get()[0];
-
-        $obj = json_decode($dataSalesOrderDetails->details_order_detail, true);
-
-        for ($i = 0; $i < count($obj['id_product']); $i++) {
-            $sumar =  Product::select('qty_product')->whereIdProduct($obj['id_product'][$i])->get()[0];
-            $operacion = $sumar->qty_product + $obj['cantidad'][$i];
-            Product::whereIdProduct($obj['id_product'][$i])->update(['qty_product' => $operacion]);
-        }
-
-        SalesOrder::whereIdSalesOrder($id)->update(['id_order_state' => 3]);
-
+        PurchaseOrder::whereIdPurchaseOrder($id)->update(['id_order_state' => 10]);
         return redirect()->route('purchase.show', $id);
     }
 
