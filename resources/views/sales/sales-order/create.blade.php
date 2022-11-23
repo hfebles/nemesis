@@ -22,29 +22,22 @@
                     <td class="text-end align-middle">Pedido número:</td>
                     <td width="15%" class="text-end">
                         <span
-                            class="fs-4">{{ $dataConfiguration->correlative_sale_order_configuration }}{{ str_pad($config, 6, '0', STR_PAD_LEFT) }}</span>
-                        <input type="hidden" value="{{ $config }}" name="ctrl_num" />
+                            class="fs-4">{{ $dataConfiguration[0]->correlative_sale_order_configuration }}-{{ str_pad($config, 6, '0', STR_PAD_LEFT) }}</span>
                         <input type="hidden"
-                            value="{{ $dataConfiguration->correlative_sale_order_configuration }}-{{ $config }}"
+                            value="{{ $dataConfiguration[0]->correlative_sale_order_configuration }}-{{ str_pad($config, 6, '0', STR_PAD_LEFT) }}"
                             name="ref_name_sales_order" />
                     </td>
-
                 </tr>
                 <tr>
                     <td class="text-end align-middle">Nro control:</td>
                     <td width="15%" class="text-end">
                         <span class="fs-4">{{ str_pad($config, 6, '0', STR_PAD_LEFT) }}</span>
                         <input type="hidden" value="{{ $config }}" name="ctrl_num" />
-                        <input type="hidden"
-                            value="{{ $dataConfiguration->correlative_sale_order_configuration }}{{ $config }}"
-                            name="ref_name_sales_order" />
                     </td>
-
                 </tr>
             </table>
 
             <table class="table table-sm table-bordered mb-4">
-
                 <tr>
                     <td width="100%" class="d-flex justify-content-between">
                         <span>Razón social: </span>
@@ -58,21 +51,15 @@
                 </tr>
                 <tr>
                     <td width="25%">Cédula ó R.I.F.:</td>
-                    <td>
-                        <span id="dni"></span>
-                    </td>
+                    <td><span id="dni"></span></td>
                 </tr>
                 <tr>
                     <td width="25%">Teléfono: </td>
-                    <td>
-                        <span id="telefono"></span>
-                    </td>
+                    <td><span id="telefono"></span></td>
                 </tr>
                 <tr>
                     <td width="25%">Dirección: </td>
-                    <td>
-                        <span id="direccion"></span>
-                    </td>
+                    <td><span id="direccion"></span></td>
                 </tr>
                 <tr>
                     <td class="align-middle" width="25%">Tipo de Pago: </td>
@@ -86,21 +73,16 @@
                 <tr>
                     <td class="align-middle" width="25%">Vendedor: </td>
                     <td>
-                        <select class="form-select form-control-sm" name="id_worker">
-
-
-
-                            @foreach ($dataWorkers as $worker)
-                                <option value="{{ $worker->id_worker }}">{{ $worker->firts_name_worker }}
-                                    {{ $worker->last_name_worker }}</option>
-                            @endforeach
-                        </select>
+                        {!! Form::select('id_worker', $dataWorkers, $dataWorkers, [
+                            'required',
+                            'class' => 'form-select form-control-sm',
+                            'placeholder' => 'Seleccione',
+                        ]) !!}
                     </td>
                 </tr>
             </table>
             <table class="table table-sm border-dark table-bordered mb-4" id="myTable">
                 <tr>
-
                     <th scope="col" colspan="2" class="align-middle">DESCRIPCIÓN</th>
                     <th scope="col" class="text-center align-middle" width="10%">CANTIDAD</th>
                     <th scope="col" class="text-center align-middle" width="10%">P/U</th>
@@ -123,7 +105,6 @@
                     </td>
                 </tr>
                 <tr>
-
                     <th width="85%" scope="col" class="text-end align-middle">IMPUESTOS:
                         @foreach ($taxes as $tax)
                             <div class="form-check form-switch">
@@ -133,7 +114,6 @@
                                     {{ $tax->amount_tax }}%</label>
                             </div>
                         @endforeach
-
                     </th>
                     <td class="text-end align-middle">
                         <p class='align-middle mb-0' id="totalIVaas"></p><input type="hidden" id="totalIVa"
@@ -148,11 +128,7 @@
                     </td>
                 </tr>
             </table>
-
-
-
         </x-cards>
-
     </div>
     <input type="hidden" id="tasa" value="{{ $dataExchange->amount_exchange }}" />
     <input type="hidden" id="id_tasa" name="id_exchange" value="{{ $dataExchange->id_exchange }}" />
@@ -194,8 +170,7 @@
             var i = 0;
 
             function validateClient() {
-                var cliente = document.getElementById('id_client').value;
-                if (cliente == "") {
+                if (document.getElementById('id_client').value == "") {
                     return false
                 } else {
                     return true
@@ -207,57 +182,43 @@
                     var table = document.getElementById("myTable");
                     var row = table.insertRow(-1);
                     row.id = 'tr_' + i
-
                     var cell2 = row.insertCell(-1);
                     var cell3 = row.insertCell(-1);
                     var cell4 = row.insertCell(-1);
                     var cell5 = row.insertCell(-1);
                     var cell6 = row.insertCell(-1);
                     var cell7 = row.insertCell(-1);
-
                     cell2.innerHTML = '<a id="search_productos_' + i + '" onclick="abreModal(\'producto\', ' + i +
                         ')" class="btn btn-info btn-block mb-0"><i class="fas fa-search fa-lg"></i></a>';
-                    //cell2.id = "td_"+i
                     cell2.className = "align-middle bg-info"
                     cell2.width = "3%"
-
                     cell3.innerHTML = "<p class='align-middle mb-0' id='name_product" + i + "'></p>";
                     cell3.id = "td_" + i
                     cell3.className = "align-middle"
-
-
                     cell4.innerHTML = "<input type='hidden' name='id_product[]' id='id_product_" + i +
                         "'><input onkeyup='calculate(" + i +
                         ", this.value)' class='form-control' autocomplete='off' id='cant_" + i +
                         "' type='number' name='cantidad[]'>";
                     cell4.className = "text-center align-middle"
-
                     cell5.innerHTML = "<p class='align-middle  mb-0' id='precio_productos_" + i +
                         "'></p><input type='hidden' name='precio_producto[]' id='price_product_" + i + "'>";
                     cell5.className = "text-center align-middle"
-
                     cell6.innerHTML = "<p class='align-middle  mb-0' id='subtotals_" + i + "'></p>";
                     cell6.className = "text-center align-middle"
                     cell6.id = "tds_" + i
-
                     cell7.innerHTML =
                         '<a onclick="borrarRow(this)" class="btn btn-block mb-0 btn-danger mb-0"><i class="fas fa-minus-circle"></i></a>';
                     cell7.className = "text-center align-middle bg-danger"
-
                     i++
-
                 } else {
                     alert('Debe seleccionar primero al cliente')
                     abreModal('clientes')
                 }
             }
 
-
-
             function calculate(x = "", y = "", xx = "") {
                 var id_product = document.getElementById('id_product_' + x).value
                 var cc = document.getElementById('cant_' + x)
-
                 if (y > 0) {
                     const csrfToken = "{{ csrf_token() }}";
                     fetch('/sales/availability', {
@@ -274,22 +235,16 @@
                         return response.json();
                     }).then(data => {
                         if (data.respuesta == true) {
-
                             let precio_unitario = document.getElementById('price_product_' + x).value
                             let cantidad = document.getElementById('cant_' + x).value
                             let subtotal = (precio_unitario * cantidad).toFixed(2)
-
-
                             document.getElementById('subtotals_' + x).innerHTML = 'Bs. ' + subtotal
                             document.getElementById('subtotal_' + x).value = subtotal
-
                             var suma = 0
                             var sumaNo = 0
                             var total = 0
-
                             var exe = document.getElementsByName('subtotal_exento[]')
                             var noExe = document.getElementsByName('subtotal[]')
-
                             for (let e = 0; e < exe.length; e++) {
                                 valor = exe[e].value || 0
                                 suma += parseFloat(valor)
@@ -298,18 +253,13 @@
                                 valor = noExe[e].value || 0
                                 sumaNo += parseFloat(valor)
                             }
-                            // sumado = Math.round(sumaNo * 100) / 100
-
-
                             document.getElementById('subFacs').innerHTML = 'Bs. ' + sumaNo.toFixed(2)
                             document.getElementById('exentos').innerHTML = 'Bs. ' + suma.toFixed(2)
                             document.getElementById('subFac').value = sumaNo.toFixed(2)
                             document.getElementById('exento').value = suma.toFixed(2)
-
                             if (document.getElementById('taxt_16').checked == true) {
                                 calculateTaxes(16)
                             }
-
 
                         } else {
                             alert('Intruduce una cantidad valida o mayor a la cantidad actual que es: ' + data.cantid)
@@ -323,10 +273,8 @@
             }
 
             function calculateTaxes(valueTax) {
-
                 var subFac = document.getElementById('subFac').value
                 var exento = document.getElementById('exento').value
-
                 if (valueTax == 16) {
                     if (document.getElementById('taxt_' + valueTax).checked == true) {
                         IvaCalculado = (parseFloat(valueTax) / 100) * parseFloat(subFac)
@@ -339,11 +287,9 @@
                     document.getElementById('totalIVa').value = IvaCalculado.toFixed(2);
                     document.getElementById('totalTotal').value = totalTotalito;
                 }
-
             }
 
             function borrarRow(x) {
-
                 var i = x.parentNode.parentNode.rowIndex;
                 document.getElementById("myTable").deleteRow(i);
             }
@@ -376,25 +322,19 @@
 
             function seleccionarProducto(x, y, tasa) {
                 y = y - 1
-
                 var exchangeRate = document.getElementById('tasa').value
-
                 var input = document.createElement("input");
                 document.getElementById('id_product_' + y).value = x.id_product
                 input.setAttribute("type", "hidden");
                 input.setAttribute("name", "exempt_product[]");
                 input.setAttribute("id", 'exempt_product_' + y);
-
-
                 var input2 = document.createElement("input");
                 input2.setAttribute("type", "hidden");
                 input2.setAttribute("id", 'subtotal_' + y);
-
                 var input3 = document.createElement("input");
                 input3.setAttribute("type", "hidden");
                 input3.setAttribute("name", "noExento[]");
                 input3.setAttribute("id", 'noExempt_product_' + y);
-
                 if (x.tax_exempt_product == 1) {
                     input.setAttribute("value", x.price_product);
                     input2.setAttribute("name", "subtotal_exento[]");
@@ -404,7 +344,6 @@
                     if (x.product_usd_product == 0) {
                         document.getElementById('precio_productos_' + y).innerHTML = 'Bs. ' + x.price_product
                         document.getElementById('price_product_' + y).value = x.price_product
-
                     } else {
                         document.getElementById('precio_productos_' + y).innerHTML = 'Bs. ' + (x.price_product * exchangeRate)
                             .toFixed(2)
@@ -412,7 +351,6 @@
                     }
                 } else {
                     input2.setAttribute("name", "subtotal[]");
-
                     document.getElementById("td_" + y).appendChild(input3);
                     document.getElementById("tds_" + y).appendChild(input2);
                     document.getElementById('name_product' + y).innerHTML = x.code_product + " " + x.name_product
@@ -425,15 +363,12 @@
                             .toFixed(2)
                         document.getElementById('price_product_' + y).value = (x.price_product * exchangeRate).toFixed(2)
                         input3.setAttribute("value", (x.price_product * exchangeRate).toFixed(2));
-
                     }
                 }
                 document.getElementById('search_productos_' + y).style.display = 'none'
                 document.getElementById("td_" + y).colSpan = "2";
                 document.getElementById('tr_' + y).deleteCell(0);
-
                 myModal.hide()
-
             }
 
             function creaBusqueda(tipo, valorActual = "") {
@@ -451,16 +386,11 @@
                 const end = input.value.length;
                 input.setSelectionRange(end, end);
                 input.focus();
-
-
             }
 
-
             function seleccionar(x, y = "") {
-
                 creaBusqueda(x, y);
                 var exchangeRate = document.getElementById('tasa').value
-
                 var linea2 = "";
                 const csrfToken = "{{ csrf_token() }}";
                 fetch('/sales/search', {
@@ -492,12 +422,8 @@
                     }
                     linea2 += '</thead>'
                     linea2 += '</tr>'
-
-
-
                     for (let t in data.lista) {
                         c = data.lista[t]
-
                         var a = JSON.stringify(c);
                         if (c.id_product != undefined) {
                             linea2 += '<tr onclick=\'cargar(' + a + ', "' + x + '", ' + i + ')\'>'
@@ -507,7 +433,6 @@
                             } else {
                                 linea2 += '<td class="text-center">' + c.name_product + ' (E)</td>'
                             }
-
                             linea2 += '<td class="text-center">' + c.name_unit_product + '</td>'
                             linea2 += '<td class="text-center">' + c.name_presentation_product + '</td>'
                             linea2 += '<td class="text-center">' + c.qty_product + '</td>'
@@ -525,18 +450,13 @@
                             linea2 += '<td class="text-center">' + c.idcard_client + '</td>'
                             linea2 += '</tr>'
                         }
-
-
                     }
                     linea2 += '</table>'
                     col.innerHTML = linea2
                 });
             }
 
-
-
             (function() {
-
                 function decimalAdjust(type, value, exp) {
                     // Si el exp no está definido o es cero...
                     if (typeof exp === 'undefined' || +exp === 0) {

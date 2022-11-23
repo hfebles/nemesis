@@ -461,19 +461,7 @@ class InvoicingController extends Controller
                 return $pdf->stream('ejemplo.pdf');
                 break;
         }
-
-
-
-
-
-        //return $data;
-
-        
-        
     }
-
-
-    //anular
 
     public function anularFactura($id)
     {
@@ -489,6 +477,7 @@ class InvoicingController extends Controller
         }
 
         Invoicing::whereIdInvoicing($id)->update(['id_order_state' => 3]);
+        SalesOrder::whereIdInvoice($id)->update(['id_order_state' => 3]);
         Payments::whereIdInvoice($id)->where('type_pay', '=', 1)->update(['enabled_payment' => 0]);
 
         return redirect()->route('invoicing.show', $id);

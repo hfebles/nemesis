@@ -65,27 +65,16 @@ class WorkersController extends Controller
 
     public function create()
     {
-
-        
         $route = app('router')->getRoutes(url()->previous())->match(app('request')->create(url()->previous()))->getName();
-
-
-        
         $conf = [
             'title-section' => 'Cargar un nuevo trabajador',
             'group' => 'rrhh-worker',
             'back' => $route,
             'url' => '/hhrr/workers'
         ];
-
         $userRegister = Workers::select('id_user')->where('id_user', '<>', null)->get();
         $group =  GroupWorkers::whereEnabledGroupWorker(1)->pluck('name_group_worker', 'id_group_worker');
         $users = User::whereNotIn('id', $userRegister)->where('name', 'not like', '%admin%')->pluck('name', 'id');
-
-        // return $userRegister;
-
-
-
         return view('rrhh.workers.create', compact('conf', 'group', 'users'));
     }
 
@@ -93,46 +82,27 @@ class WorkersController extends Controller
     public function store(Request $request)
     {
         $data = $request->except('_token');
-
         $save = new Workers();
         $save->firts_name_worker  = strtoupper($data['firts_name_worker']);
         $save->last_name_worker = strtoupper($data['last_name_worker']);
         $save->dni_worker = $data['dni_worker'];
         $save->id_group_worker = $data['id_group_worker'];
-
-        if (isset($data['phone_worker'])) {
-            $save->phone_worker = $data['phone_worker'];
-        }
-
-        if (isset($data['mail_worker'])) {
-            $save->mail_worker = strtoupper($data['mail_worker']);
-        }
-
-        if (isset($data['id_user'])) {
-            $save->id_user = $data['id_user'];
-        }
-
+        if (isset($data['phone_worker'])) { $save->phone_worker = $data['phone_worker']; }
+        if (isset($data['mail_worker'])) { $save->mail_worker = strtoupper($data['mail_worker']); }
+        if (isset($data['id_user'])) { $save->id_user = $data['id_user']; }
         $save->save();
-
-        $message = [
-            'type' => 'susccess',
-            'message' => 'Se registro el trabajador: ' . $save->firts_name_worker . ' ' . $save->last_name_worker . ' con éxito',
-        ];
-
-        return redirect()->route('workers.index')->with('message', $message);
+        return redirect()->route('workers.index')->with('message', 'Se registro el trabajador: ' . $save->firts_name_worker . ' ' . $save->last_name_worker . ' con éxito');
     }
 
 
 
     public function show($id)
     {
-
         $data = Workers::select('dni_worker', 'last_name_worker', 'firts_name_worker', 'mail_worker', 'phone_worker', 'gw.name_group_worker', 'u.name')
             ->join('group_workers as gw', 'gw.id_group_worker', '=', 'workers.id_group_worker', 'left outer')
             ->join('users as u', 'u.id', '=', 'workers.id_user', 'left outer')
             ->whereIdWorker($id)
-            ->get()[0];
-
+            ->find($id);
         $conf = [
             'title-section' => 'Trabajador: ' . $data->last_name_worker . ' ' . $data->firts_name_worker,
             'group' => 'rrhh-worker',
@@ -140,7 +110,6 @@ class WorkersController extends Controller
             'edit' => ['route' => 'workers.edit', 'id' => $id,],
             'url' => '/hhrr/workers'
         ];
-
         return view('rrhh.workers.show', compact('data', 'conf'));
     }
 
@@ -150,55 +119,30 @@ class WorkersController extends Controller
             ->join('group_workers as gw', 'gw.id_group_worker', '=', 'workers.id_group_worker', 'left outer')
             ->join('users as u', 'u.id', '=', 'workers.id_user', 'left outer')
             ->whereIdWorker($id)
-            ->get()[0];
-
-
+            ->find($id);
         $conf = [
             'title-section' => 'Editar trabajador: ' . $data->last_name_worker . ' ' . $data->firts_name_worker,
             'group' => 'rrhh-worker',
             'back' => 'workers.index',
             'url' => '/hhrr/workers'
         ];
-
         $userRegister = Workers::select('id_user')->where('id_user', '<>', $data->id_user)->where('id_user', '<>', null)->get();
         $group =  GroupWorkers::whereEnabledGroupWorker(1)->pluck('name_group_worker', 'id_group_worker');
         $users = User::whereNotIn('id', $userRegister)->where('name', 'not like', '%admin%')->pluck('name', 'id');
-
-
         return view('rrhh.workers.edit', compact('conf', 'data', 'group', 'users'));
     }
 
 
     public function update(Request $request, $id)
     {
-
         $data = $request->except('_token', '_method');
-
-
-
         $data['firts_name_worker']  = strtoupper($data['firts_name_worker']);
         $data['last_name_worker'] = strtoupper($data['last_name_worker']);
-
-        if (isset($data['phone_worker'])) {
-            $data['phone_worker'] = $data['phone_worker'];
-        }
-
-        if (isset($data['mail_worker'])) {
-            $data['mail_worker'] = strtoupper($data['mail_worker']);
-        }
-
-        if (isset($data['id_user'])) {
-            $data['id_user'] = $data['id_user'];
-        }
-
+        if (isset($data['phone_worker'])) { $data['phone_worker'] = $data['phone_worker']; }
+        if (isset($data['mail_worker'])) { $data['mail_worker'] = strtoupper($data['mail_worker']); }
+        if (isset($data['id_user'])) { $data['id_user'] = $data['id_user']; }
         Workers::whereIdWorker($id)->update($data);
-
-        $message = [
-            'type' => 'success',
-            'message' => 'Se actualizo el trabajador con éxito',
-        ];
-
-        return redirect()->route('workers.index')->with('message', $message);
+        return redirect()->route('workers.index')->with('message', 'Se actualizo el trabajador con éxito');
     }
 
     /*========================================*/

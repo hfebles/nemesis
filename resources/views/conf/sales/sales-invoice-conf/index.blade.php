@@ -13,20 +13,20 @@
         <table class="table table-bordered table-sm">
             <tr>
                 <td>Correlativo:</td>
-                <td>{{ $data[0]->correlative_invoicing_configutarion }}</td>
+                <td>{{ $data->correlative_invoicing_configutarion }}</td>
             </tr>
             <tr>
                 <td>Nombre de impresión:</td>
-                <td>{{ $data[0]->print_name_invoicing_configutarion }}</td>
+                <td>{{ $data->print_name_invoicing_configutarion }}</td>
             </tr>
             <tr>
                 <td>Numero de control:</td>
-                <td>{{ $data[0]->control_number_invoicing_configutarion }}</td>
+                <td>{{ $data->control_number_invoicing_configutarion }}</td>
             </tr>
-            {{-- <tr>
+            <tr>
                 <td>Cuenta contable:</td>
-                <td>{{ $data[0]->id_ledger_account }}</td>
-            </tr> --}}
+                <td>{{ $data->name_ledger_account }}</td>
+            </tr>
 
         </table>
 

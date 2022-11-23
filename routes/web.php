@@ -331,6 +331,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('/delivery/delivery', DeliveryController::class);
     Route::get('/delivery/delivery/cancel/{id}', [DeliveryController::class, 'cancel'])->name('delivery.cancel');
     Route::get('/delivery/delivery/aprove/{id}', [DeliveryController::class, 'aprove'])->name('delivery.aprove');
+    Route::get('/delivery/delivery/finalice/{id}', [DeliveryController::class, 'finalice'])->name('delivery.finalice');
      
 
     /**

@@ -63,12 +63,8 @@ class GroupWorkersController extends Controller
         $save->name_group_worker = strtoupper($data['name_group_worker']);
         $save->save();
 
-        $message = [
-            'type' => 'success',
-            'message' => 'Se registro el grupo: '.$save->name_group_worker.' con exito',
-        ];
                         
-        return redirect()->route('group-workers.index')->with('message', $message);
+        return redirect()->route('group-workers.index')->with('message', 'Se registro el grupo: '.$save->name_group_worker.' con exito');
         
 
 
