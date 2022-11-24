@@ -245,7 +245,7 @@ class SalesOrderController extends Controller
             'no_exempt_amout_sales_order' => $data['subFac'],
             'total_amount_tax_sales_order' => $data['total_taxes'],
         ]);
-        
+
         salesOrderDetails::whereIdSalesOrder($id)->update(['details_order_detail' => json_encode($dataDetails)]);
         for ($i = 0; $i < count($data['id_product']); $i++) {
             $restar =  Product::select('qty_product')->whereIdProduct($data['id_product'][$i])->get();
@@ -256,12 +256,12 @@ class SalesOrderController extends Controller
 
         $deliveryNote = DeliveryNotes::where('ref_name_delivery_note', '=', $saleOrderData->ref_name_sales_order)->get();
 
-       // return $deliveryNote;
+        // return $deliveryNote;
         if (count($deliveryNote) > 0) {
 
             $total = $data['subFac'] + $data['exento'];
 
-           // return $total;
+            // return $total;
             $payments = Payments::where('id_delivery_note', '=', $deliveryNote[0]->id_delivery_note)->get();
             if (count($payments) > 0) {
                 $pagos = 0;
@@ -292,38 +292,40 @@ class SalesOrderController extends Controller
                             'details_delivery_notes' => json_encode($dataDetails),
                         ]
                     );
-            }else{
+            } else {
                 DeliveryNotes::where('id_delivery_note', '=', $deliveryNote[0]->id_delivery_note)
-                ->update(
-                    [
-                        'type_payment' => $saleOrderData->type_payment,
-                        'id_client' => $saleOrderData->id_client,
-                        'id_exchange' => $saleOrderData->id_exchange,
-                        'ctrl_num' => $saleOrderData->ctrl_num,
-                        'ref_name_delivery_note' => $saleOrderData->ref_name_sales_order,
-                        'residual_amount_delivery_note' => $total,
-                        'total_amount_delivery_note' => $total,
-                        'exempt_amout_delivery_note' => $data['exento'],
-                        'id_order_state' => 6,
-                        'no_exempt_amout_delivery_note' => $data['subFac'],
-                        'date_delivery_note' => date('Y-m-d'),
-                    ]
-                );
-            DeliveryNotesDetails::where('id_delivery_note', '=', $deliveryNote[0]->id_delivery_note)
-                ->update(
-                    [
-                        'id_delivery_note' => $deliveryNote[0]->id_delivery_note,
-                        'details_delivery_notes' => json_encode($dataDetails),
-                    ]
-                );
+                    ->update(
+                        [
+                            'type_payment' => $saleOrderData->type_payment,
+                            'id_client' => $saleOrderData->id_client,
+                            'id_exchange' => $saleOrderData->id_exchange,
+                            'ctrl_num' => $saleOrderData->ctrl_num,
+                            'ref_name_delivery_note' => $saleOrderData->ref_name_sales_order,
+                            'residual_amount_delivery_note' => $total,
+                            'total_amount_delivery_note' => $total,
+                            'exempt_amout_delivery_note' => $data['exento'],
+                            'id_order_state' => 6,
+                            'no_exempt_amout_delivery_note' => $data['subFac'],
+                            'date_delivery_note' => date('Y-m-d'),
+                        ]
+                    );
+                DeliveryNotesDetails::where('id_delivery_note', '=', $deliveryNote[0]->id_delivery_note)
+                    ->update(
+                        [
+                            'id_delivery_note' => $deliveryNote[0]->id_delivery_note,
+                            'details_delivery_notes' => json_encode($dataDetails),
+                        ]
+                    );
             }
         }
         return redirect()->route('sales-order.index')->with('message', 'Se actualizo el pedido con éxito');
     }
 
 
-    public function anular($id)
+    public function anular($id, $id_delivery_note="")
     {
+
+        
         $dataSalesOrderDetails = salesOrderDetails::whereIdSalesOrder($id)->get()[0];
         $obj = json_decode($dataSalesOrderDetails->details_order_detail, true);
         for ($i = 0; $i < count($obj['id_product']); $i++) {
@@ -331,14 +333,14 @@ class SalesOrderController extends Controller
             $operacion = $sumar->qty_product + $obj['cantidad'][$i];
             Product::whereIdProduct($obj['id_product'][$i])->update(['qty_product' => $operacion]);
         }
-       SalesOrder::whereIdSalesOrder($id)->update(['id_order_state' => 3]);
-        
-        $deliveryNote = DeliveryNotes::where('ref_name_delivery_note', '=', SalesOrder::find($id)->ref_name_sales_order)->get();
+        SalesOrder::whereIdSalesOrder($id)->update(['id_order_state' => 3]);
+
+        //$deliveryNote = DeliveryNotes::where('ref_name_delivery_note', '=', SalesOrder::find($id)->ref_name_sales_order)->get();
 
 
 
-        if (count($deliveryNote) > 0) {
-            DeliveryNotes::where('id_delivery_note', '=', $deliveryNote[0]->id_delivery_note)->update(['id_order_state' => 3]);
+        if ($id_delivery_note) {
+            DeliveryNotes::where('id_delivery_note', '=', $id_delivery_note)->update(['id_order_state' => 3,  'residual_amount_delivery_note' => (new DeliveryNotesController)->getDataDN($id_delivery_note)->total_amount_delivery_note]);
         }
 
 
@@ -433,5 +435,10 @@ class SalesOrderController extends Controller
         } else {
             return response()->json(['respuesta' => false, 'cantid' => $actual[0]->qty_product]);
         }
+    }
+
+    public function getDataSO($id)
+    {
+        return SalesOrder::find($id);
     }
 }

@@ -32,6 +32,7 @@ return new class extends Migration
             $table->integer('id_user')->nullable();
             $table->integer('id_worker')->nullable();
             $table->integer('id_invoice')->nullable();
+            $table->integer('id_delivery_note')->nullable();
             $table->boolean('enabled_sales_order')->default(1);
             $table->timestamps();
         });

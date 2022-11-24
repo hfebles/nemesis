@@ -194,7 +194,7 @@ Route::group(['middleware' => ['auth']], function() {
 
     Route::resource('/sales/deliveries-notes', DeliveryNotesController::class);
     Route::get('/sales/deliveries-notes/validate/{id}', [DeliveryNotesController::class, 'validarPedido'])->name('sales.deliveries-notes-validate');
-    Route::get('/sales/cancel-deliveries-notes/{id}', [InvoicingController::class, 'anularPedido'])->name('sales.cancel-deliveries-notes');
+    Route::get('/sales/cancel-deliveries-notes/{id}', [DeliveryNotesController::class, 'anularPedido'])->name('sales.cancel-deliveries-notes');
     
 
     

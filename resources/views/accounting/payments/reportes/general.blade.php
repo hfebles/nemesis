@@ -64,8 +64,7 @@
         <tr class="bg-dark text-white">
             <th width="8%" class="text-center align-middle">Fecha</th>
             <th class="text-center align-middle">Cliente</th>
-            <th width="8%" class="text-center align-middle">Factura</th>
-            <th width="8%" class="text-center align-middle">Pedido</th>
+            <th width="20%" class="text-center align-middle">Factura / Pedido</th>
             <th width="25%" class="text-center align-middle">Banco</th>
             <th width="8%" class="text-center align-middle">Referencia</th>
             <th width="15%" class="text-center align-middle">Monto</th>
@@ -74,8 +73,7 @@
             <tr>
                 <td class="text-center align-middle">{{ date('d/m/Y', strtotime($tabla->date_payment)) }}</td>
                 <td class="text-center align-middle">{{ $tabla->name_client }}</td>
-                <td class="text-center align-middle">{{ $tabla->ref_name_invoicing ?? 'N/A' }}</td>
-                <td class="text-center align-middle">{{ $tabla->ref_name_delivery_note ?? 'N/A' }}</td>
+                <td class="text-center align-middle">{{ $tabla->ref_name_invoicing ?? $tabla->ref_name_delivery_note }} {{ $tabla->estadoFactura ?? $tabla->estadoPedido}}</td>
                 <td class="text-center align-middle">{{ $tabla->name_bank }}</td>
                 <td class="text-center align-middle">{{ $tabla->ref_payment }}</td>
                 <td class="text-center align-middle">Bs. {{ number_format($tabla->amount_payment, 2, ',', '.') }}</td>

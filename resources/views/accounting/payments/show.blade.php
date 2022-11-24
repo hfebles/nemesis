@@ -23,7 +23,8 @@
     </div>
     <table class="table table-sm table-bordered mb-0">
         <tr>
-            <td colspan="2">Fecha del pago: {{ date('d/m/Y', strtotime($data->date_payment)) }}</td>
+            <td>Fecha del pago: {{ date('d/m/Y', strtotime($data->date_payment)) }}</td>
+            <td>Refencia: {{$data->ref_payment}}</td>
         </tr>
         <tr>
             <td>Cliente: {{$data->name_client}}</td>

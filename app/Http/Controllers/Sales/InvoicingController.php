@@ -211,21 +211,16 @@ class InvoicingController extends Controller
             Product::whereIdProduct($dataInvoice['id_product'][$i])->update(['qty_product' => $operacion]);
         }
 
-        $move = (new MovesAccountsController)->createMoves($saveInvoice->id_invoicing, $saveInvoice->date_invoicing, 1);                       
+        $move = (new MovesAccountsController)->createMoves($saveInvoice->id_invoicing, $saveInvoice->date_invoicing, 1);
 
 
 
         $result = (new AccountingEntriesController)->saveEntriesSales($move, $saveInvoice->id_invoicing);
-        
-      //return $result;
+
+        //return $result;
 
 
-        $message = [
-            'type' => 'success',
-            'message' => 'Se registro con éxito',
-        ];
-
-        return redirect()->route('invoicing.show', $saveInvoice->id_invoicing);
+        return redirect()->route('invoicing.show', $saveInvoice->id_invoicing)->with('message', 'Se registro la factura con éxito');
     }
 
 
@@ -281,13 +276,13 @@ class InvoicingController extends Controller
 
         SalesOrder::whereIdSalesOrder($id)->update(['id_order_state' => 2, 'id_invoice' => $inv->id_invoicing]);
 
-        $move = (new MovesAccountsController)->createMoves($inv->id_invoicing, $inv->date_invoicing, 1);                       
+        $move = (new MovesAccountsController)->createMoves($inv->id_invoicing, $inv->date_invoicing, 1);
 
 
 
         $result = (new AccountingEntriesController)->saveEntriesSales($move, $inv->id_invoicing);
 
-        return redirect()->route('invoicing.show', $inv->id_invoicing);
+        return redirect()->route('invoicing.show', $inv->id_invoicing)->with('message', 'Se registro la factura con éxito');
     }
 
 
@@ -295,19 +290,30 @@ class InvoicingController extends Controller
     public function show($id)
     {
 
-        
-        $data =  \DB::select("SELECT i.*, c.address_client, c.phone_client, c.idcard_client, c.name_client, w.firts_name_worker, w.last_name_worker, e.amount_exchange, e.date_exchange
-        FROM invoicings as i
-        INNER JOIN clients AS c ON c.id_client = i.id_client
-        INNER JOIN exchanges AS e ON e.id_exchange = i.id_exchange
-        LEFT OUTER JOIN workers AS w ON w.id_worker = i.id_worker
-        WHERE i.id_invoicing = $id")[0];
+       $data = Invoicing::select(
+            'invoicings.*',
+            'c.address_client',
+            'c.phone_client',
+            'c.idcard_client',
+            'c.name_client',
+            'w.firts_name_worker',
+            'w.last_name_worker',
+            'e.amount_exchange',
+            'e.date_exchange',
+            \DB::raw('CASE 
+        WHEN invoicings.id_order_state = 3 THEN "Factura Cancelada"
+        END as estado')
+        )
+            ->join('clients AS c', 'c.id_client', '=', 'invoicings.id_client')
+            ->join('exchanges AS e', 'e.id_exchange', '=', 'invoicings.id_exchange')
+            ->join('workers AS w', 'w.id_worker', '=', 'invoicings.id_worker', 'left outer')
+            ->find($id);
 
 
         //return $data;
 
         $conf = [
-            'title-section' => 'Factura: '.$data->ref_name_invoicing,
+            'title-section' => 'Factura: ' . $data->ref_name_invoicing,
             'group' => 'sales-invoices',
             'back' => 'invoicing.index',
         ];
@@ -323,14 +329,14 @@ class InvoicingController extends Controller
             ->get();
 
         $surplus = Surplus::select('amount_surplus', 'payments.id_payment', 'payments.ref_payment', 'payments.date_payment')
-                    ->join('payments', 'payments.id_payment', '=', 'surpluses.id_payment')
-                    ->where('surpluses.id_client', '=', $data->id_client)
-                    ->where('used_surplus', '=', 1)
-                    ->get();
+            ->join('payments', 'payments.id_payment', '=', 'surpluses.id_payment')
+            ->where('surpluses.id_client', '=', $data->id_client)
+            ->where('used_surplus', '=', 1)
+            ->get();
 
-    //    return $surplus;
+        //    return $surplus;
 
-        
+
 
 
 
@@ -368,7 +374,7 @@ class InvoicingController extends Controller
 
                 $dataDetails = SalesOrderDetails::whereIdSalesOrder($id)->get()[0];
 
-               // return $data;
+                // return $data;
 
                 $obj = json_decode($dataDetails->details_order_detail, true);
 
@@ -390,7 +396,7 @@ class InvoicingController extends Controller
                 }
                 $dataGeneral = ['fecha' => date('d-m-Y'), 'cantidad' =>  $cantita];
                 $pdf = \PDF::loadView('sales.reportes.sale-order', compact('data', 'dataProducts', 'obj', 'dataGeneral', 'conf'));
-                return $pdf->stream(date('dmY', strtotime($data->date_sales_order)).'_'.$data->name_client.'_'.$data->ref_name_sales_order.'.pdf');
+                return $pdf->stream(date('dmY', strtotime($data->date_sales_order)) . '_' . $data->name_client . '_' . $data->ref_name_sales_order . '.pdf');
                 break;
 
 
@@ -425,7 +431,7 @@ class InvoicingController extends Controller
                 }
                 $dataGeneral = ['fecha' => date('d-m-Y'), 'cantidad' =>  $cantita];
                 $pdf = \PDF::loadView('sales.reportes.facturas2', compact('data', 'dataProducts', 'obj', 'dataGeneral', 'conf'));
-                return $pdf->stream(date('dmY', strtotime($data->date_invoicing)).'_'.$data->name_client.'_'.$data->ref_name_invoicing.'.pdf');
+                return $pdf->stream(date('dmY', strtotime($data->date_invoicing)) . '_' . $data->name_client . '_' . $data->ref_name_invoicing . '.pdf');
                 break;
 
             case 3:
@@ -439,7 +445,7 @@ class InvoicingController extends Controller
 
                 $dataDetails = DeliveryNotesDetails::whereIdDeliveryNote($id)->get()[0];
 
-              
+
                 $obj = json_decode($dataDetails->details_delivery_notes, true);
 
                 $cantita = 0;
@@ -466,10 +472,8 @@ class InvoicingController extends Controller
     }
 
     public function anularFactura($id)
-    {
-
+    {   
         $dataDetails = InvoicingDetails::whereIdInvoicing($id)->get()[0];
-
         $obj = json_decode($dataDetails->details_invoicing_detail, true);
 
         for ($i = 0; $i < count($obj['id_product']); $i++) {
@@ -478,14 +482,15 @@ class InvoicingController extends Controller
             Product::whereIdProduct($obj['id_product'][$i])->update(['qty_product' => $operacion]);
         }
 
-        Invoicing::whereIdInvoicing($id)->update(['id_order_state' => 3]);
+        Invoicing::whereIdInvoicing($id)->update(['id_order_state' => 3, 'residual_amount_invoicing' => $this->getDataInv($id)->total_amount_invoicing]);
         SalesOrder::whereIdInvoice($id)->update(['id_order_state' => 3]);
-        Payments::whereIdInvoice($id)->where('type_pay', '=', 1)->update(['enabled_payment' => 0]);
-
+        
+        //Payments::whereIdInvoice($id)->where('type_pay', '=', 1)->update(['enabled_payment' => 0]);
+        
         $pagos = Payments::whereIdInvoice($id)->get();
 
-        if(count($pagos)>0){
-            for ($i=0; $i < count($pagos); $i++) { 
+        if (count($pagos) > 0) {
+            for ($i = 0; $i < count($pagos); $i++) {
                 Surplus::create([
                     'amount_surplus' => $pagos[$i]->amount_payment,
                     'id_payment' => $pagos[$i]->id_payment,
@@ -493,15 +498,13 @@ class InvoicingController extends Controller
                 ]);
             }
         }
-        
-        
 
         return redirect()->route('invoicing.show', $id);
     }
 
 
-    public function getDataInv($id){
-
-        return Invoicing::whereIdInvoicing($id)->get()[0];
+    public function getDataInv($id)
+    {
+        return Invoicing::find($id);
     }
 }

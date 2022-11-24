@@ -20,7 +20,8 @@
         <x-cards>
             <div class="row g-3">
                 <div class="col-sm-12 d-flex">
-                    <a target="_blank" href="{{ route('sales.invoices-print', ['id' => $data->id_delivery_note, 'type' => 3]) }}"
+                    <a target="_blank"
+                        href="{{ route('sales.invoices-print', ['id' => $data->id_delivery_note, 'type' => 3]) }}"
                         class="btn btn-sm btn-info btn-icon-split ml-auto">
                         <span class="icon text-white-50">
                             <i class="fas fa-print"></i>
@@ -37,15 +38,15 @@
                         </a>
                     @endif
                     @if ($data->id_order_state != 3)
-                    @if (Gate::check('sales-invoices-delete') || Gate::check('adm-delete'))
-                        <a href="{{ route('sales.cancel-deliveries-notes', $data->id_delivery_note) }}"
-                            class="btn btn-sm btn-danger btn-icon-split ml-3">
-                            <span class="icon text-white-50">
-                                <i class="fas fa-times-circle"></i>
-                            </span>
-                            <span class="text">Anular</span>
-                        </a>
-                    @endif
+                        @if (Gate::check('sales-invoices-delete') || Gate::check('adm-delete'))
+                            <a href="{{ route('sales.cancel-deliveries-notes', $data->id_delivery_note) }}"
+                                class="btn btn-sm btn-danger btn-icon-split ml-3">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-times-circle"></i>
+                                </span>
+                                <span class="text">Anular</span>
+                            </a>
+                        @endif
                     @endif
                 </div>
 
@@ -214,33 +215,35 @@
                             </th>
                         </tr>
                         <tfoot class="bg-gray-100">
-                           
 
-                                <tr>
-                                    <td width="43%" class="text-end">Pendiente por cobrar: </td>
-                                    <td width="7.5%"class="text-end"><label class="text-danger">$
-                                            {{ number_format($data->residual_amount_delivery_note / $data->amount_exchange, '2', ',', '.') }}</label>
-                                    </td>
-                                    <td width="19%" class="text-end">Pendiente por cobrar: </td>
-                                    <td width="10%" class="text-end"><label class="text-danger">Bs.
-                                            {{ number_format($data->residual_amount_delivery_note, '2', ',', '.') }}</label>
-                                    </td>
-                                </tr>
+
+                            <tr>
+                                <td width="43%" class="text-end">Pendiente por cobrar: </td>
+                                <td width="7.5%"class="text-end"><label class="text-danger">$
+                                        {{ number_format($data->residual_amount_delivery_note / $data->amount_exchange, '2', ',', '.') }}</label>
+                                </td>
+                                <td width="19%" class="text-end">Pendiente por cobrar: </td>
+                                <td width="10%" class="text-end"><label class="text-danger">Bs.
+                                        {{ number_format($data->residual_amount_delivery_note, '2', ',', '.') }}</label>
+                                </td>
+                            </tr>
                             <tr>
                                 <td colspan="4" class="text-end">Pagos recibidos</td>
 
                             </tr>
+                            @if ($data->id_order_state != 3)
+                                @foreach ($payments as $k => $pago)
+                                    <tr>
+                                        <td colspan="4" class="text-end fst-italic text-muted"><a
+                                                href="{{ route('payments.show', $pago->id_payment) }}">#{{ $pago->ref_payment }}
+                                                | {{ $pago->name_bank }} |
+                                                {{ date('d-m-Y', strtotime($pago->date_payment)) }}
+                                                | Bs. {{ number_format($pago->amount_payment, '2', ',', '.') }}</a></td>
+                                    </tr>
+                                @endforeach
+                            @endif
 
-                            @foreach ($payments as $k => $pago)
-                                <tr>
-                                    <td colspan="4" class="text-end fst-italic text-muted"><a
-                                            href="{{ route('payments.show', $pago->id_payment) }}">#{{ $pago->ref_payment }}
-                                            | {{ $pago->name_bank }} | {{ date('d-m-Y', strtotime($pago->date_payment)) }}
-                                            | Bs. {{ number_format($pago->amount_payment, '2', ',', '.') }}</a></td>
-                                </tr>
-                            @endforeach
-
-                            @if ($data->id_order_state != 7)
+                            @if ($data->id_order_state != 7 && $data->id_order_state != 3)
                                 <tr>
                                     <td colspan="4" class="text-end">Saldo</td>
                                 </tr>

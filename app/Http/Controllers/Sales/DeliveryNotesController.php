@@ -23,7 +23,8 @@ class DeliveryNotesController extends Controller
         $this->middleware('permission:adm-delete|sales-deliveries-notes-delete', ['only' => ['destroy', 'anularFactura']]);
     }
 
-    function index(Request $request){
+    function index(Request $request)
+    {
 
         $conf = [
             'title-section' => 'Notas de entrega',
@@ -32,14 +33,16 @@ class DeliveryNotesController extends Controller
         ];
 
 
-        $data = DeliveryNotes::select('id_delivery_note', 'ref_name_sales_order', 'ref_name_delivery_note', 'date_delivery_note', 'name_client', 'total_amount_delivery_note', 'os.name_order_state', 'c.name_client')
+        $data = DeliveryNotes::select('delivery_notes.id_delivery_note', 'ref_name_sales_order', 'ref_name_delivery_note', 'date_delivery_note', 'name_client', 'total_amount_delivery_note', 'os.name_order_state', 'c.name_client')
             ->join('clients as c', 'c.id_client', '=', 'delivery_notes.id_client', 'left outer')
-            ->join('sales_orders as so', 'so.id_invoice', '=', 'delivery_notes.id_delivery_note')
+            ->join('sales_orders as so', 'so.id_delivery_note', '=', 'delivery_notes.id_delivery_note')
             ->join('order_states as os', 'os.id_order_state', '=', 'delivery_notes.id_order_state', 'left outer')
             ->where('so.id_order_state', '<>', 2)
             ->whereEnabledDeliveryNote(1)
             ->orderBy('id_delivery_note', 'DESC')
-            ->paginate(10);
+            ->paginate(15);
+
+
 
         $table = [
             'c_table' => 'table table-bordered table-hover mb-0 text-uppercase',
@@ -65,7 +68,7 @@ class DeliveryNotesController extends Controller
             'url' => "/sales/deliveries-notes",
             'id' => 'id_delivery_note',
             'data' => $data,
-            'i' => (($request->input('page', 1) - 1) * 5),
+            'i' => (($request->input('page', 1) - 1) * 15),
         ];
 
 
@@ -85,14 +88,14 @@ class DeliveryNotesController extends Controller
     public function validarPedido($id)
     {
 
-        
-        
+
+
         // return $id;
         $dataSalesOrder = SalesOrder::find($id);
         $dataDetails = SalesOrderDetails::whereIdSalesOrder($id)->get()[0];
 
-       // return $dataSalesOrder;
-        
+        // return $dataSalesOrder;
+
         $inv = new DeliveryNotes();
         $invDetails = new DeliveryNotesDetails();
         $inv->type_payment = $dataSalesOrder['type_payment'];
@@ -105,7 +108,7 @@ class DeliveryNotesController extends Controller
             $inv->id_worker = $dataSalesOrder['id_worker'];
         }
 
-        $total = $dataSalesOrder['no_exempt_amout_sales_order']+$dataSalesOrder['exempt_amout_sales_order'];
+        $total = $dataSalesOrder['no_exempt_amout_sales_order'] + $dataSalesOrder['exempt_amout_sales_order'];
 
         $inv->id_user = $dataSalesOrder['id_user'];
         $inv->residual_amount_delivery_note = $total;
@@ -121,8 +124,8 @@ class DeliveryNotesController extends Controller
         $invDetails->save();
 
         SalesOrder::whereIdSalesOrder($id)->update([
-            'id_order_state' => 6, 
-            'id_invoice' => $inv->id_delivery_note,
+            'id_order_state' => 6,
+            'id_delivery_note' => $inv->id_delivery_note,
             'total_amount_sales_order' =>  $total,
             'residual_amount_sales_order' =>  $total,
             'total_amount_tax_sales_order' => 0,
@@ -138,12 +141,11 @@ class DeliveryNotesController extends Controller
 
         //return redirect()->route('invoicing.show', $inv->id_invoicing);
         return redirect()->route('deliveries-notes.show', $inv->id_delivery_note);
-
-
     }
 
 
-    public function show($id){
+    public function show($id)
+    {
         $data =  \DB::select("SELECT so.*, c.address_client, c.phone_client, c.idcard_client, c.name_client, w.firts_name_worker, w.last_name_worker, e.amount_exchange, e.date_exchange
                                 FROM delivery_notes as so
                                 INNER JOIN clients AS c ON c.id_client = so.id_client
@@ -152,13 +154,13 @@ class DeliveryNotesController extends Controller
                                 WHERE so.id_delivery_note = $id")[0];
 
 
-    //    return $data;
+        //    return $data;
 
         $conf = [
             'title-section' => 'Nota de entrega: ',
-            'group' => 'sales-order',
-            'back' => 'sales-order.index',
-            'edit' => ['route' => 'sales-order.edit', 'id' => $id],
+            'group' => 'sales-deliveries-notes',
+            'back' => 'deliveries-notes.index',
+            'edit' => ['route' => 'deliveries-notes.edit', 'id' => $id],
         ];
 
 
@@ -171,41 +173,43 @@ class DeliveryNotesController extends Controller
             ->where('type_pay', '=', 2)
             ->get();
 
-            $surplus = Surplus::select('amount_surplus', 'payments.id_payment', 'payments.ref_payment', 'payments.date_payment')
-                    ->join('payments', 'payments.id_payment', '=', 'surpluses.id_payment')
-                    ->where('surpluses.id_client', '=', $data->id_client)
-                    ->where('used_surplus', '=', 1)
-                    ->get();
-        
+        $surplus = Surplus::select('amount_surplus', 'payments.id_payment', 'payments.ref_payment', 'payments.date_payment')
+            ->join('payments', 'payments.id_payment', '=', 'surpluses.id_payment')
+            ->where('surpluses.id_client', '=', $data->id_client)
+            ->where('used_surplus', '=', 1)
+            ->get();
+
 
         $obj = json_decode(DeliveryNotesDetails::whereIdDeliveryNote($id)->get()[0]->details_delivery_notes, true);
 
-        for($i = 0; $i<count($obj['id_product']); $i++){
+        for ($i = 0; $i < count($obj['id_product']); $i++) {
             $dataProducts[$i] =  \DB::select("SELECT products.*, p.name_presentation_product, u.name_unit_product, u.short_unit_product
                                                 FROM products 
                                                 INNER JOIN presentation_products AS p ON p.id_presentation_product = products.id_presentation_product
                                                 INNER JOIN unit_products AS u ON u.id_unit_product = products.id_unit_product
-                                                WHERE products.id_product =".$obj['id_product'][$i]);
+                                                WHERE products.id_product =" . $obj['id_product'][$i]);
         }
 
         return view('sales.deliveries-notes.show', compact('conf', 'data', 'dataProducts', 'obj', 'dataBanks', 'payments', 'surplus'));
     }
 
 
-    public function getDataDN($id){
+    public function getDataDN($id)
+    {
 
-        return DeliveryNotes::whereIdDeliveryNote($id)->get()[0];
+        return DeliveryNotes::find($id);
     }
 
 
-    public function anularPedido($id){
-        $id_saleOrder = DeliveryNotes::select('id_invoice')->find($id)->id_invoice;
-        (new SalesOrderController)->anular($id_saleOrder);
+    public function anularPedido($id)
+    {
+        $idSaleOrder = SalesOrder::where('id_delivery_note', '=', $id)->get()[0];
+        $t = (new SalesOrderController)->anular($idSaleOrder->id_sales_order, $id);
+        $pagos = Payments::whereIdDeliveryNote($id)->get();
 
-        $pagos = Payments::whereIdInvoice($id)->get();
-
-        if(count($pagos)>0){
-            for ($i=0; $i < count($pagos); $i++) { 
+        //Payments::whereIdDeliveryNote($id)->update(['id_delivery_note' => null]);
+        if (count($pagos) > 0) {
+            for ($i = 0; $i < count($pagos); $i++) {
                 Surplus::create([
                     'amount_surplus' => $pagos[$i]->amount_payment,
                     'id_payment' => $pagos[$i]->id_payment,
@@ -213,7 +217,8 @@ class DeliveryNotesController extends Controller
                 ]);
             }
         }
-    }
-    
 
+
+        return redirect()->route('deliveries-notes.show', $id)->with('message', 'Se elimino la nota con exito');
+    }
 }

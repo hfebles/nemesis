@@ -11,6 +11,7 @@
         @if ($message = Session::get('message'))
             <x-cards :message="$message" />
         @endif
+
         <x-cards>
             <div class="mb-3 d-flex">
                 <div class="dropdown  ml-auto">
@@ -43,7 +44,7 @@
                         <td class="text-center align-middle">{{ ++$table['i'] }}</td>
                         <td class="text-center align-middle">{{ date('d-m-Y', strtotime($tabla->date_payment)) }}</td>
                         <td class="text-center align-middle">{{ $tabla->name_client }}</td>
-                        <td class="text-center align-middle">{{ $tabla->ref_name_invoicing ?? $tabla->ref_name_delivery_note }}</td>
+                        <td class="text-center align-middle">{{ $tabla->ref_name_invoicing ?? $tabla->ref_name_delivery_note }} <span class="text-danger">{{ $tabla->estadoFactura ?? $tabla->estadoPedido }}</span></td>
                         <td class="text-center align-middle">{{ $tabla->name_bank }}</td>
                         <td class="text-end align-middle">#{{  $tabla->ref_payment }}</td>
                         <td class="text-center align-middle">{{ number_format($tabla->amount_payment, '2', ',', '.') }}</td>
