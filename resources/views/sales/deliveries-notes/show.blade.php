@@ -27,7 +27,7 @@
                         </span>
                         <span class="text">Imprimir</span>
                     </a>
-                    @if ($data->id_order_state != 7 && Gate::check('payment-create'))
+                    @if ($data->id_order_state != 7 && Gate::check('payment-create') && $data->id_order_state != 3)
                         <a data-bs-toggle="modal" data-bs-target="#exampleModal"
                             class="btn btn-sm btn-success btn-icon-split ml-3">
                             <span class="icon text-white-50">
@@ -36,15 +36,16 @@
                             <span class="text">Pagar</span>
                         </a>
                     @endif
-
+                    @if ($data->id_order_state != 3)
                     @if (Gate::check('sales-invoices-delete') || Gate::check('adm-delete'))
-                        <a href="/sales/cancel/{{ $data->id_delivery_note }}"
+                        <a href="{{ route('sales.cancel-deliveries-notes', $data->id_delivery_note) }}"
                             class="btn btn-sm btn-danger btn-icon-split ml-3">
                             <span class="icon text-white-50">
                                 <i class="fas fa-times-circle"></i>
                             </span>
                             <span class="text">Anular</span>
                         </a>
+                    @endif
                     @endif
                 </div>
 

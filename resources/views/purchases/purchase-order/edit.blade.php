@@ -23,14 +23,17 @@
                     <table class="table table-sm table-bordered">
                         <tr>
                             <td width="80%" class="text-end">Fecha:</td>
-                            <td width="10%" class="text-start"><span>{{ date('d-m-Y', strtotime($data->date_purchase_order)) }}</span></td>
+                            <td width="10%" class="text-start">
+                                <span>{{ date('d-m-Y', strtotime($data->date_purchase_order)) }}</span>
+                            </td>
                         </tr>
                         <tr>
                             <td class="text-end">Nro control:</td>
                             <td class="text-start"><span>{{ $data->ref_name_purchase_order }}</span></td>
                         <tr>
                             <td class="text-end align-middle">Factura proveedor:</td>
-                            <td width="15%" class="text-end"><input value="{{ $data->supplier_order ?? '' }}" type="text" class='form-control form-control-sm' name="supplier_order" /></td>
+                            <td width="15%" class="text-end"><input value="{{ $data->supplier_order ?? '' }}"
+                                    type="text" class='form-control form-control-sm' name="supplier_order" /></td>
                         </tr>
                     </table>
                     <table class="table table-sm table-bordered mb-4">
@@ -106,18 +109,42 @@
                                     </td>
 
                                     <td class="text-center align-middle" width="10%">
-                                        <input type='hidden' name='id_product[]' id='id_product_{{ $i }}' value="{{ $obj['id_product'][$i] }}" /> 
-                                        <input onkeyup='calculate("{{ $i }}", this.value)' value="{{ $obj['cantidad'][$i] }}" class='form-control' autocomplete='off' id='cant_{{ $i }}' type='number' name='cantidad[]' />
+
+                                        <input type='hidden' name='id_product[]' id='id_product_{{ $i }}'
+                                            value="{{ $obj['id_product'][$i] }}" />
+                                        @if ($products->tax_exempt_product == 1)
+                                            <input type="hidden" name="exempt_product[]"
+                                                id="exempt_product_{{ $i }}"
+                                                value="{{ $obj['precio_producto'][$i] }}">
+                                        @else
+                                            <input type="hidden" name="noExento[]"
+                                                id="noExempt_product_{{ $i }}"
+                                                value="{{ $obj['precio_producto'][$i] }}">
+                                        @endif
+
+
+                                        <input onkeyup='calculate("{{ $i }}", this.value)'
+                                            value="{{ $obj['cantidad'][$i] }}" class='form-control' autocomplete='off'
+                                            id='cant_{{ $i }}' type='number' name='cantidad[]' />
                                     </td>
                                     <td class="text-center align-middle" width="10%">
-                                        <input onkeyup='calculate("{{ $i }}", this.value)' value="{{ $obj['precio_producto'][$i] }}" class='form-control' autocomplete='off' id='precio_productos_{{ $i }}' type='number' name='cantidad[]' />
-                                        
+                                        <input onkeyup='calculate("{{ $i }}", this.value)'
+                                            value="{{ $obj['precio_producto'][$i] }}" class='form-control'
+                                            autocomplete='off' id='price_product_{{ $i }}' type='number'
+                                            name='precio_producto[]' />
                                     </td>
 
 
                                     <td class="text-center align-middle " width="10%">
                                         <p class='align-middle  mb-0' id='subtotals_{{ $i }}'>
-                                            {{ $obj['precio_producto'][$i] * $obj['cantidad'][$i] }}</p>
+                                            Bs. {{ number_format($obj['precio_producto'][$i] * $obj['cantidad'][$i], 2, ',', '.') }}</p>
+
+                                        @if ($products->tax_exempt_product == 1)
+                                            <input type="hidden" id="subtotal_{{ $i }}" name="subtotal_exento[]" value="{{ $obj['precio_producto'][$i] * $obj['cantidad'][$i] }}">
+                                        @else
+                                            <input type="hidden" id="subtotal_{{ $i }}" name="subtotal[]" value="{{ $obj['precio_producto'][$i] * $obj['cantidad'][$i] }}">
+                                        @endif
+                                        
                                     </td>
                                     <td class="bg-danger"><a onclick="borrarRow(this)"
                                             class="btn btn-block mb-0 btn-danger mb-0"><i
@@ -155,13 +182,14 @@
                             <th width="85%" scope="col" class="text-end align-middle">IMPUESTO:
                                 @foreach ($taxes as $tax)
                                     <div class="form-check form-switch">
-                                        <input class="form-check-input" onchange="calculateTaxes({{ $tax->amount_tax }})"
-                                            value="{{ $tax->amount_tax }}" type="checkbox" id="taxt_{{ $tax->amount_tax }}">
+                                        <input checked class="form-check-input" onchange="calculateTaxes({{ $tax->amount_tax }})"
+                                            value="{{ $tax->amount_tax }}" type="checkbox"
+                                            id="taxt_{{ $tax->amount_tax }}">
                                         <label class="form-check-label" for="">{{ $tax->name_tax }}
                                             {{ $tax->amount_tax }}%</label>
                                     </div>
                                 @endforeach
-        
+
                             </th>
                             <td class="text-end align-middle">
                                 <p class='align-middle mb-0' id="totalIVaas">Bs.
@@ -252,8 +280,9 @@
                 if (validateClient() == true) {
                     var table = document.getElementById("myTable");
                     var row = table.insertRow(-1);
-                    row.id = 'tr_' + i
-
+                    var totalRowCount = table.rows.length;
+                    let counterTR = totalRowCount - 2
+                    row.id = 'tr_' + counterTR
                     var cell2 = row.insertCell(-1);
                     var cell3 = row.insertCell(-1);
                     var cell4 = row.insertCell(-1);
@@ -261,36 +290,34 @@
                     var cell6 = row.insertCell(-1);
                     var cell7 = row.insertCell(-1);
 
-                    cell2.innerHTML = '<a id="search_productos_' + i + '" onclick="abreModal(\'producto\', ' + i +
-                        ')" class="btn btn-info btn-block mb-0"><i class="fas fa-search fa-lg"></i></a>';
-                    //cell2.id = "td_"+i
+                    cell2.innerHTML =
+                        `<a id="search_productos_${counterTR}" onclick="abreModal(\'producto\', '${counterTR}')" class="btn btn-info btn-block mb-0"><i class="fas fa-search fa-lg"></i></a>`;
                     cell2.className = "align-middle bg-info"
                     cell2.width = "3%"
 
-                    cell3.innerHTML = "<p class='align-middle mb-0' id='name_product" + i + "'></p>";
-                    cell3.id = "td_" + i
+                    cell3.innerHTML = "<p class='align-middle mb-0' id='name_product" + counterTR + "'></p>";
+                    cell3.id = "td_" + counterTR
                     cell3.className = "align-middle"
 
 
-                    cell4.innerHTML = "<input type='hidden' name='id_product[]' id='id_product_" + i +
-                        "'><input onkeyup='calculate(" + i +
-                        ", this.value)' class='form-control' autocomplete='off' id='cant_" + i +
+                    cell4.innerHTML = "<input type='hidden' name='id_product[]' id='id_product_" + counterTR +
+                        "'><input onkeyup='calculate(" + counterTR +
+                        ", this.value)' class='form-control' autocomplete='off' id='cant_" + counterTR +
                         "' type='number' name='cantidad[]'>";
                     cell4.className = "text-center align-middle"
 
-                    cell5.innerHTML = "<input type='text' name='precio_producto[]' onkeyup='calculate("+i+
-                        ",this.value)' class='form-control' autocomplete='off' id='price_product_" + i + "'>";
+                    cell5.innerHTML = "<input type='text' name='precio_producto[]' onkeyup='calculate(" + counterTR +
+                        ",this.value)' class='form-control' autocomplete='off' id='price_product_" + counterTR + "'>";
                     cell5.className = "text-center align-middle"
 
-                    cell6.innerHTML = "<p class='align-middle  mb-0' id='subtotals_" + i + "'></p>";
+                    cell6.innerHTML = "<p class='align-middle  mb-0' id='subtotals_" + counterTR + "'></p>";
                     cell6.className = "text-center align-middle"
-                    cell6.id = "tds_" + i
+                    cell6.id = "tds_" + counterTR
 
                     cell7.innerHTML =
                         '<a onclick="borrarRow(this)" class="btn btn-block mb-0 btn-danger mb-0"><i class="fas fa-minus-circle"></i></a>';
                     cell7.className = "text-center align-middle bg-danger"
 
-                    i++
 
                 } else {
                     alert('Debe seleccionar primero al proveedor')
@@ -304,67 +331,59 @@
                 var id_product = document.getElementById('id_product_' + x).value
                 var cc = document.getElementById('cant_' + x)
 
-     
-                    const csrfToken = "{{ csrf_token() }}";
-                    fetch('/purchase/availability', {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            cantidad: y,
-                            producto: id_product
-                        }),
-                        headers: {
-                            'content-type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken
+                const csrfToken = "{{ csrf_token() }}";
+                fetch('/purchase/availability', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        cantidad: y,
+                        producto: id_product
+                    }),
+                    headers: {
+                        'content-type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    }
+                }).then(response => {
+                    return response.json();
+                }).then(data => {
+                    if (data.respuesta == true) {
+
+                        let precio_unitario = document.getElementById('price_product_' + x).value
+                        let cantidad = document.getElementById('cant_' + x).value
+                        let subtotal = (precio_unitario * cantidad).toFixed(2)
+
+                        document.getElementById('subtotals_' + x).innerHTML = 'Bs. ' + subtotal
+                        document.getElementById('subtotal_' + x).value = subtotal
+
+                        var suma = 0
+                        var sumaNo = 0
+                        var total = 0
+
+                        var exe = document.getElementsByName('subtotal_exento[]')
+                        var noExe = document.getElementsByName('subtotal[]')
+
+                        for (let e = 0; e < exe.length; e++) {
+                            valor = exe[e].value || 0
+                            suma += parseFloat(valor)
                         }
-                    }).then(response => {
-                        return response.json();
-                    }).then(data => {
-                        if (data.respuesta == true) {
-
-                            let precio_unitario = document.getElementById('price_product_' + x).value
-                            let cantidad = document.getElementById('cant_' + x).value
-                            let subtotal = (precio_unitario * cantidad).toFixed(2)
-
-
-                            document.getElementById('subtotals_' + x).innerHTML = 'Bs. ' + subtotal
-                            document.getElementById('subtotal_' + x).value = subtotal
-
-                            var suma = 0
-                            var sumaNo = 0
-                            var total = 0
-
-                            var exe = document.getElementsByName('subtotal_exento[]')
-                            var noExe = document.getElementsByName('subtotal[]')
-
-                            for (let e = 0; e < exe.length; e++) {
-                                valor = exe[e].value || 0
-                                suma += parseFloat(valor)
-                            }
-                            for (let e = 0; e < noExe.length; e++) {
-                                valor = noExe[e].value || 0
-                                sumaNo += parseFloat(valor)
-                            }
-                            // sumado = Math.round(sumaNo * 100) / 100
-
-
-
-                            document.getElementById('subFacs').innerHTML = 'Bs. ' + sumaNo.toFixed(2)
-                            document.getElementById('exentos').innerHTML = 'Bs. ' + suma.toFixed(2)
-
-
-                            document.getElementById('subFac').value = sumaNo.toFixed(2)
-                            document.getElementById('exento').value = suma.toFixed(2)
-
-                            if (document.getElementById('taxt_16').checked == true) {
-                                calculateTaxes(16)
-                            }
-
-                        } else {
-                            alert('Intruduce una cantidad valida o mayor a la cantidad actual que es: ' + data.cantid)
-                            cc.value = ""
+                        for (let e = 0; e < noExe.length; e++) {
+                            valor = noExe[e].value || 0
+                            sumaNo += parseFloat(valor)
                         }
-                    });
-       
+
+                        document.getElementById('subFacs').innerHTML = 'Bs. ' + sumaNo.toFixed(2)
+                        document.getElementById('exentos').innerHTML = 'Bs. ' + suma.toFixed(2)
+                        document.getElementById('subFac').value = sumaNo.toFixed(2)
+                        document.getElementById('exento').value = suma.toFixed(2)
+
+                        if (document.getElementById('taxt_16').checked == true) {
+                            calculateTaxes(16)
+                        }
+                    } else {
+                        alert('Intruduce una cantidad valida o mayor a la cantidad actual que es: ' + data.cantid)
+                        cc.value = ""
+                    }
+                });
+
             }
 
             function calculateTaxes(valueTax) {
@@ -391,6 +410,26 @@
 
                 var i = x.parentNode.parentNode.rowIndex;
                 document.getElementById("myTable").deleteRow(i);
+                var suma = 0
+                var sumaNo = 0
+                var total = 0
+                var exe = document.getElementsByName('subtotal_exento[]')
+                var noExe = document.getElementsByName('subtotal[]')
+                for (let e = 0; e < exe.length; e++) {
+                    valor = exe[e].value || 0
+                    suma += parseFloat(valor)
+                }
+                for (let e = 0; e < noExe.length; e++) {
+                    valor = noExe[e].value || 0
+                    sumaNo += parseFloat(valor)
+                }
+                document.getElementById('subFacs').innerHTML = 'Bs. ' + sumaNo.toFixed(2)
+                document.getElementById('exentos').innerHTML = 'Bs. ' + suma.toFixed(2)
+                document.getElementById('subFac').value = sumaNo.toFixed(2)
+                document.getElementById('exento').value = suma.toFixed(2)
+                if (document.getElementById('taxt_16').checked == true) {
+                    calculateTaxes(16)
+                }
             }
 
             function abreModal(x, y = "") {
@@ -421,30 +460,16 @@
             }
 
             function seleccionarProducto(x, y = "", tasa) {
-                // console.log(x);
-                // console.log(y);
-                //y = y-1
-
-
                 var table = document.getElementById("myTable");
                 var totalRowCount = table.rows.length;
-
                 var y = totalRowCount - 2
-                console.log(y)
-
-
-
                 var exchangeRate = document.getElementById('tasa').value
-
-                //console.log(exchangeRate)
-
-
                 var input = document.createElement("input");
+
                 document.getElementById('id_product_' + y).value = x.id_product
                 input.setAttribute("type", "hidden");
                 input.setAttribute("name", "exempt_product[]");
                 input.setAttribute("id", 'exempt_product_' + y);
-
 
                 var input2 = document.createElement("input");
                 input2.setAttribute("type", "hidden");
@@ -463,12 +488,12 @@
                     document.getElementById('name_product' + y).innerHTML = x.code_product + " " + x.name_product + " " + x
                         .short_unit_product + " " + x.name_presentation_product + " (E)"
                     if (x.product_usd_product == 0) {
-                        document.getElementById('precio_productos_' + y).innerHTML = 'Bs. ' + x.price_product
+                        //document.getElementById('precio_productos_' + y).innerHTML = 'Bs. ' + x.price_product
                         document.getElementById('price_product_' + y).value = x.price_product
 
                     } else {
-                        document.getElementById('precio_productos_' + y).innerHTML = 'Bs. ' + (x.price_product * exchangeRate)
-                            .toFixed(2)
+                        // document.getElementById('precio_productos_' + y).innerHTML = 'Bs. ' + (x.price_product * exchangeRate)
+                        // .toFixed(2)
                         document.getElementById('price_product_' + y).value = (x.price_product * exchangeRate).toFixed(2)
                     }
                 } else {
@@ -479,13 +504,13 @@
                     document.getElementById('name_product' + y).innerHTML = x.code_product + " " + x.name_product + " " + x
                         .short_unit_product + " " + x.name_presentation_product
                     if (x.product_usd_product == 0) {
-                        document.getElementById('precio_productos_' + y).innerHTML = 'Bs. ' + x.price_product
-                        document.getElementById('price_product_' + y).value = x.price_product
+                        //document.getElementById('precio_productos_' + y).innerHTML = 'Bs. ' + x.price_product
+                        //document.getElementById('price_product_' + y).value = x.price_product
                         input3.setAttribute("value", x.price_product);
                     } else {
-                        document.getElementById('precio_productos_' + y).innerHTML = 'Bs. ' + (x.price_product * exchangeRate)
-                            .toFixed(2)
-                        document.getElementById('price_product_' + y).value = (x.price_product * exchangeRate).toFixed(2)
+                        // document.getElementById('precio_productos_' + y).innerHTML = 'Bs. ' + (x.price_product * exchangeRate)
+                        // .toFixed(2)
+                        //document.getElementById('price_product_' + y).value = (x.price_product * exchangeRate).toFixed(2)
                         input3.setAttribute("value", (x.price_product * exchangeRate).toFixed(2));
 
                     }

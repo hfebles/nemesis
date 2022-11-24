@@ -38,7 +38,7 @@ class DeliveryNotesController extends Controller
             ->join('order_states as os', 'os.id_order_state', '=', 'delivery_notes.id_order_state', 'left outer')
             ->where('so.id_order_state', '<>', 2)
             ->whereEnabledDeliveryNote(1)
-            ->orderBy('id_delivery_note', 'ASC')
+            ->orderBy('id_delivery_note', 'DESC')
             ->paginate(10);
 
         $table = [
@@ -85,20 +85,14 @@ class DeliveryNotesController extends Controller
     public function validarPedido($id)
     {
 
-
+        
         
         // return $id;
         $dataSalesOrder = SalesOrder::find($id);
-
-
-
-
-
         $dataDetails = SalesOrderDetails::whereIdSalesOrder($id)->get()[0];
 
+       // return $dataSalesOrder;
         
-      //return $dataSalesOrder;
-
         $inv = new DeliveryNotes();
         $invDetails = new DeliveryNotesDetails();
         $inv->type_payment = $dataSalesOrder['type_payment'];
@@ -201,6 +195,24 @@ class DeliveryNotesController extends Controller
     public function getDataDN($id){
 
         return DeliveryNotes::whereIdDeliveryNote($id)->get()[0];
+    }
+
+
+    public function anularPedido($id){
+        $id_saleOrder = DeliveryNotes::select('id_invoice')->find($id)->id_invoice;
+        (new SalesOrderController)->anular($id_saleOrder);
+
+        $pagos = Payments::whereIdInvoice($id)->get();
+
+        if(count($pagos)>0){
+            for ($i=0; $i < count($pagos); $i++) { 
+                Surplus::create([
+                    'amount_surplus' => $pagos[$i]->amount_payment,
+                    'id_payment' => $pagos[$i]->id_payment,
+                    'id_client' => $pagos[$i]->id_client,
+                ]);
+            }
+        }
     }
     
 

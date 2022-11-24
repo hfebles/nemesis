@@ -253,6 +253,8 @@ class PurchaseOrderController extends Controller
                     ->get();
             }
 
+
+
             return view('purchases.purchase-order.edit', compact('conf', 'data', 'dataProducts', 'obj', 'taxes', 'dataExchange'));
         }
     }
@@ -262,6 +264,8 @@ class PurchaseOrderController extends Controller
     {
 
 
+
+        //return $request;
 
         $data = $request->except('_token', '_method');
 
@@ -276,14 +280,14 @@ class PurchaseOrderController extends Controller
         $dataDetails = $request->except('_token', 'id_supplier', 'type_payment_purchase_order', 'subFac', 'exento', 'total_taxes', 'total_con_tax', 'noExento', 'subtotal', 'exempt_product', 'subtotal_exento', 'id_worker', 'id_exchange', 'ref_name_sales_order', 'ctrl_num');
 
         PurchaseOrder::whereIdPurchaseOrder($id)->update([
-            'type_payment' => $data['type_payment_purchase_order'],
+            
             'id_supplier' => $data['id_supplier'],
             'id_exchange' => $data['id_exchange'],
             'id_user' => Auth::id(),
             'total_amount_purchase_order' => $data['total_con_tax'],
             'exempt_amout_purchase_order' => $data['exento'],
             'no_exempt_amout_purchase_order' => $data['subFac'],
-            'total_amount_tax_purchase_order' => $data['subFac'],
+            'total_amount_tax_purchase_order' => $data['total_taxes'],
         ]);
 
 
@@ -295,13 +299,7 @@ class PurchaseOrderController extends Controller
             Product::whereIdProduct($data['id_product'][$i])->update(['qty_product' => $operacion]);
         }
 
-
-        $message = [
-            'type' => 'warning',
-            'message' => 'Se actualizo el pedido con éxito',
-        ];
-
-        return redirect()->route('purchase-order.index')->with('message', $message);
+        return redirect()->route('purchase-order.index')->with('message', 'Se actualizo el pedido con éxito');
     }
 
 

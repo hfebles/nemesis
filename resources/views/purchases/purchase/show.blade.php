@@ -219,9 +219,9 @@
                             <p class="text-center">Desea recibir el pedido:</p>
                             <table class="table table-sm table-hover table-borderes">
                                 <tr>
-                                    <th>Producto</th>
-                                    <th>Solicitado</th>
-                                    <th>Recibido</th>
+                                    <th>Producto:</th>
+                                    <th>Solicitado:</th>
+                                    <th>Recibiendo:</th>
                                 </tr>
                                 {!! Form::open([
                                     'route' => 'purchase.receptions',
@@ -232,21 +232,30 @@
                                 ]) !!}
                                 @for ($i = 0; $i < count($dataProducts); $i++)
                                     @foreach ($dataProducts[$i] as $k => $products)
-                                        <tr>
-                                            <td class="align-middle">{{ $products->name_product }}
-                                                {{ $products->name_presentation_product }}
-                                                {{ $products->short_unit_product }}
-                                            </td>
-                                            <td class="text-center align-middle" width="10%">
-                                                {{ number_format(json_decode($dataProdcs['pendiente'][$i]), 2, ',', '.') ?? '' }}
-                                            </td>
-                                            <td>
-                                                <input type="hidden" name="id_product[]"
-                                                    value="{{ $products->id_product }}">
-                                                <input type="number" name="cantidad[]"
-                                                    class="form-control form-control-sm">
-                                            </td>
-                                        </tr>
+                                    @if ($dataProdcs['pendiente'][$i] > 0)
+
+                                    <tr>
+                                        <td class="align-middle">{{ $products->name_product }}
+                                            {{ $products->name_presentation_product }}
+                                            {{ $products->short_unit_product }}
+                                        </td>
+                                        <td class="text-center align-middle" width="10%">
+                                            {{ number_format(json_decode($dataProdcs['pendiente'][$i]), 2, ',', '.') ?? '' }}
+                                        </td>
+                                        <td>
+                                            <input type="hidden" name="id_product[]"
+                                                value="{{ $products->id_product }}">
+                                            <input type="number" name="cantidad[]"
+                                                class="form-control form-control-sm">
+                                        </td>
+                                    </tr>
+                                    @else
+                                    <input type="hidden" name="id_product[]"
+                                    value="{{ $products->id_product }}">
+                                <input type="number" name="cantidad[]"
+                                    class="form-control form-control-sm">
+                                    @endif
+                                        
                                     @endforeach
                                 @endfor
                             </table>

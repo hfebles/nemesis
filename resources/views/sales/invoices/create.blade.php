@@ -369,6 +369,26 @@
 
                 var i = x.parentNode.parentNode.rowIndex;
                 document.getElementById("myTable").deleteRow(i);
+                var suma = 0
+                var sumaNo = 0
+                var total = 0
+                var exe = document.getElementsByName('subtotal_exento[]')
+                var noExe = document.getElementsByName('subtotal[]')
+                for (let e = 0; e < exe.length; e++) {
+                    valor = exe[e].value || 0
+                    suma += parseFloat(valor)
+                }
+                for (let e = 0; e < noExe.length; e++) {
+                    valor = noExe[e].value || 0
+                    sumaNo += parseFloat(valor)
+                }
+                document.getElementById('subFacs').innerHTML = 'Bs. ' + sumaNo.toFixed(2)
+                document.getElementById('exentos').innerHTML = 'Bs. ' + suma.toFixed(2)
+                document.getElementById('subFac').value = sumaNo.toFixed(2)
+                document.getElementById('exento').value = suma.toFixed(2)
+                if (document.getElementById('taxt_16').checked == true) {
+                    calculateTaxes(16)
+                }
             }
 
             function abreModal(x, y = "") {

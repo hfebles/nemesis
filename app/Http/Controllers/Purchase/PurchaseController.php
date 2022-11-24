@@ -110,6 +110,8 @@ class PurchaseController extends Controller
 
     public function receptions(Request $request)
     {
+
+       // return $request;
         $obj = json_decode(\DB::select("select details_reception from purchase_receptions where id_purchase = $request->id_purchase order by id_purchase_reception DESC")[0]->details_reception, true);
         if (array_sum($obj['pendiente']) > 0) {
             for ($i = 0; $i < count($obj['id_product']); $i++) {
@@ -158,24 +160,16 @@ class PurchaseController extends Controller
         $data = PurchaseOrder::select('*', 'purchase_order_details.*')
             ->join('purchase_order_details', 'purchase_order_details.id_purchase_order', '=', 'purchase_orders.id_purchase_order')
             ->find($id);
-
         $dataPedido = json_decode($data->details_purchase_order_detail, true);
-
         for ($i = 0; $i < count($dataPedido['id_product']); $i++) {
             $dataPedido['pendiente'][$i] = $dataPedido['cantidad'][$i];
             $dataPedido['recibido'][$i] = "0";
         }
-
-
-
-
         $savePurchase = new Purchase();
-
         $savePurchase->id_supplier = $data->id_supplier;
         $savePurchase->id_exchange = $data->id_exchange;
         $savePurchase->ctrl_num = $data->ctrl_num;
         $savePurchase->id_worker = $data->id_worker;
-
         $savePurchase->id_user = $data->id_user;
         $savePurchase->total_amount_purchase = $data->total_amount_purchase_order;
         $savePurchase->exempt_amout_purchase = $data->exempt_amout_purchase_order;
@@ -184,14 +178,11 @@ class PurchaseController extends Controller
         $savePurchase->date_purchase = $data->date_purchase_order;
         $savePurchase->id_order_state = 11;
         $savePurchase->save();
-
         $saveDetails = new PurchaseDetails();
         $saveDetails->id_purchase = $savePurchase->id_purchase;
         $saveDetails->details_purchase_detail = $data->details_purchase_order_detail;
         $saveDetails->save();
-
         $da = json_encode($dataPedido);
-
         PurchaseOrder::whereIdPurchaseOrder($id)->update(['id_order_state' => 9, 'id_purchase' => $savePurchase->id_purchase]);
         \DB::select("insert into purchase_receptions (id_purchase, details_reception) values($savePurchase->id_purchase, '$da')");
         return redirect()->route('purchase.show', $savePurchase->id_purchase)->with('message', 'Orden aprobada con exito');

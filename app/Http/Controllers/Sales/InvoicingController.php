@@ -142,6 +142,8 @@ class InvoicingController extends Controller
     public function store(Request $request)
     {
 
+
+        //return $request;
         $dataConfiguration = InvoicingConfigutarion::all()[0];
 
         $dataInvoice = $request->except('_token');
@@ -479,6 +481,20 @@ class InvoicingController extends Controller
         Invoicing::whereIdInvoicing($id)->update(['id_order_state' => 3]);
         SalesOrder::whereIdInvoice($id)->update(['id_order_state' => 3]);
         Payments::whereIdInvoice($id)->where('type_pay', '=', 1)->update(['enabled_payment' => 0]);
+
+        $pagos = Payments::whereIdInvoice($id)->get();
+
+        if(count($pagos)>0){
+            for ($i=0; $i < count($pagos); $i++) { 
+                Surplus::create([
+                    'amount_surplus' => $pagos[$i]->amount_payment,
+                    'id_payment' => $pagos[$i]->id_payment,
+                    'id_client' => $pagos[$i]->id_client,
+                ]);
+            }
+        }
+        
+        
 
         return redirect()->route('invoicing.show', $id);
     }

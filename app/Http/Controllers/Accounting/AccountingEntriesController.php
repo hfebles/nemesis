@@ -64,7 +64,7 @@ class AccountingEntriesController extends Controller
 
         /*HACER MEJOR */
 
-        $client = Client::whereIdClient($invoice->id_client)->get()[0];    
+        $client = Client::find($invoice->id_client);    
 
         // 1. Registramos la linea de la cuenta por cobrar: 
         AccountingEntries::create([
