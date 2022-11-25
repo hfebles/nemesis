@@ -14,56 +14,64 @@ class MaterialsListController extends Controller
 {
     function __construct()
     {
-         $this->middleware('permission:production-material-list|adm-list', ['only' => ['index']]);
-         $this->middleware('permission:adm-create|production-material-create', ['only' => ['create','store']]);
-         $this->middleware('permission:adm-edit|production-material-edit', ['only' => ['edit','update']]);
-         $this->middleware('permission:adm-delete|production-material-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:production-material-list|adm-list', ['only' => ['index']]);
+        $this->middleware('permission:adm-create|production-material-create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:adm-edit|production-material-edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:adm-delete|production-material-delete', ['only' => ['destroy']]);
     }
 
 
-    public function index(Request $request){
-        
+    public function index(Request $request)
+    {
+
+        $data = MaterialsList::select('id_materials_list', 'name_materials_list', 'qty_materials_list', 'name_unit_product')
+        ->join('products', 'products.id_product', '=', 'materials_lists.id_product')
+        ->join('unit_products', 'products.id_unit_product', '=', 'unit_products.id_unit_product', 'left outer')
+        ->where('salable_product', '=', 1)
+        ->where('enabled_materials_list', '=', 1)->toSql();
+        //return $data;
+
         $conf = [
             'title-section' => 'Lista de materiales',
             'group' => 'production-material',
-            'create' => ['route' =>'material-list.create', 'name' => 'Nueva lista', ],
+            'create' => ['route' => 'material-list.create', 'name' => 'Nueva lista',],
         ];
 
         $table = [
             'c_table' => 'table table-bordered table-hover mb-0 text-uppercase',
             'c_thead' => 'bg-dark text-white',
-            'ths' => ['#', 'Producto', 'Cantidad', 'Unidad', ],
-            'w_ts' => ['3','','','',],
-            'c_ths' => 
-                [
+            'ths' => ['#', 'Producto', 'Cantidad', 'Unidad',],
+            'w_ts' => ['3', '', '', '',],
+            'c_ths' =>
+            [
                 'text-center align-middle',
                 'text-center align-middle',
                 'text-center align-middle',
-                'text-center align-middle',],
-            'tds' => ['name_materials_list', 'qty_product', 'name_unit_product',],
+                'text-center align-middle',
+            ],
+            'tds' => ['name_materials_list', 'qty_materials_list', 'name_unit_product',],
             'switch' => false,
             'edit' => false,
-            'edit_modal' => false,  
+            'edit_modal' => false,
             'show' => true,
-            'url' => "/production/material",
+            'url' => "/production/material-list",
             'id' => 'id_materials_list',
-            'group' => '/production-material-list',
-            'data' => MaterialsList::select('id_materials_list', 'name_materials_list', 'qty_product', 'name_unit_product')
-                                ->join('products', 'products.id_product', '=', 'materials_lists.id_product')
-                                ->join('unit_products', 'products.id_unit_product', '=', 'unit_products.id_unit_product', 'left outer')
-                                ->where('salable_product', '=', 1)
-                                ->where('enabled_materials_list', '=', 1)
-                                ->paginate(10),
-            'i' => (($request->input('page', 1) - 1) * 5),
+            'group' => 'production-material',
+            'data' => MaterialsList::select('id_materials_list', 'name_materials_list', 'qty_materials_list', 'name_unit_product')
+                ->join('products', 'products.id_product', '=', 'materials_lists.id_product')
+                ->join('unit_products', 'products.id_unit_product', '=', 'unit_products.id_unit_product', 'left outer')
+                ->where('salable_product', '=', 1)
+                ->where('enabled_materials_list', '=', 1)
+                ->paginate(15),
+            'i' => (($request->input('page', 1) - 1) * 15),
         ];
 
         return view('productions.material_list.index', compact('conf', 'table'));
-
-        
     }
 
 
-    public function create(){
+    public function create()
+    {
 
         $conf = [
             'title-section' => 'Crear una nueva lista de materiales',
@@ -79,19 +87,21 @@ class MaterialsListController extends Controller
         $productos = Product::where('salable_product', '=', 0)->pluck('name_product', 'id_product');
         $presentaciones = PresentationProduct::pluck('name_presentation_product', 'id_presentation_product');
 
-       return view('productions.material_list.create', compact('conf', 'products', 'units', 'presentations', 'productos', 'presentaciones'));
+        return view('productions.material_list.create', compact('conf', 'products', 'units', 'presentations', 'productos', 'presentaciones'));
     }
 
 
 
 
-    public function store(Request $request){
+    public function store(Request $request)
+    {   
+        //return $request;
 
         $data = $request->except('_token', 'id_product_details', 'qtys', 'id_presentation_details');
         $dataDetails = $request->except('_token', 'id_product', 'qty_materials_list', 'id_presentation_product');
 
         $saveList = new MaterialsList();
-        
+
         $saveList->id_product = $data['id_product'];
         $saveList->name_materials_list = $data['name_materials_list'];
         $saveList->qty_materials_list = $data['qty_materials_list'];
@@ -103,42 +113,35 @@ class MaterialsListController extends Controller
         $saveDetails->details = json_encode($dataDetails);
         $saveDetails->save();
 
-        
 
-
-
-        $message = [
-            'type' => 'success',
-            'message' => 'Se registro la lista de materiales con éxito',
-        ];
-                        
-        return redirect()->route('material-list.index')->with('message', $message);
+        return redirect()->route('material-list.index')->with('message', 'Se registro la lista de materiales con éxito');
     }
 
 
-    public function show($id){
+    public function show($id)
+    {
 
         $data = MaterialsList::select('materials_lists.id_materials_list', 'name_product', 'qty_materials_list', 'name_presentation_product', 'details')
-        ->join('products', 'products.id_product', '=', 'materials_lists.id_product')
-        ->join('presentation_products', 'presentation_products.id_presentation_product', '=', 'materials_lists.id_presentation')
-        ->join('materials_list_details', 'materials_list_details.id_materials_list', '=', 'materials_lists.id_materials_list')
-        ->where('materials_lists.id_materials_list', '=', $id)
-        ->get()[0];
+            ->join('products', 'products.id_product', '=', 'materials_lists.id_product')
+            ->join('presentation_products', 'presentation_products.id_presentation_product', '=', 'materials_lists.id_presentation')
+            ->join('materials_list_details', 'materials_list_details.id_materials_list', '=', 'materials_lists.id_materials_list')
+            ->where('materials_lists.id_materials_list', '=', $id)
+            ->get()[0];
 
         $objDetails = json_decode($data->details, true);
-        
+
         $dataProductsDetails = [];
         $dataPresentationDetails = [];
 
-        for ($i=0; $i < count($objDetails['id_product_details']); $i++) { 
+        for ($i = 0; $i < count($objDetails['id_product_details']); $i++) {
 
             $dataProductsDetails[$i] = Product::select('name_product')
-                                                ->where('id_product', '=', $objDetails['id_product_details'][$i])
-                                                ->get();
-            
+                ->where('id_product', '=', $objDetails['id_product_details'][$i])
+                ->get();
+
             $dataPresentationDetails[$i] = PresentationProduct::select('name_presentation_product')
-                                                                ->where('id_presentation_product', '=',  $objDetails['id_presentation_details'][$i])
-                                                                ->get();
+                ->where('id_presentation_product', '=',  $objDetails['id_presentation_details'][$i])
+                ->get();
         }
 
         $conf = [
@@ -153,30 +156,30 @@ class MaterialsListController extends Controller
     }
 
 
-    public function edit($id){
+    public function edit($id)
+    {
 
         $data = MaterialsList::select('materials_lists.id_materials_list', 'name_product', 'qty_materials_list', 'name_presentation_product', 'details')
-        ->join('products', 'products.id_product', '=', 'materials_lists.id_product')
-        ->join('presentation_products', 'presentation_products.id_presentation_product', '=', 'materials_lists.id_presentation')
-        ->join('materials_list_details', 'materials_list_details.id_materials_list', '=', 'materials_lists.id_materials_list')
-        ->where('materials_lists.id_materials_list', '=', $id)
-        ->get()[0];
+            ->join('products', 'products.id_product', '=', 'materials_lists.id_product')
+            ->join('presentation_products', 'presentation_products.id_presentation_product', '=', 'materials_lists.id_presentation')
+            ->join('materials_list_details', 'materials_list_details.id_materials_list', '=', 'materials_lists.id_materials_list')
+            ->where('materials_lists.id_materials_list', '=', $id)
+            ->get()[0];
 
         $objDetails = json_decode($data->details, true);
-        
+
         $dataProductsDetails = [];
         $dataPresentationDetails = [];
 
-        for ($i=0; $i < count($objDetails['id_product_details']); $i++) { 
+        for ($i = 0; $i < count($objDetails['id_product_details']); $i++) {
 
             $dataProductsDetails[$i] = Product::select('name_product')
-                                                ->where('id_product', '=', $objDetails['id_product_details'][$i])
-                                                ->get();
+                ->where('id_product', '=', $objDetails['id_product_details'][$i])
+                ->get();
 
             $dataPresentationDetails[$i] = PresentationProduct::select('name_presentation_product')
-                                                                ->where('id_presentation_product', '=',  $objDetails['id_presentation_details'][$i])
-                                                                ->get();
-
+                ->where('id_presentation_product', '=',  $objDetails['id_presentation_details'][$i])
+                ->get();
         }
 
         $conf = [
@@ -193,36 +196,30 @@ class MaterialsListController extends Controller
 
         $productos = Product::where('salable_product', '=', 0)->pluck('name_product', 'id_product');
         $presentaciones = PresentationProduct::pluck('name_presentation_product', 'id_presentation_product');
-        
+
         return view('productions.material_list.edit', compact('data', 'products', 'presentations', 'dataProductsDetails', 'dataPresentationDetails', 'objDetails', 'conf', 'productos', 'presentaciones'));
     }
 
 
-    public function update(Request $request, $id){
+    public function update(Request $request, $id)
+    {
 
         $dataDetails = $request->except('_token', 'id_product', 'qty_materials_list', 'id_presentation_product');
-        
+
         MaterialsListDetails::where('id_materials_list', '=', $id)
-                                ->update([
-                                    'details' => json_encode($dataDetails),
-                                ]);
+            ->update([
+                'details' => json_encode($dataDetails),
+            ]);
 
 
-        $message = [
-            'type' => 'success',
-            'message' => 'Se registro la lista de materiales con éxito',
-        ];
-                        
-        return redirect()->route('material-list.show', $id)->with('message', $message);
-
+        return redirect()->route('material-list.show', $id)->with('message', 'Se actualizo la lista de materiales con éxito');
     }
 
 
-    public function destroy($id){
+    public function destroy($id)
+    {
 
         MaterialsList::where('id_materials_list', '=', $id)->update(['enabled_materials_list' => 0]);
-        return redirect()->route('material-list.index');
+        return redirect()->route('material-list.index')->with('message', 'Se elimino la lista de materiales con éxito');
     }
-
-    
 }

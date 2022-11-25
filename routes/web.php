@@ -67,7 +67,7 @@ Route::get('/', function () {
 Route::get('/home', [HomeController::class, 'index'])->name('home');
 
 
-Route::group(['middleware' => ['auth']], function() {
+Route::group(['middleware' => ['auth']], function () {
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -78,9 +78,9 @@ Route::group(['middleware' => ['auth']], function() {
      * 
      */
 
-    
+
     Route::resource('/mantenice/roles', RoleController::class);
-    
+
     // Users
     Route::resource('/mantenice/users', UserController::class);
     Route::get('/mantenice/users/profile/{id}', [UserController::class, 'profile'])->name('users.profile');
@@ -158,7 +158,7 @@ Route::group(['middleware' => ['auth']], function() {
     //Route::get('/accounting/moves/moves-show/{id}', [MovesAccountsController::class, 'verMovimientos'])->name('moves.moves-show');
 
     Route::get('/accounting/reports/{id}', [MovesAccountsController::class, 'reports'])->name('moves.reports');
-    
+
     /**
      * 
      * FIN CONTABILIDAD
@@ -171,12 +171,12 @@ Route::group(['middleware' => ['auth']], function() {
      * VENTAS
      * 
      */
-    
+
     // CLIENTES
 
     Route::resource('/sales/clients', ClientController::class);
     Route::post('/sales/clients/search', [ClientController::class, 'searchCliente'])->name('clients.search-client');
-    
+
 
     //PEDIDOS
 
@@ -195,16 +195,16 @@ Route::group(['middleware' => ['auth']], function() {
     Route::resource('/sales/deliveries-notes', DeliveryNotesController::class);
     Route::get('/sales/deliveries-notes/validate/{id}', [DeliveryNotesController::class, 'validarPedido'])->name('sales.deliveries-notes-validate');
     Route::get('/sales/cancel-deliveries-notes/{id}', [DeliveryNotesController::class, 'anularPedido'])->name('sales.cancel-deliveries-notes');
-    
-
-    
 
 
 
 
 
 
-     /**
+
+
+
+    /**
      * 
      * FIN VENTAS
      * 
@@ -216,23 +216,23 @@ Route::group(['middleware' => ['auth']], function() {
      * ALMACEN
      * 
      */
-    
+
     // ALMACEN
 
     Route::resource('/warehouse/warehouse', WarehouseController::class);
-    
-     /**
+
+    /**
      * 
      * FIN ALMACEN
      * 
      */
 
-     /**
+    /**
      * 
      * PAYMENTS
      * 
      */
-    
+
     // PAYMENTS
 
     Route::resource('/accounting/payments', PaymentController::class);
@@ -242,23 +242,23 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('/accounting/search/payment-print-date', [PaymentController::class, 'imprimirPagoFechas'])->name('payments.payment-print-date');
 
     Route::get('/accounting/register-pay-sur/{id}/{invoice}/{type}', [PaymentController::class, 'registerPayBySurplus'])->name('payments.register-pay-sur');
-    
+
     Route::resource('/acounting/surplus/', Surplus::class);
 
-    
+
     /**
-    * 
-    * FIN PAYMENTS
-    * 
-    */
+     * 
+     * FIN PAYMENTS
+     * 
+     */
 
 
-     /**
+    /**
      * 
      * PRODUCTOS
      * 
      */
-    
+
     // PRODUCTOS
 
     Route::get('/products/product/salable', [ProductController::class, 'indexSalable'])->name('product.salable');
@@ -266,65 +266,67 @@ Route::group(['middleware' => ['auth']], function() {
     Route::post('/products/product/search-code', [ProductController::class, 'searchCode'])->name('product.search-code');
     Route::post('/products/search', [ProductController::class, 'search'])->name('product.search');
 
-    
-    
+
+
     /**
-    * 
-    * FIN PRODUCTOS
-    * 
-    */
+     * 
+     * FIN PRODUCTOS
+     * 
+     */
 
 
 
-         /**
+    /**
      * 
      * RECURSOS HUMANOS
      * 
      */
-    
+
     // TRABAJADORES
     Route::resource('/hhrr/workers', WorkersController::class);
     Route::post('/hhrr/workers/search-dni', [WorkersController::class, 'searchCedula'])->name('workers.search-dni');
-    
+
     // GRUPOS DE TRABAJO
     Route::resource('/hhrr/group-workers', GroupWorkersController::class);
     Route::post('/hhrr/edit-group', [GroupWorkersController::class, 'editModal'])->name('workers.edit-group');
 
-    
-    
+
+
     /**
-    * 
-    * FIN RECURSOS HUMANOS
-    * 
-    */
+     * 
+     * FIN RECURSOS HUMANOS
+     * 
+     */
 
 
-         /**
+    /**
      * 
      * PRODUCCION
      * 
      */
-    
+
     // ordenes de produccion
     Route::resource('/production/production-order', ProductionOrderController::class);
     Route::post('/production/material-list-search', [ProductionOrderController::class, 'traerLista'])->name('production-order.material-list-search');
     Route::get('/production/aprove/{id}', [ProductionOrderController::class, 'aprove'])->name('production-order.aprove');
     Route::get('/production/finalice/{id}', [ProductionOrderController::class, 'finalice'])->name('production-order.finalice');
-    
+    Route::post('/production/validate-qtys', [ProductionOrderController::class, 'validateQtys'])->name('production-order.validate-qtys');
+    Route::post('/production/material-list-search-products', [ProductionOrderController::class, 'traerListaMateriales'])->name('production-order.material-list-search-products');
+
 
     
     // lista de materiales
     Route::resource('/production/material-list', MaterialsListController::class);
-    
 
 
-    
-    
+
+
+
     /**
-    * 
-    * FIN PRODUCCION
-    * 
-    */
+     * 
+     * FIN PRODUCCION
+     * 
+     */
 
 
     //Delivery
@@ -333,7 +335,7 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/delivery/delivery/cancel/{id}', [DeliveryController::class, 'cancel'])->name('delivery.cancel');
     Route::get('/delivery/delivery/aprove/{id}', [DeliveryController::class, 'aprove'])->name('delivery.aprove');
     Route::get('/delivery/delivery/finalice/{id}', [DeliveryController::class, 'finalice'])->name('delivery.finalice');
-     
+
 
     /**
      * 
@@ -341,7 +343,7 @@ Route::group(['middleware' => ['auth']], function() {
      * 
      */
 
-    
+
     Route::resource('/purchase/purchase-order', PurchaseOrderController::class);
     Route::resource('/purchase/purchase', PurchaseController::class);
     Route::resource('/purchase/supplier', SupplierController::class);
@@ -354,11 +356,9 @@ Route::group(['middleware' => ['auth']], function() {
     Route::get('/purchase/cancel-order/{id}', [PurchaseOrderController::class, 'anular'])->name('purchase.cancel-order');
     Route::get('/purchase/cancel-purchase/{id}', [PurchaseController::class, 'anular'])->name('purchase.cancel-purchase');
 
-     /**
+    /**
      * 
      * FIN COMPRAS
      * 
      */
-     
-
 });
