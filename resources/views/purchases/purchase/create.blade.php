@@ -247,7 +247,7 @@
                 }
             }
 
-
+a
 
             function calculate(x = "", y = "", xx = "", precio) {
                 var id_product = document.getElementById('id_product_' + x).value
@@ -255,7 +255,7 @@
 
      
                     const csrfToken = "{{ csrf_token() }}";
-                    fetch('/purchase/availability', {
+                    fetch('{{ route('purchase.check-aviavility') }}', {
                         method: 'POST',
                         body: JSON.stringify({
                             cantidad: y,
