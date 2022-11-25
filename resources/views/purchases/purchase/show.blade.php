@@ -13,17 +13,9 @@
             <x-cards size="12" :message="$message" />
         </div>
     @endif
-
-
-
     <div class="row">
         <x-cards>
-
-
-
             <div class="row g-3">
-
-
                 <div class="col-sm-12 d-flex">
                     <a href="" class="btn btn-sm btn-info btn-icon-split ml-auto">
                         <span class="icon text-white-50">
@@ -31,9 +23,6 @@
                         </span>
                         <span class="text">Imprimir</span>
                     </a>
-
-
-
                     @if ($data->id_order_state != 12 && $data->id_order_state != 10)
                         @if (Gate::check('sales-invoices-create') || Gate::check('adm-create'))
                             <a href="{{ route('purchase.edit', $data->id_purchase) }}"
@@ -45,11 +34,20 @@
                             </a>
                         @endif
                     @endif
+                    @if ($data->id_order_state != 5 && Gate::check('payment-create') && $data->id_order_state != 3)
+                        <a data-bs-toggle="modal" data-bs-target="#pago"
+                            class="btn btn-sm btn-success btn-icon-split ml-3">
+                            <span class="icon text-white-50">
+                                <i class="fas fa-check-circle"></i>
+                            </span>
+                            <span class="text">Registrar pago</span>
+                        </a>
+                    @endif
                     @if ($data->id_order_state == 11 || $data->id_order_state == 12)
                         @if (Gate::check($conf['group'] . '-edit') || Gate::check('adm-edit'))
                             <a class="btn btn-sm @if ($data->id_order_state == 11) btn-warning @else btn-success disabled @endif btn-icon-split ml-3"
-                                data-bs-toggle="modal" data-bs-target="#exampleModal"><span class="icon text-white-50">
-                                    <i class="fas fa-check"></i>
+                                data-bs-toggle="modal" data-bs-target="#exampleModal1"><span class="icon text-white-50">
+                                    <i class="fas fa-check-circle"></i>
                                 </span>
                                 <span class="text">
                                     @if ($data->id_order_state == 11)
@@ -205,7 +203,7 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    <div class="modal fade" id="exampleModal1" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -232,30 +230,27 @@
                                 ]) !!}
                                 @for ($i = 0; $i < count($dataProducts); $i++)
                                     @foreach ($dataProducts[$i] as $k => $products)
-                                    @if ($dataProdcs['pendiente'][$i] > 0)
-
-                                    <tr>
-                                        <td class="align-middle">{{ $products->name_product }}
-                                            {{ $products->name_presentation_product }}
-                                            {{ $products->short_unit_product }}
-                                        </td>
-                                        <td class="text-center align-middle" width="10%">
-                                            {{ number_format(json_decode($dataProdcs['pendiente'][$i]), 2, ',', '.') ?? '' }}
-                                        </td>
-                                        <td>
+                                        @if ($dataProdcs['pendiente'][$i] > 0)
+                                            <tr>
+                                                <td class="align-middle">{{ $products->name_product }}
+                                                    {{ $products->name_presentation_product }}
+                                                    {{ $products->short_unit_product }}
+                                                </td>
+                                                <td class="text-center align-middle" width="10%">
+                                                    {{ number_format(json_decode($dataProdcs['pendiente'][$i]), 2, ',', '.') ?? '' }}
+                                                </td>
+                                                <td>
+                                                    <input type="hidden" name="id_product[]"
+                                                        value="{{ $products->id_product }}">
+                                                    <input type="number" name="cantidad[]"
+                                                        class="form-control form-control-sm">
+                                                </td>
+                                            </tr>
+                                        @else
                                             <input type="hidden" name="id_product[]"
                                                 value="{{ $products->id_product }}">
-                                            <input type="number" name="cantidad[]"
-                                                class="form-control form-control-sm">
-                                        </td>
-                                    </tr>
-                                    @else
-                                    <input type="hidden" name="id_product[]"
-                                    value="{{ $products->id_product }}">
-                                <input type="number" name="cantidad[]"
-                                    class="form-control form-control-sm">
-                                    @endif
-                                        
+                                            <input type="number" name="cantidad[]" class="form-control form-control-sm">
+                                        @endif
                                     @endforeach
                                 @endfor
                             </table>
@@ -267,4 +262,85 @@
                 </div>
             </div>
         </div>
+    </div>
+
+        
+    <!-- Modal -->
+    <div class="modal fade" id="pago" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="title-modal">Cargar pago</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                {!! Form::open([
+                    'route' => 'payments.store',
+                    'method' => 'POST',
+                    'novalidate',
+                    'placeholder' => 'Fecha del pago',
+                    'class' => 'needs-validation row g-3',
+                    'id' => 'myForm',
+                ]) !!}
+                <div class="col-sm-6">
+                    <div class="form-floating">
+                        {!! Form::date('date_payment', \Carbon\Carbon::now(), ['class' => 'form-control form-control-sm', 'required']) !!}
+                        <label>Fecha del pago</label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-floating">
+                        {!! Form::text('ref_payment', null, [
+                            'placeholder' => 'Número de referencia',
+                            'autocomplete' => 'off',
+                            'required',
+                            'class' => 'form-control form-control-sm',
+                        ]) !!}
+                        <label>Número de referencia</label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-floating">
+                        {!! Form::text('residual_amount_invoicing', number_format($data->residual_amount_purchase, 2, ',', '.'), [
+                            'disabled',
+                            'placeholder' => 'Monto residual',
+                            'autocomplete' => 'off',
+                            'required',
+                            'class' => 'form-control form-control-sm',
+                        ]) !!}
+                        <label>Monto residual:</label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-floating">
+                        {!! Form::select('id_bank', $dataBanks, null, ['class' => 'form-select form-control-sm', 'required']) !!}
+                        <label>Banco:</label>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="form-floating">
+                        {!! Form::text('amount_payment', $data->residual_amount_purchase, [
+                            'placeholder' => 'Monto a pagar',
+                            'autocomplete' => 'off',
+                            'required',
+                            'class' => 'form-control form-control-sm',
+                        ]) !!}
+                        <label>Monto a pagar:</label>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+
+                <x-btns-save side="false" />
+                {!! Form::hidden('id_purchase', $data->id_purchase) !!}
+                {!! Form::hidden('id_client', $data->id_client) !!}
+                {!! Form::hidden('type_pay', 3) !!}
+                {!! Form::close() !!}
+
+                <div class="modal-footer mt-3">
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
     @endsection

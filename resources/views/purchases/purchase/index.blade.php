@@ -8,11 +8,7 @@
 
 @section('content')
     <div class="row">
-        @if ($message = Session::get('message'))
-            <x-cards size="12" :table="$table" :message="$message" />
-        @else
-            <x-cards size="12" :table="$table" />
-        @endif
+            <x-cards :table="$table" />
     </div>
     
 @endsection

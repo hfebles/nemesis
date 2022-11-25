@@ -2,16 +2,22 @@
 
 namespace App\Http\Controllers\Purchase;
 
+use App\Http\Controllers\Accounting\AccountingEntriesController;
+use App\Http\Controllers\Accounting\MovesAccountsController;
 use App\Http\Controllers\Controller;
+use App\Models\Conf\Bank;
 use App\Models\Conf\Country\Estados;
 use App\Models\Conf\Exchange;
 use App\Models\Conf\Sales\SaleOrderConfiguration;
 use App\Models\Conf\Tax;
 use App\Models\HumanResources\Workers;
+use App\Models\Payments\Payments;
+use App\Models\Payments\Surplus;
 use App\Models\Products\Product;
 use App\Models\Purchase\Purchase;
 use App\Models\Purchase\PurchaseDetails;
 use App\Models\Purchase\PurchaseOrder;
+use App\Models\Purchase\PurchaseOrderDetails;
 use App\Models\Purchase\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -226,6 +232,7 @@ class PurchaseController extends Controller
         }
 
         $saveSalesOrder->id_user = Auth::id();
+        $saveSalesOrder->residual_amount_purchase = $dataSalesOrder['total_con_tax'];
         $saveSalesOrder->total_amount_purchase = $dataSalesOrder['total_con_tax'];
         $saveSalesOrder->exempt_amout_purchase = $dataSalesOrder['exento'];
         $saveSalesOrder->no_exempt_amout_purchase = $dataSalesOrder['subFac'];
@@ -251,6 +258,9 @@ class PurchaseController extends Controller
 
         \DB::select("insert into purchase_receptions (id_purchase, details_reception) values($saveSalesOrder->id_purchase, '$da')");
 
+        $move = (new MovesAccountsController)->createMovesPurchase($saveSalesOrder->id_purchase, $saveSalesOrder->date_purchase, 2);
+        $result = (new AccountingEntriesController)->saveEntriesPurchase($move, $saveSalesOrder->id_purchase);
+
         return redirect()->route('purchase.show', $saveSalesOrder->id_purchase)->with('message', 'Se registro la orden con éxito');
     }
 
@@ -261,6 +271,8 @@ class PurchaseController extends Controller
             ->join('exchanges AS e', 'e.id_exchange', '=', 'purchases.id_exchange')
             ->join('workers AS w', 'w.id_worker', '=', 'purchases.id_worker', 'left outer')
             ->find($id);
+
+        //return $data;
         $dataProdcs = json_decode(\DB::select("SELECT * FROM purchase_receptions where id_purchase = $id order by id_purchase DESC")[0]->details_reception, true);
         $obj = json_decode(PurchaseDetails::whereIdPurchase($id)->get()[0]->details_purchase_detail, true);
         for ($i = 0; $i < count($dataProdcs['id_product']); $i++) {
@@ -270,13 +282,29 @@ class PurchaseController extends Controller
                 ->whereIdProduct($obj['id_product'][$i])
                 ->get();
         }
+
+        $dataBanks = Bank::whereEnabledBank(1)->pluck('name_bank', 'id_bank');
+
+        $payments = Payments::select('payments.*', 'name_bank')
+            ->join('banks', 'banks.id_bank', '=', 'payments.id_bank')
+            ->whereIdPurchase($id)
+            ->whereTypePay(1)
+            ->get();
+
+        $surplus = Surplus::select('amount_surplus', 'payments.id_payment', 'payments.ref_payment', 'payments.date_payment')
+            ->join('payments', 'payments.id_payment', '=', 'surpluses.id_payment')
+            ->where('surpluses.id_client', '=', $data->id_supplier)
+            ->where('used_surplus', '=', 1)
+            ->get();
+
+            
         $conf = [
             'title-section' => 'Compra: ' . $data->ref_name_purchase,
             'group' => 'purchase',
             'back' => 'purchase.index',
             'edit' => ['route' => 'purchase.edit', 'id' => $id],
         ];
-        return view('purchases.purchase.show', compact('conf', 'data', 'dataProducts', 'obj', 'dataProdcs'));
+        return view('purchases.purchase.show', compact('conf', 'data', 'dataProducts', 'obj', 'dataProdcs', 'dataBanks', 'surplus', 'payments'));
     }
 
 
@@ -479,5 +507,10 @@ class PurchaseController extends Controller
         } else {
             return response()->json(['respuesta' => true, 'exento' => false]);
         }
+    }
+
+    public function getDataPurchase($id)
+    {
+        return Purchase::find($id);
     }
 }

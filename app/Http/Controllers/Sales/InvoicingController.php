@@ -277,9 +277,6 @@ class InvoicingController extends Controller
         SalesOrder::whereIdSalesOrder($id)->update(['id_order_state' => 2, 'id_invoice' => $inv->id_invoicing]);
 
         $move = (new MovesAccountsController)->createMoves($inv->id_invoicing, $inv->date_invoicing, 1);
-
-
-
         $result = (new AccountingEntriesController)->saveEntriesSales($move, $inv->id_invoicing);
 
         return redirect()->route('invoicing.show', $inv->id_invoicing)->with('message', 'Se registro la factura con éxito');

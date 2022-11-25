@@ -18,9 +18,8 @@ class CreateSurplusesTable extends Migration
             $table->float('amount_surplus', 8, 2);
             $table->unsignedBigInteger('id_payment');
             $table->foreign('id_payment')->references('id_payment')->on('payments');
-            $table->unsignedBigInteger('id_client');
-            $table->foreign('id_client')->references('id_client')->on('clients');
-
+            $table->integer('id_client')->nullable();
+            $table->integer('id_supplier')->nullable();
             $table->integer('id_payment_used')->nullable();
             $table->boolean('used_surplus')->default(1);
             $table->timestamps();

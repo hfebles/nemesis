@@ -115,7 +115,7 @@
                     <th width="85%" scope="col" class="text-end align-middle">IMPUESTO:
                         @foreach ($taxes as $tax)
                             <div class="form-check form-switch">
-                                <input class="form-check-input" onchange="calculateTaxes({{ $tax->amount_tax }})"
+                                <input checked class="form-check-input" onchange="calculateTaxes({{ $tax->amount_tax }})"
                                     value="{{ $tax->amount_tax }}" type="checkbox" id="taxt_{{ $tax->amount_tax }}">
                                 <label class="form-check-label" for="">{{ $tax->name_tax }}
                                     {{ $tax->amount_tax }}%</label>

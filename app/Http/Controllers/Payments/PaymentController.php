@@ -6,6 +6,7 @@ use App\Http\Controllers\Accounting\AccountingEntriesController;
 use App\Http\Controllers\Accounting\MovesAccountsController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Delivery\DeliveryController;
+use App\Http\Controllers\Purchase\PurchaseController;
 use App\Http\Controllers\Sales\DeliveryNotesController;
 use App\Http\Controllers\Sales\InvoicingController;
 use App\Models\Accounting\AccountingEntries;
@@ -13,6 +14,7 @@ use App\Models\Accounting\TypeLedgerAccounts;
 use App\Models\Conf\Bank;
 use App\Models\Payments\Payments;
 use App\Models\Payments\Surplus;
+use App\Models\Purchase\Purchase;
 use App\Models\Sales\DeliveryNotes;
 use App\Models\Sales\Invoicing;
 use Illuminate\Http\Request;
@@ -105,8 +107,6 @@ class PaymentController extends Controller
     public function store(Request $request)
     {
 
-
-
         $data = $request->except('_token');
 
         // return $data;
@@ -123,7 +123,7 @@ class PaymentController extends Controller
 
 
         if ($data['type_pay'] == 1) {
-
+            /*======================================== [ PAGOS FACTURAS] ======================================== */
             $invoice = (new InvoicingController)->getDataInv($data['id_invoice']);
             if ($invoice->residual_amount_invoicing == $payment->amount_payment) {
                 Invoicing::whereIdInvoicing($invoice->id_invoicing)->update(['residual_amount_invoicing' => 0.00, 'id_order_state' => 5]);
@@ -157,7 +157,8 @@ class PaymentController extends Controller
             }
 
             return redirect()->route('invoicing.show', $data['id_invoice']);
-        } else {
+        } elseif ($data['type_pay'] == 2){
+            /*======================================== [ PAGOS NOTAS DE CREDITO] ======================================== */
             $dn = (new DeliveryNotesController)->getDataDN($data['id_delivery_note']);
             if ($dn->residual_amount_delivery_note == intval($payment->amount_payment)) {
                 $payment->id_delivery_note  = $data['id_delivery_note'];
@@ -180,6 +181,40 @@ class PaymentController extends Controller
                 DeliveryNotes::whereIdDeliveryNote($data['id_delivery_note'])->update(['residual_amount_delivery_note' => 0.00, 'id_order_state' => 7]);
             }
             return redirect()->route('deliveries-notes.show', $data['id_delivery_note']);
+        }else{
+            /*======================================== [ PAGOS COMPRAS] ======================================== */
+            $purchase = (new PurchaseController)->getDataPurchase($data['id_purchase']);
+            if ($purchase->residual_amount_purchase == $payment->amount_payment) {
+                Purchase::whereIdPurchase($purchase->id_purchase)->update(['residual_amount_purchase' => 0.00, 'id_order_state' => 5]);
+                $payment->id_purchase = $purchase->id_purchase;
+                $payment->save();
+                $move = (new MovesAccountsController)->createMoves($purchase->id_purchase, $payment->date_payment, 4);
+                (new AccountingEntriesController)->saveEntriesPaymentsPurchase($move, $purchase->id_purchase, $payment->amount_payment, $payment->id_bank);
+            } elseif ($purchase->residual_amount_purchase > $payment->amount_payment) {
+                $resto = $purchase->residual_amount_purchase - $payment->amount_payment;
+                Purchase::whereIdPurchase($data['id_purchase'])->update(['residual_amount_purchase' => $resto,]);
+                $payment->id_purchase = $data['id_purchase'];
+                $payment->save();
+                $move = (new MovesAccountsController)->createMoves($purchase->id_purchase, $payment->date_payment, 4);
+                (new AccountingEntriesController)->saveEntriesPaymentsPurchase($move, $purchase->id_purchase, $payment->amount_payment, $payment->id_bank);
+            } else {
+                $resto = $payment->amount_payment - $purchase->residual_amount_purchase;
+                $payment->id_purchase = $data['id_purchase'];
+                $payment->save();
+                $move = (new MovesAccountsController)->createMoves($purchase->id_purchase, $payment->date_payment, 4);
+                (new AccountingEntriesController)->saveEntriesPaymentsPurchase($move, $purchase->id_purchase, $payment->amount_payment, $payment->id_bank);
+
+                Surplus::create([
+                    'amount_surplus' => $resto,
+                    'id_payment' => $payment->id_payment,
+                    'id_supplier' => $purchase->id_supplier,
+                ]);
+
+
+                Purchase::whereIdPurchase($payment->id_purchase)->update(['residual_amount_purchase' => 0.00, 'id_order_state' => 5]);
+            }
+
+            return redirect()->route('purchase.show', $data['id_purchase']);
         }
     }
 

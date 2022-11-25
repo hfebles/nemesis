@@ -7,10 +7,8 @@
 @endsection
 
 @section('content')
-
     <div class="row">
         <x-cards>
-
             <div class="row g-3">
                 <div class="col-sm-12 d-flex">
                     @if ($data->id_order_state == 3)

@@ -20,7 +20,8 @@ return new class extends Migration
             $table->integer('id_ledger_account');
             $table->string('description_accounting_entries')->nullable();
             $table->integer('id_moves_account');
-            $table->integer('id_invocing');
+            $table->integer('id_invocing')->nullable();
+            $table->integer('id_purchase')->nullable();
             $table->boolean('enabled_accounting_entries')->default(1);
             $table->timestamps();
         });
