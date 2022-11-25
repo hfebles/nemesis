@@ -255,7 +255,7 @@ a
 
      
                     const csrfToken = "{{ csrf_token() }}";
-                    fetch('{{ route('purchase.check-aviavility') }}', {
+                    fetch('{{ route("purchase.check-aviavility") }}', {
                         method: 'POST',
                         body: JSON.stringify({
                             cantidad: y,
