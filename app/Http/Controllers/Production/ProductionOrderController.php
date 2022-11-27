@@ -132,7 +132,7 @@ class ProductionOrderController extends Controller
             'title-section' => 'Order de producción: ' . $data->name_production_order,
             'group' => 'production-order',
             'back' => 'production-order.index',
-            'url' => '#'
+            'url' => '#',
             'edit' => ['route' => 'material-list.edit', 'id' => $data->id_materials_list],
         ];
         return view('productions.production-order.show', compact('conf', 'data', 'dataProductsDetails', 'dataPresentationDetails', 'objDetails'));
