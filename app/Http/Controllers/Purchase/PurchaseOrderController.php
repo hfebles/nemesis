@@ -84,13 +84,11 @@ class PurchaseOrderController extends Controller
         $dataSupplier = Supplier::whereEnabledSupplier(1)->get();
 
         if (count($dataSupplier) == 0) {
-            $message = ['type' => 'warning', 'message' => 'Debe registrar un proveedor',];
-            return redirect()->route('supplier.index')->with('message', $message);
+            return redirect()->route('supplier.index')->with('error', 'Debe registrar un proveedor');
         }
 
         if (count($dataExchange) == 0) {
-            $message = ['type' => 'warning', 'message' => 'Debe registrar un tasa de cambio',];
-            return redirect()->route('exchange.index')->with('message', $message);
+            return redirect()->route('exchange.index')->with('error', 'Debe registrar un tasa de cambio');
         } else {
             $dataExchange = $dataExchange[0];
         }
@@ -221,17 +219,9 @@ class PurchaseOrderController extends Controller
 
 
         if ($data->id_order_state == 2) {
-            $message = [
-                'type' => 'danger',
-                'message' => 'No puede editar la orden si ya fue facturada.',
-            ];
-            return redirect()->route('purchase-order.show', $data->id_sales_order)->with('message', $message);
+            return redirect()->route('purchase-order.show', $data->id_sales_order)->with('error', 'No puede editar la orden si ya fue facturada.');
         } elseif ($data->id_order_state == 3) {
-            $message = [
-                'type' => 'danger',
-                'message' => 'No puede editar la orden si ya fue cancelada.',
-            ];
-            return redirect()->route('purchase-order.show', $data->id_sales_order)->with('message', $message);
+            return redirect()->route('purchase-order.show', $data->id_sales_order)->with('error', 'No puede editar la orden si ya fue cancelada.');
         } else {
 
             $conf = [
@@ -262,25 +252,15 @@ class PurchaseOrderController extends Controller
 
     public function update(Request $request, $id)
     {
-
-
-
-        //return $request;
-
         $data = $request->except('_token', '_method');
-
         $obj = json_decode(PurchaseOrderDetails::whereIdPurchaseOrder($id)->get()[0]->details_purchase_order_detail, true);
-        // return $request;
         for ($i = 0; $i < count($obj['id_product']); $i++) {
             $sumar =  Product::select('qty_product')->whereIdProduct($obj['id_product'][$i])->get()[0];
             $operacion = $sumar->qty_product + $obj['cantidad'][$i];
             Product::whereIdProduct($obj['id_product'][$i])->update(['qty_product' => $operacion]);
         }
-
         $dataDetails = $request->except('_token', 'id_supplier', 'type_payment_purchase_order', 'subFac', 'exento', 'total_taxes', 'total_con_tax', 'noExento', 'subtotal', 'exempt_product', 'subtotal_exento', 'id_worker', 'id_exchange', 'ref_name_sales_order', 'ctrl_num');
-
         PurchaseOrder::whereIdPurchaseOrder($id)->update([
-            
             'id_supplier' => $data['id_supplier'],
             'id_exchange' => $data['id_exchange'],
             'id_user' => Auth::id(),
@@ -289,16 +269,12 @@ class PurchaseOrderController extends Controller
             'no_exempt_amout_purchase_order' => $data['subFac'],
             'total_amount_tax_purchase_order' => $data['total_taxes'],
         ]);
-
-
         PurchaseOrderDetails::whereIdPurchaseOrder($id)->update(['details_purchase_order_detail' => json_encode($dataDetails)]);
-
         for ($i = 0; $i < count($data['id_product']); $i++) {
             $restar =  Product::select('qty_product')->whereIdProduct($data['id_product'][$i])->get();
             $operacion = $restar[0]->qty_product - $data['cantidad'][$i];
             Product::whereIdProduct($data['id_product'][$i])->update(['qty_product' => $operacion]);
         }
-
         return redirect()->route('purchase-order.index')->with('message', 'Se actualizo el pedido con éxito');
     }
 
@@ -318,10 +294,9 @@ class PurchaseOrderController extends Controller
 
         if ($request->texto == 'proveedor') {
             if (isset($request->param)) {
-                $dataProveedor =  \DB::select("SELECT * 
-                                                FROM suppliers 
-                                                WHERE name_supplier LIKE '%" . $request->param . "%' 
-                                                OR idcard_supplier LIKE '%" . $request->param . "%'");
+                $dataProveedor = Supplier::where('name_supplier', 'like', "%$request->param%")
+                    ->orWhere('idcard_supplier', 'like', "%$request->param%")->get();
+
                 return response()->json(
                     [
                         'lista' => $dataProveedor,

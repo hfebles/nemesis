@@ -5,10 +5,6 @@ namespace App\Http\Controllers\Sales;
 use App\Http\Controllers\Accounting\AccountingEntriesController;
 use App\Http\Controllers\Accounting\MovesAccountsController;
 use App\Http\Controllers\Controller;
-use App\Models\Accounting\AccountingEntries;
-use App\Models\Accounting\MovesAccounts;
-use App\Models\Accounting\SubLedgerAccount;
-use App\Models\Accounting\TypeLedgerAccounts;
 use App\Models\Conf\Bank;
 use App\Models\Conf\Exchange;
 use App\Models\Conf\Sales\InvoicingConfigutarion;
@@ -293,10 +289,14 @@ class InvoicingController extends Controller
             'c.phone_client',
             'c.idcard_client',
             'c.name_client',
+            'c.taxpayer_client',
+            'c.porcentual_amount_tax_client',
             'w.firts_name_worker',
             'w.last_name_worker',
             'e.amount_exchange',
             'e.date_exchange',
+            'r.voucher_number_whs',
+            'r.id_withholding_iva_sale',
             \DB::raw('CASE 
         WHEN invoicings.id_order_state = 3 THEN "Factura Cancelada"
         END as estado')
@@ -304,6 +304,7 @@ class InvoicingController extends Controller
             ->join('clients AS c', 'c.id_client', '=', 'invoicings.id_client')
             ->join('exchanges AS e', 'e.id_exchange', '=', 'invoicings.id_exchange')
             ->join('workers AS w', 'w.id_worker', '=', 'invoicings.id_worker', 'left outer')
+            ->join('withholding_iva_sales AS r', 'r.id_invoice', '=', 'invoicings.id_invoicing', 'left outer')
             ->find($id);
 
 

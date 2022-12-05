@@ -61,13 +61,7 @@ class WarehouseController extends Controller
         $save->name_warehouse = strtoupper($data['name_warehouse']);
         $save->code_warehouse = strtoupper($data['code_warehouse']);
         $save->save();
-
-        $message = [
-            'type' => 'success',
-            'message' => 'Se registro con éxito',
-        ];
-                        
-        return redirect()->route('warehouse.index')->with('message', $message);
+        return redirect()->route('warehouse.index')->with('message', 'Se registro con éxito');
 
     }
 
@@ -139,12 +133,8 @@ class WarehouseController extends Controller
 
         $data = $request->except('_token', '_method');
         Warehouse::whereIdWarehouse($id)->update($data);
-        $message = [
-            'type' => 'success',
-            'message' => 'Se edito con éxito',
-        ];
                         
-        return redirect()->route('warehouse.show', $id)->with('message', $message);
+        return redirect()->route('warehouse.show', $id)->with('message', 'Se edito con éxito');
     }
 
     public function destroy($id){
@@ -158,13 +148,8 @@ class WarehouseController extends Controller
 
 
         }
-
-        $message = [
-            'type' => 'success',
-            'message' => 'Se elimino con éxito',
-        ];
-                        
-        return redirect()->route('warehouse.index')->with('message', $message);
+  
+        return redirect()->route('warehouse.index')->with('message', 'Se elimino con éxito');
     }
 
 

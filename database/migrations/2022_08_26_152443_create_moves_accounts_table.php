@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('id_invocing')->nullable();
             $table->integer('id_purchase')->nullable();
             $table->date('date_moves_account');
-            $table->boolean('type_moves_account')->default(0);
+            $table->tinyInteger('type_moves_account')->comment('1. Venta, 2. Compra, 3. Pago de Facturas Ventas, 4. Pago Facturas compras');
             $table->timestamps();
         });
     }

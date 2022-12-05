@@ -25,9 +25,8 @@ use App\Http\Controllers\Accounting\GroupController;
 use App\Http\Controllers\Accounting\AccountingEntriesController;
 use App\Http\Controllers\Accounting\MovesAccountsController;
 use App\Http\Controllers\Accounting\RecordAccoutingController;
-use App\Http\Controllers\Accounting\SubLedgerAccounts2Controller;
-use App\Http\Controllers\Accounting\SubLedgerAccounts3Controller;
-use App\Http\Controllers\Accounting\SubLedgerAccounts4Controller;
+use App\Http\Controllers\Accounting\WithholdingIvaPurchasesController;
+use App\Http\Controllers\Accounting\WithholdingIvaSalesController;
 use App\Http\Controllers\Warehouse\WarehouseController;
 
 use App\Http\Controllers\Products\ProductController;
@@ -143,11 +142,6 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('accounting/sub-group-accounting', SubGroupController::class);
     Route::resource('accounting/group-accounting', GroupController::class);
 
-    Route::resource('accounting/sub-ledger-account2', SubLedgerAccounts2Controller::class);
-    Route::resource('accounting/sub-ledger-account3', SubLedgerAccounts3Controller::class);
-    Route::resource('accounting/sub-ledger-account4', SubLedgerAccounts4Controller::class);
-
-
     // ASIENTOS CONTABLES
     Route::resource('accounting/accounting-entries', AccountingEntriesController::class);
     Route::resource('accounting/accounting-records', RecordAccoutingController::class);
@@ -158,6 +152,11 @@ Route::group(['middleware' => ['auth']], function () {
     //Route::get('/accounting/moves/moves-show/{id}', [MovesAccountsController::class, 'verMovimientos'])->name('moves.moves-show');
 
     Route::get('/accounting/reports/{id}', [MovesAccountsController::class, 'reports'])->name('moves.reports');
+
+
+    // RETENCIONES
+    Route::resource('/accounting/withholding-sales', WithholdingIvaSalesController::class); //VENTAS
+    Route::resource('/accounting/withholding-purchases', WithholdingIvaPurchasesController::class); //COMPRAS
 
     /**
      * 
@@ -314,10 +313,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('/production/material-list-search-products', [ProductionOrderController::class, 'traerListaMateriales'])->name('production-order.material-list-search-products');
 
 
-    
+
     // lista de materiales
     Route::resource('/production/material-list', MaterialsListController::class);
-
+    Route::post('/production/material-product-list', [MaterialsListController::class, 'traerProductos'])->name('production-order.material-product-list');
 
 
 

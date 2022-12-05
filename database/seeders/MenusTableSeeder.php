@@ -42,6 +42,7 @@ class MenusTableSeeder extends Seeder
         Menu::create(['id' => 15, 'name' => 'Asientos contables', 'slug' => 'moves.index', 'grupo' => 'accounting-records', 'icono' => 'fa-regular fa-address-book', 'parent' => '3', 'order' => '0', 'href' => '0', ]);
         Menu::create(['id' => 16, 'name' => 'Pagos Recibidos', 'slug' => 'payments.index', 'grupo' => 'payment', 'icono' => 'fa-sharp fa-solid fa-cash-register', 'parent' => '3', 'order' => '1', 'href' => '0', ]);
         Menu::create(['id' => 17, 'name' => 'Plan Contable', 'slug' => 'ledger-account.index', 'grupo' => 'accounting-ledger', 'icono' => 'fa-sharp fa-solid fa-table-list', 'parent' => '3', 'order' => '2', 'href' => '0', ]);
+        
 
         //ALMACEN
         Menu::create(['id' => 18, 'name' => 'Almacenes', 'slug' => 'warehouse.index', 'grupo' => 'warehouse-warehouse', 'icono' => 'fa-sharp fa-solid fa-warehouse', 'parent' => '4', 'order' => '0', 'href' => '0', ]);
@@ -81,6 +82,9 @@ class MenusTableSeeder extends Seeder
         Menu::create(['id' => 40, 'name' => 'Ordenes de Compras', 'slug' => 'purchase-order.index', 'grupo' => 'purchase-order', 'icono' => 'fa-solid fa-receipt', 'parent' => '39', 'order' => '0', 'href' => '0', ]);
         Menu::create(['id' => 41, 'name' => 'Proveedores', 'slug' => 'supplier.index', 'grupo' => 'purchase-supplier', 'icono' => 'fa-solid fa-receipt', 'parent' => '39', 'order' => '2', 'href' => '0', ]);
         Menu::create(['id' => 42, 'name' => 'Compras', 'slug' => 'purchase.index', 'grupo' => 'purchase-purchase', 'icono' => 'fa-solid fa-receipt', 'parent' => '39', 'order' => '1', 'href' => '0', ]);
+
+        //Contabilidad
+        Menu::create(['id' => 43, 'name' => 'Retenciones de iva Compras', 'slug' => 'withholding-purchases.index', 'grupo' => 'accounting-withholding-purchases', 'icono' => 'fa-sharp fa-solid fa-table-list', 'parent' => '39', 'order' => '3', 'href' => '0', ]);
     }
 
 }

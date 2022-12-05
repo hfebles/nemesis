@@ -62,6 +62,20 @@
 
                             </td>
                         </tr>
+                        @if ($data->taxpayer_client == 1)
+                            <tr>
+                                <td class="text-end">Retención:</td>
+                                <td class="text-start">
+                                    @if ($data->voucher_number_whs == null)
+                                    <a onclick="abreModal()" class="btn btn-sm btn-success btn-circle" type="button"><i
+                                        class="fas fa-edit fa-lg"></i></a>
+                                    @else
+                                        <a href="{{ route('withholding-sales.show', $data->id_withholding_iva_sale) }}">{{ $data->voucher_number_whs }}</a>
+                                    @endif
+
+                                </td>
+                            </tr>
+                        @endif
                     </table>
                     <table class="table table-sm table-bordered mb-4">
 
@@ -146,72 +160,104 @@
 
                     <table class="table table-sm table-bordered mb-0">
                         <tr>
-                            <th scope="col" class="text-end align-middle">TIPO DE TASA DE CAMBIO: <span
-                                    class="text-danger">{{ date('d-m-Y', strtotime($data->date_exchange)) }}</span></th>
-                            <th scope="col" class="text-end align-middle">
+                            <td scope="col" class="text-end align-middle">TIPO DE TASA DE CAMBIO: <span
+                                    class="text-danger">{{ date('d-m-Y', strtotime($data->date_exchange)) }}</span></td>
+                            <td scope="col" class="text-end align-middle">
                                 <p class='align-middle mb-0'>$ {{ number_format($data->amount_exchange, 2, ',', '.') }}</p>
-                            </th>
-                            <th colspan="2" scope="col" class="text-end align-middle"></th>
+                            </td>
+                            <td colspan="2" scope="col" class="text-end align-middle"></td>
                         </tr>
                         <tr>
-                            <th scope="col" class="text-end align-middle">BASE IMPONIBLE: </th>
-                            <th scope="col" class="text-end align-middle">
+                            <td scope="col" class="text-end align-middle">BASE IMPONIBLE: </th>
+                            <td scope="col" class="text-end align-middle">
                                 <p class='align-middle mb-0' id="subFacs">$
                                     {{ number_format($data->no_exempt_amout_invoicing / $data->amount_exchange, 2, ',', '.') }}
                                 </p>
-                            </th>
+                            </td>
 
-                            <th scope="col" class="text-end align-middle">BASE IMPONIBLE: </th>
-                            <th scope="col" class="text-end align-middle">
+                            <td scope="col" class="text-end align-middle">BASE IMPONIBLE: </td>
+                            <td scope="col" class="text-end align-middle">
                                 <p class='align-middle mb-0' id="subFacs">Bs.
                                     {{ number_format($data->no_exempt_amout_invoicing, 2, ',', '.') }}</p>
-                            </th>
+                            </td>
                         </tr>
                         <tr>
-                            <th scope="col" class="text-end align-middle">EXENTO: </th>
-                            <th scope="col" class="text-end align-middle">
+                            <td scope="col" class="text-end align-middle">EXENTO: </td>
+                            <td scope="col" class="text-end align-middle">
                                 <p class='align-middle mb-0' id="subFacs">$
                                     {{ number_format($data->exempt_amout_invoicing / $data->amount_exchange, 2, ',', '.') }}
                                 </p>
-                            </th>
+                            </td>
 
-                            <th scope="col" class="text-end align-middle">EXENTO: </th>
-                            <th scope="col" class="text-end align-middle">
+                            <td scope="col" class="text-end align-middle">EXENTO: </td>
+                            <td scope="col" class="text-end align-middle">
                                 <p class='align-middle mb-0' id="exentos"></p>Bs.
                                 {{ number_format($data->exempt_amout_invoicing, 2, ',', '.') }}
-                            </th>
+                            </td>
                         </tr>
                         <tr>
-                            <th scope="col" class="text-end align-middle">IVA: </th>
-                            <th scope="col" class="text-end align-middle">
+                            <td scope="col" class="text-end align-middle">IVA: </td>
+                            <td scope="col" class="text-end align-middle">
                                 <p class='align-middle mb-0' id="subFacs">$
                                     {{ number_format($data->total_amount_tax_invoicing / $data->amount_exchange, 2, ',', '.') }}
                                 </p>
-                            </th>
+                            </td>
 
-                            <th scope="col" class="text-end align-middle">IVA:</th>
-                            <th scope="col" class="text-end align-middle">
+                            <td scope="col" class="text-end align-middle">IVA:</td>
+                            <td scope="col" class="text-end align-middle">
                                 <p class='align-middle mb-0' id="totalIVaas">Bs.
                                     {{ number_format($data->total_amount_tax_invoicing, 2, ',', '.') }}</p>
-                            </th>
+                            </td>
                         </tr>
                         <tr>
-                            <th scope="col" class="text-end align-middle">TOTAL A PAGAR: </th>
+                            <th scope="col" class="text-end align-middle text-dark">TOTAL A PAGAR: </th>
                             <th scope="col" class="text-end align-middle">
-                                <p class='align-middle mb-0' id="subFacs">$
+                                <p class='align-middle mb-0 text-dark' id="subFacs">$
                                     {{ number_format($data->total_amount_invoicing / $data->amount_exchange, 2, ',', '.') }}
                                 </p>
                             </th>
 
-                            <th scope="col" class="text-end align-middle">TOTAL A PAGAR: </th>
-                            <th scope="col" class="text-end align-middle">
+                            <th scope="col" class="text-end align-middle text-dark">TOTAL A PAGAR: </th>
+                            <th scope="col" class="text-end align-middle text-dark">
                                 <p class='align-middle mb-0' id="totalTotals">Bs.
                                     {{ number_format($data->total_amount_invoicing, 2, ',', '.') }}</p>
                             </th>
                         </tr>
-                        <tr>
-                            <td></td>
-                        </tr>
+
+                        @if ($data->taxpayer_client == 1)
+                            @if ($data->porcentual_amount_tax_client == 75)
+                                <tr>
+                                    <th scope="col" class="text-end align-middle text-dark">IVA RETENIDO: </th>
+                                    <th scope="col" class="text-end align-middle text-dark">
+                                        <p class='align-middle mb-0' id="subFacs">$
+                                            {{ number_format(($data->total_amount_tax_invoicing * 0.75) / $data->amount_exchange, 2, ',', '.') }}
+                                        </p>
+                                    </th>
+
+                                    <th scope="col" class="text-end align-middle text-dark">IVA RETENIDO: </th>
+                                    <th scope="col" class="text-end align-middle text-dark">
+                                        <p class='align-middle mb-0' id="totalTotals">Bs.
+                                            {{ number_format($data->total_amount_tax_invoicing * 0.75, 2, ',', '.') }}</p>
+                                    </th>
+                                </tr>
+                            @else
+                                <tr>
+                                    <th scope="col" class="text-end align-middle text-dark">IVA RETENIDO: </th>
+                                    <th scope="col" class="text-end align-middle text-dark">
+                                        <p class='align-middle mb-0' id="subFacs">$
+                                            {{ number_format($data->total_amount_tax_invoicing / $data->amount_exchange, 2, ',', '.') }}
+                                        </p>
+                                    </th>
+
+                                    <th scope="col" class="text-end align-middle text-dark">IVA RETENIDO: </th>
+                                    <th scope="col" class="text-end align-middle text-dark">
+                                        <p class='align-middle mb-0' id="totalTotals">Bs.
+                                            {{ number_format($data->total_amount_tax_invoicing, 2, ',', '.') }}</p>
+                                    </th>
+                                </tr>
+                            @endif
+
+                        @endif
                         <tfoot class="bg-gray-100">
 
                             <tr>
@@ -268,7 +314,36 @@
 
         </x-cards>
     </div>
-
+    @if ($data->taxpayer_client == 1)
+    <div class="modal fade" id="exampleModal2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="title-modal"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        
+                        {!! Form::model($data, ['method' => 'PATCH', 'route' => ['withholding-sales.update', $data->id_withholding_iva_sale]]) !!}
+                        <div class="col-12">
+                            {{ $data->ref_name_invoicing }}
+                        </div>
+                        <div class="col-12">
+                            {!! Form::text('voucher_number_whs', null, array('minlength' => '14', 'maxlength' => '14', 'onkeypress' => 'return soloNumeros(event);', 'autocomplete' => 'off','required', 'placeholder' => 'Ingrese el número de la retencion','class' => 'form-control form-control-sm')) !!}
+                        </div>
+                        
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success" >Guardar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                    {!! Form::close() !!}
+                </div>
+            </div>
+        </div>
+        @endif
 
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
@@ -350,20 +425,13 @@
     @endsection
     @section('js')
         <script>
-            (function() {
-                'use strict'
-                var forms = document.querySelectorAll('.needs-validation')
-                Array.prototype.slice.call(forms)
-                    .forEach(function(form) {
-                        form.addEventListener('submit', function(event) {
-                            if (!form.checkValidity()) {
-                                event.preventDefault()
-                                event.stopPropagation()
-                            }
+            var myModal = new bootstrap.Modal(document.getElementById('exampleModal2'));
 
-                            form.classList.add('was-validated')
-                        }, false)
-                    })
-            })()
+            function abreModal() {
+                myModal.show()
+            }
+
+
+
         </script>
     @endsection

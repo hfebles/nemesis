@@ -23,7 +23,8 @@ class MovesAccountsController extends Controller
             'id_moves_account',
             'ref_name_invoicing',
             'ref_name_purchase',
-            'date_moves_account',)
+            'date_moves_account',
+        )
             ->join('invoicings', 'invoicings.id_invoicing', '=', 'moves_accounts.id_invocing', 'left outer')
             ->join('purchases', 'purchases.id_purchase', '=', 'moves_accounts.id_purchase', 'left outer')
             ->paginate(15);
@@ -66,7 +67,7 @@ class MovesAccountsController extends Controller
         $type_moves_account = MovesAccounts::find($id)->type_moves_account;
 
 
-        //return $type_moves_account;
+        //   return $type_moves_account;
 
         $data = MovesAccounts::select('moves_accounts.*', 'accounting_entries.*', 'ledger_accounts.id_type_ledger_account')
             ->join('accounting_entries', 'accounting_entries.id_moves_account', '=', 'moves_accounts.id_moves_account')
@@ -78,33 +79,93 @@ class MovesAccountsController extends Controller
 
         $debe = 0;
         $haber = 0;
-        if ($type_moves_account == 1 || $type_moves_account == 3) {
+
+        //return $data;
+
+
+        /**
+         * 
+         * Activos, gastos y costos aumentan por el debe, disminuyen por el haber. 
+         * 
+         * Pasivos, patrimonio e ingresos, aumentan el haber y disminuyen por el debe. 
+         * 
+         * 
+         */
+
+        //1. Verificamos la naturalidad de la cuenta en relacion al tipo de movimiento. 
+
+
+
+        //Tipo de movimiento
+        if ($type_moves_account == 1) { // venta
+
             for ($i = 0; $i < count($data); $i++) {
+                //Cuentas debe 
+                if ($data[$i]->id_type_ledger_account == 2 || $data[$i]->id_type_ledger_account == 3 || $data[$i]->id_type_ledger_account == 4) {
+                    
+                    $data[$i]->monto_haber = $data[$i]->amount_accounting_entries;
+                    $haber = $haber + $data[$i]->monto_haber;
+                    $data[$i]->contador = 'haber';
+                } else { // cuentas haber
+
+                    $data[$i]->monto_debe = $data[$i]->amount_accounting_entries;
+                    $data[$i]->contador = 'debe';
+                    $debe = $debe + $data[$i]->monto_debe;
+
+                }
+            }
+        } elseif ($type_moves_account == 2) { // compra
+
+
+
+            for ($i = 0; $i < count($data); $i++) {
+                //Cuentas debe 
                 if ($data[$i]->id_type_ledger_account == 1 || $data[$i]->id_type_ledger_account == 5 || $data[$i]->id_type_ledger_account == 6) {
                     $data[$i]->monto_debe = $data[$i]->amount_accounting_entries;
+
+                    $data[$i]->contador = 'debe';
+
+
                     $debe = $debe + $data[$i]->monto_debe;
-                } else {
+                } else { // cuentas haber
+
                     $data[$i]->monto_haber = $data[$i]->amount_accounting_entries;
                     $haber = $haber + $data[$i]->monto_haber;
+                    $data[$i]->contador = 'haber';
                 }
             }
         }
 
 
-        if ($type_moves_account == 2 || $type_moves_account == 4) {
-            for ($i = 0; $i < count($data); $i++) {
-                if ($data[$i]->id_type_ledger_account == 2 || $data[$i]->id_type_ledger_account == 3 || $data[$i]->id_type_ledger_account == 4) {
-                    $data[$i]->monto_haber = $data[$i]->amount_accounting_entries;
-                    $haber = $haber + $data[$i]->monto_haber;
-                } elseif ($data[$i]->id_type_ledger_account == 1) {
-                    $data[$i]->monto_haber = $data[$i]->amount_accounting_entries;
-                    $haber = $haber + $data[$i]->monto_haber;
-                } else {
-                    $data[$i]->monto_debe = $data[$i]->amount_accounting_entries;
-                    $debe = $debe + $data[$i]->monto_debe;
-                }
-            }
-        }
+        // return $data;
+
+        // if ($type_moves_account == 1 || $type_moves_account == 3) {
+        //     for ($i = 0; $i < count($data); $i++) {
+        //         if ($data[$i]->id_type_ledger_account == 1 || $data[$i]->id_type_ledger_account == 5 || $data[$i]->id_type_ledger_account == 6) {
+        //             $data[$i]->monto_debe = $data[$i]->amount_accounting_entries;
+        //             $debe = $debe + $data[$i]->monto_debe;
+        //         } else {
+        //             $data[$i]->monto_haber = $data[$i]->amount_accounting_entries;
+        //             
+        //         }
+        //     }
+        // }
+
+
+        // if ($type_moves_account == 2 || $type_moves_account == 4) {
+        //     for ($i = 0; $i < count($data); $i++) {
+        //         if ($data[$i]->id_type_ledger_account == 2 || $data[$i]->id_type_ledger_account == 3 || $data[$i]->id_type_ledger_account == 4) {
+        //             $data[$i]->monto_haber = $data[$i]->amount_accounting_entries;
+        //             $haber = $haber + $data[$i]->monto_haber;
+        //         } elseif ($data[$i]->id_type_ledger_account == 1) {
+        //             $data[$i]->monto_haber = $data[$i]->amount_accounting_entries;
+        //             $haber = $haber + $data[$i]->monto_haber;
+        //         } else {
+        //             $data[$i]->monto_debe = $data[$i]->amount_accounting_entries;
+        //             $debe = $debe + $data[$i]->monto_debe;
+        //         }
+        //     }
+        // }
 
 
 

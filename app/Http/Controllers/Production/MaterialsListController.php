@@ -84,10 +84,42 @@ class MaterialsListController extends Controller
         $units = UnitProduct::pluck('name_unit_product', 'id_unit_product');
         $presentations = PresentationProduct::pluck('name_presentation_product', 'id_presentation_product');
 
-        $productos = Product::where('salable_product', '=', 0)->pluck('name_product', 'id_product');
+        $productos = Product::select('id_product', \DB::raw("CONCAT(name_product,' - ',unit_products.name_unit_product) AS name"))
+        ->where('salable_product', '=', 0)
+        ->join('unit_products', 'unit_products.id_unit_product', '=', 'products.id_unit_product')
+        ->pluck('name', 'id_unit_product');
+
+
+
+
+       
+
+
         $presentaciones = PresentationProduct::pluck('name_presentation_product', 'id_presentation_product');
 
         return view('productions.material_list.create', compact('conf', 'products', 'units', 'presentations', 'productos', 'presentaciones'));
+    }
+
+    public function traerProductos(Request $request){
+
+        if(empty($request->ids)){
+            return response()->json([
+                'data' => 'relaj'
+            ]);
+        }else{
+            return response()->json([
+                Product::select('id_product', 'name_product','name_unit_product' )
+                ->join('unit_products', 'unit_products.id_unit_product', '=', 'products.id_unit_product')
+                ->where('salable_product', '=', 0)
+                ->whereNotIn('id_product', $request->ids)
+                ->get()
+            ]);
+            
+         }
+         // arreglar la presentacion de los productos.
+       
+
+        return '...';
     }
 
 

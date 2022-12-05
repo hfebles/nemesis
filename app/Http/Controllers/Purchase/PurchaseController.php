@@ -88,12 +88,10 @@ class PurchaseController extends Controller
         $dataExchange = Exchange::whereEnabledExchange(1)->where('date_exchange', '=', date('Y-m-d'))->orderBy('id_exchange', 'DESC')->get();
         $dataSupplier = Supplier::whereEnabledSupplier(1)->get();
         if (count($dataSupplier) == 0) {
-            $message = ['type' => 'warning', 'message' => 'Debe registrar un proveedor',];
-            return redirect()->route('supplier.index')->with('message', $message);
+            return redirect()->route('supplier.index')->with('message', 'Debe registrar un proveedor');
         }
         if (count($dataExchange) == 0) {
-            $message = ['type' => 'warning', 'message' => 'Debe registrar un tasa de cambio',];
-            return redirect()->route('exchange.index')->with('message', $message);
+            return redirect()->route('exchange.index')->with('error', 'Debe registrar un tasa de cambio');
         } else {
             $dataExchange = $dataExchange[0];
         }
@@ -260,7 +258,7 @@ class PurchaseController extends Controller
 
         $move = (new MovesAccountsController)->createMovesPurchase($saveSalesOrder->id_purchase, $saveSalesOrder->date_purchase, 2);
         $result = (new AccountingEntriesController)->saveEntriesPurchase($move, $saveSalesOrder->id_purchase);
-
+        //return $result;
         return redirect()->route('purchase.show', $saveSalesOrder->id_purchase)->with('message', 'Se registro la orden con éxito');
     }
 

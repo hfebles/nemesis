@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Tu sistema.com | @yield('title-section')</title>
+    <title>{{ env('NAME_COMPANY') }} | @yield('title-section')</title>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">

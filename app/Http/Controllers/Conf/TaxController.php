@@ -21,6 +21,11 @@ class TaxController extends Controller
 
     public function index(Request $request)
     {
+
+        $route = app('router')->getRoutes(url()->previous())->match(app('request')->create(url()->previous()))->getName();
+
+   
+
         $conf = [
             'title-section' => 'Impuestos',
             'group' => 'taxes',

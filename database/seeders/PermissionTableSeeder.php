@@ -40,6 +40,8 @@ class PermissionTableSeeder extends Seeder
 
             'accounting-ledger-list', 'accounting-ledger-create', 'accounting-ledger-edit', 'accounting-ledger-delete',
             'accounting-records-list', 'accounting-records-create', 'accounting-records-edit', 'accounting-records-delete',
+            'accounting-withholding-sales-list', 'accounting-withholding-sales-create', 'accounting-withholding-sales-edit', 'accounting-withholding-sales-delete',
+            'accounting-withholding-purchases-list', 'accounting-withholding-purchases-create', 'accounting-withholding-purchases-edit', 'accounting-withholding-purchases-delete',
 
             'sales-clients-list', 'sales-clients-create', 'sales-clients-edit', 'sales-clients-delete',
             'sales-order-list', 'sales-order-create', 'sales-order-edit', 'sales-order-delete',
