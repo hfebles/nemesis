@@ -102,7 +102,7 @@ class MovesAccountsController extends Controller
             for ($i = 0; $i < count($data); $i++) {
                 //Cuentas debe 
                 if ($data[$i]->id_type_ledger_account == 2 || $data[$i]->id_type_ledger_account == 3 || $data[$i]->id_type_ledger_account == 4) {
-                    
+
                     $data[$i]->monto_haber = $data[$i]->amount_accounting_entries;
                     $haber = $haber + $data[$i]->monto_haber;
                     $data[$i]->contador = 'haber';
@@ -111,7 +111,6 @@ class MovesAccountsController extends Controller
                     $data[$i]->monto_debe = $data[$i]->amount_accounting_entries;
                     $data[$i]->contador = 'debe';
                     $debe = $debe + $data[$i]->monto_debe;
-
                 }
             }
         } elseif ($type_moves_account == 2) { // compra
@@ -190,28 +189,58 @@ class MovesAccountsController extends Controller
 
         $nameLedger = LedgerAccount::find($id)->name_ledger_account;
 
+        // return $id;
+
         $conf = [
             'title-section' => $nameLedger,
             'group' => 'sales-invoices',
-            'create' => ['route' => 'invoicing.create', 'name' => 'Nuevo asiento'],
+            'back' => "moves.index",
         ];
 
         $data = MovesAccounts::select('moves_accounts.*', 'accounting_entries.*',)
             ->join('accounting_entries', 'accounting_entries.id_moves_account', '=', 'moves_accounts.id_moves_account')
             ->where('accounting_entries.id_ledger_account', '=', $id)
-            ->get();
+            ->toSql();
+
+        return $data;
+
+
+        /* 
+        select `accounting_entries`.* 
+        from `accounting_entries` 
+        where `accounting_entries`.`id_moves_account` in (select `moves_accounts`.id_moves_account 
+                                                            from `moves_accounts` 
+                                                            inner join `accounting_entries` on `accounting_entries`.`id_moves_account` = `moves_accounts`.`id_moves_account` 
+                                                            where `accounting_entries`.`id_ledger_account` in (SELECT ledger_accounts.id_ledger_account 
+                                                                                                                from ledger_accounts 
+                                                                                                                where ledger_accounts.code_ledger_account like '%1.1.1.2.%')
+                                                            );*/
+
 
 
         $debe = 0;
         $haber = 0;
+
+        /**
+         * type_moves_account
+         * 3. Pago de Facturas Ventas, Debe + Haber -
+         * 4. Pago Facturas Compras Debe - Haber +
+         */
+
         for ($i = 0; $i < count($data); $i++) {
 
-            if ($data[$i]->type_moves_account == 1) {
-                $debe = $debe + $data[$i]->amount_accounting_entries;
+            if ($data[$i]->type_moves_account == 1 || $data[$i]->type_moves_account == 3) {
+                $data[$i]->monto_debe = $data[$i]->amount_accounting_entries;
+                $debe = $debe + $data[$i]->monto_debe;
             } else {
-                $haber = $haber + $data[$i]->amount_accounting_entries;
+
+                $data[$i]->monto_haber = $data[$i]->amount_accounting_entries;
+                $haber = $haber + $data[$i]->monto_haber;
             }
         }
+
+
+        // return $data;
 
         $totales = ['debe' => $debe, 'haber' => $haber];
         return view('accounting.moves-account.reportes.mayor', compact('data', 'conf', 'totales'));

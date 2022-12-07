@@ -1,8 +1,8 @@
 {
     "name": "laravel/laravel",
     "type": "project",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "description": "Nemesis Administrativo",
+    "keywords": ["administrativo", "nemesis"],
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",

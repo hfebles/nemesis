@@ -3,44 +3,36 @@
 @section('title-section', $conf['title-section'])
 
 @section('btn')
-<x-btns :create="$conf['create']" :group="$conf['group']" />
+    <x-btns :back="$conf['back']" :group="$conf['group']" />
 @endsection
 
 @section('content')
     <div class="row g-3">
-<x-cards>
-    <table class="table table-bordered table-sm table-hover">
-        <tr>
-            <td>fecha</td>
-            <td>desc</td>
-            <td>debe</td>
-            <td>haber</td>
-        </tr>
-        
-        @foreach ($data as $d)
-        <tr>
-            <td>{{ $d->date_moves_account }}</td>
-            <td>{{ $d->description_accounting_entries }}</td>
-            <td>
-                @if ($d->type_moves_account == 1)
-                {{ $d->amount_accounting_entries }}
-                @endif
-            </td>
-            <td>
-                @if ($d->type_moves_account == 3)
-                {{ $d->amount_accounting_entries }}
-                @endif
-            </td>
-        </tr>
-        @endforeach
+        <x-cards>
+            <table class="table table-bordered table-sm table-hover">
+                <tr>
+                    <td>Fecha</td>
+                    <td>Descripcion</td>
+                    <td>DEBE</td>
+                    <td>HABER</td>
+                </tr>
 
-        <tr>
-            <td></td>
-            <td></td>
-            <td>{{ $totales['debe'] }}</td>
-            <td>{{ $totales['haber'] }}</td>
-        </tr>
-    </table>
-</x-cards>
+                @foreach ($data as $d)
+                    <tr>
+                        <td>{{ $d->date_moves_account }}</td>
+                        <td>{{ $d->description_accounting_entries }}</td>
+                        <td class="text-end">{{ number_format($d->monto_debe, '2', ',', '.') ?? 0, 00 }}</td>
+                        <td class="text-end">{{ number_format($d->monto_haber, '2', ',', '.') ?? 0, 00 }}</td>
+                    </tr>
+                @endforeach
+
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>{{ number_format($totales['debe'], '2', ',', '.') }}</td>
+                    <td>{{ number_format($totales['haber'], '2', ',', '.') }}</td>
+                </tr>
+            </table>
+        </x-cards>
     </div>
 @endsection

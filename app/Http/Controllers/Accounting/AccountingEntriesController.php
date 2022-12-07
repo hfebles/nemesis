@@ -251,7 +251,7 @@ class AccountingEntriesController extends Controller
 
         //Revisar peo mental. 
 
-        if ($supplier->taxpayer_supplier == 1) {
+        if (env('TAX_PAYEER_COMPANY') == true) {
             //Contibuyente especial 
 
             if ($supplier->porcentual_amount_tax_supplier == 75) {
@@ -303,10 +303,7 @@ class AccountingEntriesController extends Controller
                         'id_purchase' => $purchase,
                     ]);
                 }
-
-                
-
-                
+              
 
 
                 // Registro de la retencion
@@ -441,9 +438,7 @@ class AccountingEntriesController extends Controller
 
         /*HACER MEJOR */
 
-        $client = Client::whereIdClient($invoice->id_client)->get()[0];
-
-
+        $client = Client::find($invoice->id_client);
 
 
         // 1. Registramos la linea del banco: 
@@ -451,7 +446,7 @@ class AccountingEntriesController extends Controller
             'date_accounting_entries' => $invoice->date_invoicing,
             'amount_accounting_entries' => $amount,
             'id_ledger_account' => $banco,
-            'description_accounting_entries' => 'BANCO',
+            'description_accounting_entries' => 'BANCO/'.$invoice->ref_name_invoicing,
             'id_moves_account' => $move,
             'id_invocing' => $invocing,
         ]);
@@ -461,8 +456,8 @@ class AccountingEntriesController extends Controller
         AccountingEntries::create([
             'date_accounting_entries' => $invoice->date_invoicing,
             'amount_accounting_entries' => $amount,
-            'id_ledger_account' => 57,
-            'description_accounting_entries' => 'CXC ACTIVO',
+            'id_ledger_account' => 11,
+            'description_accounting_entries' => 'CXC ACTIVO/'.$invoice->ref_name_invoicing,
             'id_moves_account' => $move,
             'id_invocing' => $invocing,
         ]);
@@ -486,7 +481,7 @@ class AccountingEntriesController extends Controller
         AccountingEntries::create([
             'date_accounting_entries' => $purchases->date_purchase,
             'amount_accounting_entries' => $amount,
-            'id_ledger_account' => 121,
+            'id_ledger_account' => 57,
             'description_accounting_entries' => 'CXP PASIVO',
             'id_moves_account' => $move,
             'id_purchase' => $purchase,
@@ -497,7 +492,7 @@ class AccountingEntriesController extends Controller
             'date_accounting_entries' => $purchases->date_purchase,
             'amount_accounting_entries' => $amount,
             'id_ledger_account' => Bank::find($bank)->id_ledger_account,
-            'description_accounting_entries' => 'BANCO',
+            'description_accounting_entries' => 'BANCO'.$purchases->ref_name_purchase,
             'id_moves_account' => $move,
             'id_purchase' => $purchase,
         ]);
