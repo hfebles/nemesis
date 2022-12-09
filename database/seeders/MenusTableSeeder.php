@@ -84,7 +84,7 @@ class MenusTableSeeder extends Seeder
         Menu::create(['id' => 42, 'name' => 'Compras', 'slug' => 'purchase.index', 'grupo' => 'purchase-purchase', 'icono' => 'fa-solid fa-receipt', 'parent' => '39', 'order' => '1', 'href' => '0', ]);
 
         //Contabilidad
-        Menu::create(['id' => 43, 'name' => 'Retenciones de iva Compras', 'slug' => '/accounting/withholding-purchases', 'grupo' => 'accounting-withholding-purchases', 'icono' => 'fa-sharp fa-solid fa-table-list', 'parent' => '39', 'order' => '3', 'href' => '1', ]);
+        Menu::create(['id' => 43, 'name' => 'Retenciones de iva Compras', 'slug' => 'withholding-purchases.index', 'grupo' => 'accounting-withholding-purchases', 'icono' => 'fa-sharp fa-solid fa-table-list', 'parent' => '39', 'order' => '3', 'href' => '0', ]);
     }
 
 }
