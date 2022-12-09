@@ -156,7 +156,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     // RETENCIONES
     Route::resource('/accounting/withholding-sales', WithholdingIvaSalesController::class); //VENTAS
-    Route::resource('/accounting/withholdingpurchases', WithholdingIvaPurchasesController::class); //COMPRAS
+    Route::resource('/accounting/withholding-purchases', WithholdingIvaPurchasesController::class); //COMPRAS
 
     /**
      * 
