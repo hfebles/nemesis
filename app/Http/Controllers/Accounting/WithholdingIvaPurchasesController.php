@@ -16,54 +16,50 @@ class WithholdingIvaPurchasesController extends Controller
         $this->middleware('permission:adm-delete|accounting-withholding-purchases-delete', ['only' => ['destroy']]);
     }
 
-    public function index(Request $request){
-        return "holis";
+    public function index(Request $request)
+    {
+        $conf = [
+            'title-section' => 'Retenciones IVA',
+            'group' => 'accounting-withholding-purchases',
+            'create' => ['route' => 'invoicing.create', 'name' => 'Nueva factura'],
+        ];
+
+        $data = WithholdingIvaPurchases::select('id_invoicing', 'residual_amount_invoicing', 'ref_name_invoicing', 'date_invoicing', 'total_amount_invoicing', 'os.name_order_state', 'c.name_client')
+            ->join('clients as c', 'c.id_client', '=', 'invoicings.id_client', 'left outer')
+            ->join('order_states as os', 'os.id_order_state', '=', 'invoicings.id_order_state', 'left outer')
+            ->whereEnabledInvoicing(1)
+            ->orderBy('id_invoicing', 'ASC')
+            ->paginate(10);
+
+        $table = [
+            'c_table' => 'table table-bordered table-hover mb-0 text-uppercase',
+            'c_thead' => 'bg-dark text-white',
+            'ths' => ['#', 'Factura', 'Fecha', 'Cliente', 'Estado', 'Total', 'A cobrar'],
+            'w_ts' => ['3', '10', '10', '41', '12', '12', '12',],
+            'c_ths' =>
+            [
+                'text-center align-middle',
+                'text-center align-middle',
+                'text-center align-middle',
+                'text-center align-middle',
+                'text-center align-middle',
+                'text-center align-middle',
+                'text-center align-middle',
+                'text-center align-middle',
+            ],
+            'tds' => ['ref_name_invoicing', 'date_invoicing', 'name_client', 'name_order_state', 'total_amount_invoicing', 'residual_amount_invoicing'],
+            'switch' => false,
+            'edit' => false,
+            'show' => true,
+            'edit_modal' => false,
+            'url' => "/sales/invoicing",
+            'id' => 'id_invoicing',
+            'data' => $data,
+            'group' => 'accounting-withholding-purchases',
+            'i' => (($request->input('page', 1) - 1) * 5),
+        ];
+        return view('sales.invoices.index', compact('conf', 'table'));
     }
-
-
-    // public function index(Request $request)
-    // {
-    //     $conf = [
-    //         'title-section' => 'Retenciones IVA',
-    //         'group' => 'sales-invoices',
-    //         'create' => ['route' => 'invoicing.create', 'name' => 'Nueva factura'],
-    //     ];
-
-    //     $data = WithholdingIvaPurchases::select('id_invoicing', 'residual_amount_invoicing', 'ref_name_invoicing', 'date_invoicing', 'total_amount_invoicing', 'os.name_order_state', 'c.name_client')
-    //         ->join('clients as c', 'c.id_client', '=', 'invoicings.id_client', 'left outer')
-    //         ->join('order_states as os', 'os.id_order_state', '=', 'invoicings.id_order_state', 'left outer')
-    //         ->whereEnabledInvoicing(1)
-    //         ->orderBy('id_invoicing', 'ASC')
-    //         ->paginate(10);
-
-    //     $table = [
-    //         'c_table' => 'table table-bordered table-hover mb-0 text-uppercase',
-    //         'c_thead' => 'bg-dark text-white',
-    //         'ths' => ['#', 'Factura', 'Fecha', 'Cliente', 'Estado', 'Total', 'A cobrar'],
-    //         'w_ts' => ['3', '10', '10', '41', '12', '12', '12',],
-    //         'c_ths' =>
-    //         [
-    //             'text-center align-middle',
-    //             'text-center align-middle',
-    //             'text-center align-middle',
-    //             'text-center align-middle',
-    //             'text-center align-middle',
-    //             'text-center align-middle',
-    //             'text-center align-middle',
-    //             'text-center align-middle',
-    //         ],
-    //         'tds' => ['ref_name_invoicing', 'date_invoicing', 'name_client', 'name_order_state', 'total_amount_invoicing', 'residual_amount_invoicing'],
-    //         'switch' => false,
-    //         'edit' => false,
-    //         'show' => true,
-    //         'edit_modal' => false,
-    //         'url' => "/sales/invoicing",
-    //         'id' => 'id_invoicing',
-    //         'data' => $data,
-    //         'i' => (($request->input('page', 1) - 1) * 5),
-    //     ];
-    //     return view('sales.invoices.index', compact('conf', 'table'));
-    // }
 
 
     public function registerRetention($arr)
