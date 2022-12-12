@@ -55,6 +55,7 @@ class InvoicingController extends Controller
             'c_thead' => 'bg-dark text-white',
             'ths' => ['#', 'Factura', 'Fecha', 'Cliente', 'Estado', 'Total', 'A cobrar'],
             'w_ts' => ['3', '10', '10', '41', '12', '12', '12',],
+            'td_number' => [false, false, false, false, true, true,],
             'c_ths' =>
             [
                 'text-center align-middle',
@@ -107,23 +108,25 @@ class InvoicingController extends Controller
 
         $dataConfiguration = InvoicingConfigutarion::all();
 
-        // return $dataConfig;
+        $nro = Invoicing::orderBy('id_invoicing', 'DESC')->get();
+
+        if (count($nro) > 0){
+            if($dataConfiguration[0]->control_number_invoicing_configutarion == $nro[0]->ctrl_num){
+                $dataConfiguration[0]->control_number_invoicing_configutarion = $dataConfiguration[0]->control_number_invoicing_configutarion+1;
+            }
+        }
+
+        //return $dataConfiguration;
 
         if (count($dataConfiguration) == 0) {
             return redirect()->route('invoices-config.index');
         } else {
             $dataConfiguration  = $dataConfiguration[0];
-            $config = $dataConfiguration->control_number_invoicing_configutarion;
         }
 
-        $datax = Invoicing::whereEnabledInvoicing(1)->orderBy('id_invoicing', 'DESC')->get();
 
-        if (count($datax) > 0) {
-            if ($config == $datax[0]->ctrl_num) {
-                $config = $datax[0]->ctrl_num + 1;
-            }
-            $config = $datax[0]->ctrl_num + 1;
-        }
+
+        
 
         $taxes = Tax::where('billable_tax', '=', 1)->get();
 
@@ -132,7 +135,7 @@ class InvoicingController extends Controller
                                     INNER JOIN group_workers ON group_workers.id_group_worker = workers.id_group_worker
                                     WHERE name_group_worker = 'VENDEDOR'");
 
-        return view('sales.invoices.create', compact('conf', 'dataWorkers', 'dataExchange', 'dataConfiguration', 'config', 'taxes'));
+        return view('sales.invoices.create', compact('conf', 'dataWorkers', 'dataExchange', 'dataConfiguration', 'taxes'));
     }
 
     public function store(Request $request)
@@ -169,12 +172,9 @@ class InvoicingController extends Controller
         $saveInvoice->id_client = $dataInvoice['id_client'];
         $saveInvoice->id_exchange = $dataInvoice['id_exchange'];
         $saveInvoice->ctrl_num = $dataInvoice['ctrl_num'];
-
-
-
-
-
-        $saveInvoice->ref_name_invoicing = $dataConfiguration->correlative_invoicing_configutarion . '-' . str_pad($dataInvoice['ctrl_num'], 6, "0", STR_PAD_LEFT);
+        $saveInvoice->ref_name_invoicing = $dataInvoice['ref_name_invoicing'];
+        $saveInvoice->ctrl_num_invoicing = $dataInvoice['ctrl_num_invoicing'];
+        
 
         if (isset($dataInvoice['id_worker'])) {
             $saveInvoice->id_worker = $dataInvoice['id_worker'];
@@ -188,6 +188,10 @@ class InvoicingController extends Controller
         $saveInvoice->date_invoicing = date('Y-m-d');
         $saveInvoice->id_order_state = 4;
         $saveInvoice->residual_amount_invoicing = $dataInvoice['total_con_tax'];
+
+
+
+        //return $saveInvoice;
         $saveInvoice->save();
 
 
@@ -196,6 +200,8 @@ class InvoicingController extends Controller
         $saveDetails->id_invoicing = $saveInvoice->id_invoicing;
         $saveDetails->details_invoicing_detail = json_encode($dataDetails);
         $saveDetails->save();
+
+        InvoicingConfigutarion::find(1)->update(['control_number_invoicing_configutarion' => $dataInvoice['ctrl_num']]);
 
 
 
@@ -283,7 +289,7 @@ class InvoicingController extends Controller
     public function show($id)
     {
 
-       $data = Invoicing::select(
+        $data = Invoicing::select(
             'invoicings.*',
             'c.address_client',
             'c.phone_client',
@@ -470,7 +476,7 @@ class InvoicingController extends Controller
     }
 
     public function anularFactura($id)
-    {   
+    {
         $dataDetails = InvoicingDetails::whereIdInvoicing($id)->get()[0];
         $obj = json_decode($dataDetails->details_invoicing_detail, true);
 
@@ -482,9 +488,9 @@ class InvoicingController extends Controller
 
         Invoicing::whereIdInvoicing($id)->update(['id_order_state' => 3, 'residual_amount_invoicing' => $this->getDataInv($id)->total_amount_invoicing]);
         SalesOrder::whereIdInvoice($id)->update(['id_order_state' => 3]);
-        
+
         //Payments::whereIdInvoice($id)->where('type_pay', '=', 1)->update(['enabled_payment' => 0]);
-        
+
         $pagos = Payments::whereIdInvoice($id)->get();
 
         if (count($pagos) > 0) {

@@ -23,10 +23,6 @@
                 <td>Numero de control:</td>
                 <td>{{ $data->control_number_sale_order_configuration }}</td>
             </tr>
-            <tr>
-                <td>Cuenta contable:</td>
-                <td>{{ $data->name_ledger_account }}</td>
-            </tr>
 
         </table>
 

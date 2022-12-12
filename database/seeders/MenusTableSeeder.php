@@ -60,10 +60,10 @@ class MenusTableSeeder extends Seeder
 
         //CONFIGURACIONES
         Menu::create(['id' => 25, 'name' => 'Bancos', 'slug' => 'banks.index', 'grupo' => 'banks', 'icono' => 'fa-solid fa-building-columns', 'parent' => '7', 'order' => '0', 'href' => '0', ]);
-        Menu::create(['id' => 26, 'name' => 'Facturacion', 'slug' => 'invoices-config.index', 'grupo' => 'sales-invoices-conf', 'icono' => 'fa-solid fa-screwdriver-wrench', 'parent' => '7', 'order' => '1', 'href' => '0', ]);
+        Menu::create(['id' => 26, 'name' => 'Configurar Facturacion', 'slug' => 'invoices-config.index', 'grupo' => 'sales-invoices-conf', 'icono' => 'fa-solid fa-screwdriver-wrench', 'parent' => '2', 'order' => '1', 'href' => '0', ]);
         Menu::create(['id' => 27, 'name' => 'Impuestos','slug' => 'taxes.index','grupo' => 'taxes','icono' => 'fa-solid fa-money-bills','parent' => '7','order' => '2','href' => '0',]);
         Menu::create(['id' => 28, 'name' => 'Menús','slug' => 'menu.index','grupo' => 'menu','icono' => 'fa-sharp fa-solid fa-table-list','parent' => '7','order' => '3','href' => '0',]);
-        Menu::create(['id' => 29, 'name' => 'Pedidos de venta','slug' => 'order-config.index','grupo' => 'sales-order-conf','icono' => 'fa-solid fa-screwdriver-wrench','parent' => '7','order' => '4','href' => '0',]);
+        Menu::create(['id' => 29, 'name' => 'Configurar Pedidos de venta','slug' => 'order-config.index','grupo' => 'sales-order-conf','icono' => 'fa-solid fa-screwdriver-wrench','parent' => '1','order' => '4','href' => '0',]);
         Menu::create(['id' => 30, 'name' => 'Permisologia','slug' => 'roles.index','grupo' => 'roles','icono' => 'fa-solid fa-users-rectangle','parent' => '7','order' => '5','href' => '0',]);
         Menu::create(['id' => 31, 'name' => 'Tasa de cambio','slug' => 'exchange.index','grupo' => 'exchange','icono' => 'fa-solid fa-building-columns','parent' => '7','order' => '6','href' => '0',]);
         Menu::create(['id' => 32, 'name' => 'Usuarios','slug' => 'users.index','grupo' => 'user','icono' => 'fa fa-address-card','parent' => '7','order' => '7','href' => '0',]);

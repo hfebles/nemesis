@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id('id_invoicing_configutarion');
             $table->string('print_name_invoicing_configutarion')->nullable();
             $table->string('correlative_invoicing_configutarion')->nullable();
-            $table->string('control_number_invoicing_configutarion')->nullable();
+            $table->integer('control_number_invoicing_configutarion')->nullable();
             $table->integer('id_ledger_account')->nullable();
             $table->integer('type_Ledger')->nullable();
             

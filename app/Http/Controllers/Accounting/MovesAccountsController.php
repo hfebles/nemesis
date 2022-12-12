@@ -97,7 +97,7 @@ class MovesAccountsController extends Controller
 
 
         //Tipo de movimiento
-        if ($type_moves_account == 1) { // venta
+        if ($type_moves_account == 1 || $type_moves_account == 4) { // venta
 
             for ($i = 0; $i < count($data); $i++) {
                 //Cuentas debe 
@@ -113,7 +113,8 @@ class MovesAccountsController extends Controller
                     $debe = $debe + $data[$i]->monto_debe;
                 }
             }
-        } elseif ($type_moves_account == 2) { // compra
+            
+        } elseif ($type_moves_account == 2 || $type_moves_account == 3) { // compra
 
 
 
@@ -136,42 +137,9 @@ class MovesAccountsController extends Controller
         }
 
 
-        // return $data;
+        //  return $data;
 
-        // if ($type_moves_account == 1 || $type_moves_account == 3) {
-        //     for ($i = 0; $i < count($data); $i++) {
-        //         if ($data[$i]->id_type_ledger_account == 1 || $data[$i]->id_type_ledger_account == 5 || $data[$i]->id_type_ledger_account == 6) {
-        //             $data[$i]->monto_debe = $data[$i]->amount_accounting_entries;
-        //             $debe = $debe + $data[$i]->monto_debe;
-        //         } else {
-        //             $data[$i]->monto_haber = $data[$i]->amount_accounting_entries;
-        //             
-        //         }
-        //     }
-        // }
-
-
-        // if ($type_moves_account == 2 || $type_moves_account == 4) {
-        //     for ($i = 0; $i < count($data); $i++) {
-        //         if ($data[$i]->id_type_ledger_account == 2 || $data[$i]->id_type_ledger_account == 3 || $data[$i]->id_type_ledger_account == 4) {
-        //             $data[$i]->monto_haber = $data[$i]->amount_accounting_entries;
-        //             $haber = $haber + $data[$i]->monto_haber;
-        //         } elseif ($data[$i]->id_type_ledger_account == 1) {
-        //             $data[$i]->monto_haber = $data[$i]->amount_accounting_entries;
-        //             $haber = $haber + $data[$i]->monto_haber;
-        //         } else {
-        //             $data[$i]->monto_debe = $data[$i]->amount_accounting_entries;
-        //             $debe = $debe + $data[$i]->monto_debe;
-        //         }
-        //     }
-        // }
-
-
-
-
-
-
-
+        
 
         $totales = ['debe' => $debe, 'haber' => $haber];
 

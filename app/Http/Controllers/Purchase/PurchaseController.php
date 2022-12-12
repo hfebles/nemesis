@@ -55,6 +55,7 @@ class PurchaseController extends Controller
             'c_thead' => 'bg-dark text-white',
             'ths' => ['#', 'Fecha', 'Pedido', 'Proveedor', 'Estado', 'Total'],
             'w_ts' => ['3', '10', '10', '43', '12', '12',],
+            'td_number' => [false, false, false, false, true], 
             'c_ths' =>
             [
                 'text-center align-middle',

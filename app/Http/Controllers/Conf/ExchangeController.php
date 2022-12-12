@@ -37,7 +37,7 @@ class ExchangeController extends Controller
                 'text-center align-middle',
                 'text-center align-middle',
             ],
-
+            'td_number' =>[false, true],
             'tds' => ['date_exchange', 'amount_exchange',],
             'money' => true,
             'switch' => false,
@@ -55,11 +55,23 @@ class ExchangeController extends Controller
 
     public function store(Request $request)
     {
+
+        //return $request;
+
+
         $data = $request->except('_token');
         $save = new Exchange();
         $save->date_exchange = $data['date_exchange'];
         $save->amount_exchange = $data['amount_exchange'];
         $save->save();
-        return redirect()->route('exchange.index')->with('message', 'Se registro la tasa con éxito');
+
+        //return $route;
+
+        if($request->ruta == 'invoicing.index'){
+            return redirect()->route('invoicing.create')->with('message', 'Se registro la tasa con éxito');
+        }else{
+            return redirect()->route('exchange.index')->with('message', 'Se registro la tasa con éxito');
+        }
+        
     }
 }

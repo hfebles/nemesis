@@ -3,88 +3,52 @@
 @section('title-section', $conf['title-section'])
 
 @section('btn')
-<x-btns :back="$conf['back']" :group="$conf['group']" />
+    <x-btns :back="$conf['back']" :group="$conf['group']" />
 @endsection
 
 @section('content')
-{!! Form::model($data, ['novalidate', 'class' => 'needs-validation', 'method' => 'PATCH', 'route' => ['order-config.update', $data->id_sale_order_configuration]]) !!}
-<div class="row">
-    <x-cards>
-        <table class="table table-bordered table-sm">
-            <tr>
-                <td>Correlativo:</td>
-                <td>{!! Form::text('correlative_sale_order_configuration', null, array('id' => 'correlative_sale_order_configuration', 'autocomplete' => 'off','required', 'class' => 'form-control form-control-sm')) !!}</td>
-            </tr>
-            <tr>
-                <td>Nombre de impresión:</td>
-                <td>{!! Form::text('print_name_sale_order_configuration', null, array('id' => 'print_name_sale_order_configuration', 'autocomplete' => 'off','required', 'class' => 'form-control form-control-sm')) !!}</td>
-            </tr>
-            <tr>
-                <td>Numero de control:</td>
-                <td>{!! Form::text('control_number_sale_order_configuration', null, array('id' => 'control_number_sale_order_configuration', 'autocomplete' => 'off','required', 'class' => 'form-control form-control-sm')) !!}</td>
-            </tr>
-            <tr>
-                <td>Tipo de cuenta contable asociada:</td>
-                <td>
-                    {!! Form::select('type_ledger', $typeLedger, $typeLedger, [
-                        'onchange' => 'selectSubAccount(this.value, "c")',
+    {!! Form::model($data, [
+        'novalidate',
+        'class' => 'needs-validation',
+        'method' => 'PATCH',
+        'route' => ['order-config.update', $data->id_sale_order_configuration],
+    ]) !!}
+    <div class="row">
+        <x-cards>
+            <table class="table table-bordered table-sm">
+                <tr>
+                    <td>Correlativo:</td>
+                    <td>{!! Form::text('correlative_sale_order_configuration', null, [
+                        'id' => 'correlative_sale_order_configuration',
+                        'autocomplete' => 'off',
                         'required',
-                        'class' => 'form-select form-control-sm',
-                        'placeholder' => 'Seleccione',
-                    ]) !!}
-                </td>
-            </tr>
+                        'class' => 'form-control form-control-sm',
+                    ]) !!}</td>
+                </tr>
+                <tr>
+                    <td>Nombre de impresión:</td>
+                    <td>{!! Form::text('print_name_sale_order_configuration', null, [
+                        'id' => 'print_name_sale_order_configuration',
+                        'autocomplete' => 'off',
+                        'required',
+                        'class' => 'form-control form-control-sm',
+                    ]) !!}</td>
+                </tr>
+                <tr>
+                    <td>Numero de control:</td>
+                    <td>{!! Form::text('control_number_sale_order_configuration', null, [
+                        'id' => 'control_number_sale_order_configuration',
+                        'autocomplete' => 'off',
+                        'required',
+                        'class' => 'form-control form-control-sm',
+                    ]) !!}</td>
+                </tr>
 
-            <tr id="subcuenta" style="display: none">
-                <td>Cuenta contable asociada:</td>
-                <td>
-                    <select class="form-select form-control-sm" name="id_ledger_account" required id="subcuentas"></select>
-                </td>
-            </tr>
-            
+            </table>
 
-        </table>
-
-    </x-cards>
-</div>
-<x-btns-save />
-{!! Form::close() !!}
+        </x-cards>
+    </div>
+    <x-btns-save />
+    {!! Form::close() !!}
 @endsection
 
-
-@section('js')
-<script>
-function selectSubAccount(type, location) {
-            const csrfToken = "{{ csrf_token() }}";
-            if (location == 'c') {
-                var div = document.getElementById('subcuenta');
-                div.style.display = "";
-                var select = document.getElementById('subcuentas');
-                var opts = "";
-            } else {
-                var select = document.getElementById('subcuentas_m');
-            }
-
-            fetch('/accounting/ledger-account/search-ledgers', {
-                method: 'POST',
-                body: JSON.stringify({
-                    type: type,
-                }),
-                headers: {
-                    'content-type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken
-                }
-            }).then(response => {
-                return response.json();
-            }).then(data => {
-                select.innerHTML = ""
-                for (i in data) {
-                    //console.log(data[i] )
-                    opts +=
-                        `<option value="${data[i].id_ledger_account}">${data[i].code_ledger_account} - ${data[i].name_ledger_account}</option>`
-                }
-                select.innerHTML = opts;
-            });
-        }
-</script>
-@endsection

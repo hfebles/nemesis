@@ -27,9 +27,12 @@ class SaleOrderConfigurationController extends Controller
 
     public function index(Request $request)
     {
-        $data = SaleOrderConfiguration::select('sale_order_configurations.*', 'ledger_accounts.name_ledger_account')
-        ->join('ledger_accounts', 'ledger_accounts.id_ledger_account', '=', 'sale_order_configurations.id_ledger_account')->get()[0];
-        $conf = [
+        $data = SaleOrderConfiguration::all()[0];
+
+        //return $data;
+
+
+                $conf = [
             'title-section' => 'Configuración de los pedidos de venta',
             'group' => 'sales-order-conf',
             'edit' => ['route' => 'order-config.edit', 'id' => $data->id_sale_order_configuration,],

@@ -19,23 +19,21 @@ class WithholdingIvaPurchasesController extends Controller
     public function index(Request $request)
     {
         $conf = [
-            'title-section' => 'Retenciones IVA',
+            'title-section' => 'Retenciones IVA Compras',
             'group' => 'accounting-withholding-purchases',
-            'create' => ['route' => 'invoicing.create', 'name' => 'Nueva factura'],
         ];
 
-        $data = WithholdingIvaPurchases::select('id_invoicing', 'residual_amount_invoicing', 'ref_name_invoicing', 'date_invoicing', 'total_amount_invoicing', 'os.name_order_state', 'c.name_client')
-            ->join('clients as c', 'c.id_client', '=', 'invoicings.id_client', 'left outer')
-            ->join('order_states as os', 'os.id_order_state', '=', 'invoicings.id_order_state', 'left outer')
-            ->whereEnabledInvoicing(1)
-            ->orderBy('id_invoicing', 'ASC')
-            ->paginate(10);
+        $data = WithholdingIvaPurchases::select('id_withholding_iva_purchase', 'voucher_number_whp', 'amount_tax_retention_whp', 'date_whp', 's.name_supplier')
+            ->join('suppliers as s', 's.id_supplier', '=', 'withholding_iva_purchases.id_supplier')
+            ->orderBy('date_whp', 'DESC')
+            ->paginate(15);
+            
 
         $table = [
             'c_table' => 'table table-bordered table-hover mb-0 text-uppercase',
             'c_thead' => 'bg-dark text-white',
-            'ths' => ['#', 'Factura', 'Fecha', 'Cliente', 'Estado', 'Total', 'A cobrar'],
-            'w_ts' => ['3', '10', '10', '41', '12', '12', '12',],
+            'ths' => ['#', 'Razon Social', 'Fecha', 'Numero de comprobante', 'Monto retenido',],
+            'w_ts' => ['3', '', '', '', '',],
             'c_ths' =>
             [
                 'text-center align-middle',
@@ -43,22 +41,20 @@ class WithholdingIvaPurchasesController extends Controller
                 'text-center align-middle',
                 'text-center align-middle',
                 'text-center align-middle',
-                'text-center align-middle',
-                'text-center align-middle',
-                'text-center align-middle',
             ],
-            'tds' => ['ref_name_invoicing', 'date_invoicing', 'name_client', 'name_order_state', 'total_amount_invoicing', 'residual_amount_invoicing'],
+            'td_number' => [false, false, false, true],
+            'tds' => ['name_supplier', 'date_whp', 'voucher_number_whp', 'amount_tax_retention_whp',],
             'switch' => false,
             'edit' => false,
             'show' => true,
             'edit_modal' => false,
-            'url' => "/sales/invoicing",
-            'id' => 'id_invoicing',
+            'url' => "/accounting/withholding-purchases",
+            'id' => 'id_withholding_iva_purchase',
             'data' => $data,
             'group' => 'accounting-withholding-purchases',
             'i' => (($request->input('page', 1) - 1) * 5),
         ];
-        return view('sales.invoices.index', compact('conf', 'table'));
+        return view('accounting.withholding-purchases.index', compact('conf', 'table'));
     }
 
 

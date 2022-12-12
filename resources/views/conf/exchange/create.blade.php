@@ -7,7 +7,7 @@
         <label class="form-label">Fecha:</label>
         <p>{{ date('d-m-Y') }}</p>
         {{ Form::hidden('date_exchange', date('Y-m-d')) }}
-
+        {{ Form::hidden('ruta', $route = app('router')->getRoutes(url()->previous())->match(app('request')->create(url()->previous()))->getName()) }}
     </div>
     <div class="col-md-12">
         <label class="form-label">Monto de la tasa</label>

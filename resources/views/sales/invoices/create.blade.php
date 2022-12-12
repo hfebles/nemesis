@@ -22,22 +22,21 @@
                     <td class="text-end align-middle">Pedido número:</td>
                     <td width="15%" class="text-end">
                         <span
-                            class="fs-4">{{ $dataConfiguration->correlative_sale_order_configuration }}{{ str_pad($config, 6, '0', STR_PAD_LEFT) }}</span>
-                        <input type="hidden" value="{{ $config }}" name="ctrl_num" />
+                            class="fs-4">{{ $dataConfiguration->correlative_invoicing_configutarion }}{{ str_pad($dataConfiguration->control_number_invoicing_configutarion, 6, '0', STR_PAD_LEFT) }}</span>
                         <input type="hidden"
-                            value="{{ $dataConfiguration->correlative_sale_order_configuration }}-{{ $config }}"
-                            name="ref_name_sales_order" />
+                            value="{{ $dataConfiguration->correlative_invoicing_configutarion }}{{ str_pad($dataConfiguration->control_number_invoicing_configutarion, 6, '0', STR_PAD_LEFT) }}"
+                            name="ref_name_invoicing" />
                     </td>
 
                 </tr>
                 <tr>
                     <td class="text-end align-middle">Nro control:</td>
                     <td width="15%" class="text-end">
-                        <span class="fs-4">{{ str_pad($config, 6, '0', STR_PAD_LEFT) }}</span>
-                        <input type="hidden" value="{{ $config }}" name="ctrl_num" />
+                        <span class="fs-4">{{ str_pad($dataConfiguration->control_number_invoicing_configutarion, 6, '0', STR_PAD_LEFT) }}</span>
+                        <input type="hidden" value="{{ $dataConfiguration->control_number_invoicing_configutarion }}" name="ctrl_num" />
                         <input type="hidden"
-                            value="{{ $dataConfiguration->correlative_sale_order_configuration }}{{ $config }}"
-                            name="ref_name_sales_order" />
+                            value="{{ str_pad($dataConfiguration->control_number_invoicing_configutarion, 6, '0', STR_PAD_LEFT) }}"
+                            name="ctrl_num_invoicing" />
                     </td>
 
                 </tr>
@@ -392,7 +391,6 @@
             }
 
             function abreModal(x, y = "") {
-                console.log(x)
                 myModal.show()
                 if (x == 'clientes') {
                     seleccionar(x);
