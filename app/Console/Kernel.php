@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\CronExchange;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -13,9 +14,14 @@ class Kernel extends ConsoleKernel
      * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
      * @return void
      */
+
+     protected $commands =[
+        CronExchange::class,
+     ]; 
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->command('exchange_update:cron')->dailyAt('7:00');
     }
 
     /**

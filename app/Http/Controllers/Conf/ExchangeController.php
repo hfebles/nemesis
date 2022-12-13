@@ -5,6 +5,10 @@ namespace App\Http\Controllers\Conf;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Http;
+ 
+
+
 use App\Models\Conf\Exchange;
 
 class ExchangeController extends Controller
@@ -50,6 +54,9 @@ class ExchangeController extends Controller
             'i' => (($request->input('page', 1) - 1) * 5),
         ];
 
+
+        
+
         return view('conf.exchange.index', compact('conf', 'table'));
     }
 
@@ -73,5 +80,13 @@ class ExchangeController extends Controller
             return redirect()->route('exchange.index')->with('message', 'Se registro la tasa con éxito');
         }
         
+    }
+
+    public function storeCurl($arr){
+        $save = new Exchange();
+        $save->date_exchange = $arr['date_exchange'];
+        $save->amount_exchange = $arr['amount_exchange'];
+        $save->save();
+
     }
 }

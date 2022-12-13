@@ -32,6 +32,9 @@
             </form>
         </div>
     </li>
+    <li class="nav-item">
+        <a href="#" class="nav-link">Precio BCV: {{ $url['USD']['sicad2'] }}</a>
+    </li>
 
     {{-- <!-- Nav Item - Alerts -->
     <li class="nav-item dropdown no-arrow mx-1">
