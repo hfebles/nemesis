@@ -21,6 +21,7 @@ use App\Models\Sales\SalesOrderDetails;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rules\Exists;
 
 class InvoicingController extends Controller
 {
@@ -80,6 +81,39 @@ class InvoicingController extends Controller
         return view('sales.invoices.index', compact('conf', 'table'));
     }
 
+    function getNroControl($dataConfiguration)
+    {
+        $facturas = Invoicing::orderBy('ctrl_num', 'ASC')->get();
+        $nro2 = [];
+
+        for ($i = 0; $i < sizeof($facturas); $i++) {
+            $nro2[$i] = $facturas[$i]->ctrl_num;
+        }
+
+        if (sizeof($facturas)) {
+            $existe = Invoicing::select('ctrl_num')->whereCtrlNum($dataConfiguration->control_number_invoicing_configutarion)->get();
+            if (sizeof($existe) > 0) {
+                if (sizeof(Invoicing::select('ctrl_num')->whereCtrlNum($dataConfiguration->control_number_invoicing_configutarion + 1)->get())) {
+                    $compare_array = range(1, max($nro2));
+                    $missing_values = array_diff($compare_array, $nro2);
+                    if (range(1, max($nro2)) >= $dataConfiguration->control_number_invoicing_configutarion && min($missing_values) < $dataConfiguration->control_number_invoicing_configutarion) {
+                        $ctrl = $nro2[sizeof($nro2) - 1] + 1;
+                    } else if (sizeof(Invoicing::select('ctrl_num')->whereCtrlNum($missing_values[key($missing_values)])->get()) == 0) {
+                        $ctrl = $missing_values[key($missing_values)];
+                    }
+                } else {
+                    $ctrl = $dataConfiguration->control_number_invoicing_configutarion + 1;
+                }
+            } else {
+                $ctrl = $dataConfiguration->control_number_invoicing_configutarion;
+            }
+        } else {
+            $ctrl = $dataConfiguration->control_number_invoicing_configutarion;
+        }
+
+        return $ctrl;
+    }
+
 
     public function create()
     {
@@ -94,12 +128,11 @@ class InvoicingController extends Controller
 
         $dataUsers = Client::whereEnabledClient(1)->get();
 
-        if (count($dataUsers) == 0) {
+        if (sizeof($dataUsers) < 0) {
             return redirect()->route('clients.index')->with('success', "Debe registrar un cliente");
         }
 
-        //return $dataExchange;
-        if (count($dataExchange) == 0) {
+        if (sizeof($dataExchange) == 0) {
             return redirect()->route('exchange.index')->with('success', 'Debe registrar una tasa cambiaria');
         } else {
             $dataExchange = $dataExchange[0];
@@ -108,43 +141,25 @@ class InvoicingController extends Controller
 
         $dataConfiguration = InvoicingConfigutarion::all();
 
-        $nro = Invoicing::orderBy('id_invoicing', 'DESC')->get();
-
-        if (count($nro) > 0){
-            if($dataConfiguration[0]->control_number_invoicing_configutarion == $nro[0]->ctrl_num){
-                $dataConfiguration[0]->control_number_invoicing_configutarion = $dataConfiguration[0]->control_number_invoicing_configutarion+1;
-            }
-        }
-
-        //return $dataConfiguration;
-
-        if (count($dataConfiguration) == 0) {
+        if (sizeof($dataConfiguration) == 0) {
             return redirect()->route('invoices-config.index');
         } else {
             $dataConfiguration  = $dataConfiguration[0];
         }
 
-
-
-        
+        $ctrl = $this->getNroControl($dataConfiguration);
 
         $taxes = Tax::where('billable_tax', '=', 1)->get();
-
         $dataWorkers = \DB::select("SELECT workers.id_worker, workers.firts_name_worker, workers.last_name_worker, group_workers.name_group_worker
                                     FROM workers
                                     INNER JOIN group_workers ON group_workers.id_group_worker = workers.id_group_worker
                                     WHERE name_group_worker = 'VENDEDOR'");
 
-        return view('sales.invoices.create', compact('conf', 'dataWorkers', 'dataExchange', 'dataConfiguration', 'taxes'));
+        return view('sales.invoices.create', compact('conf', 'dataWorkers', 'dataExchange', 'ctrl', 'dataConfiguration', 'taxes'));
     }
 
     public function store(Request $request)
     {
-
-
-        //return $request;
-        $dataConfiguration = InvoicingConfigutarion::all()[0];
-
         $dataInvoice = $request->except('_token');
         $dataDetails = $request->except(
             '_token',
@@ -164,38 +179,25 @@ class InvoicingController extends Controller
             'ctrl_num'
         );
 
-
-
         $saveInvoice = new Invoicing();
-
-        $saveInvoice->type_payment = $dataInvoice['type_payment_sales_order'];
+        $saveInvoice->type_payment = $dataInvoice['type_payment'];
         $saveInvoice->id_client = $dataInvoice['id_client'];
         $saveInvoice->id_exchange = $dataInvoice['id_exchange'];
         $saveInvoice->ctrl_num = $dataInvoice['ctrl_num'];
         $saveInvoice->ref_name_invoicing = $dataInvoice['ref_name_invoicing'];
         $saveInvoice->ctrl_num_invoicing = $dataInvoice['ctrl_num_invoicing'];
-        
-
         if (isset($dataInvoice['id_worker'])) {
             $saveInvoice->id_worker = $dataInvoice['id_worker'];
         }
-
         $saveInvoice->id_user = Auth::id();
         $saveInvoice->total_amount_invoicing = $dataInvoice['total_con_tax'];
         $saveInvoice->exempt_amout_invoicing = $dataInvoice['exento'];
         $saveInvoice->no_exempt_amout_invoicing = $dataInvoice['subFac'];
         $saveInvoice->total_amount_tax_invoicing = $dataInvoice['total_taxes'];
-        $saveInvoice->date_invoicing = date('Y-m-d');
+        $saveInvoice->date_invoicing = $dataInvoice['date_invoicing'];
         $saveInvoice->id_order_state = 4;
         $saveInvoice->residual_amount_invoicing = $dataInvoice['total_con_tax'];
-
-
-
-        //return $saveInvoice;
         $saveInvoice->save();
-
-
-
         $saveDetails = new InvoicingDetails();
         $saveDetails->id_invoicing = $saveInvoice->id_invoicing;
         $saveDetails->details_invoicing_detail = json_encode($dataDetails);
@@ -203,24 +205,14 @@ class InvoicingController extends Controller
 
         InvoicingConfigutarion::find(1)->update(['control_number_invoicing_configutarion' => $dataInvoice['ctrl_num']]);
 
-
-
-
         for ($i = 0; $i < count($dataInvoice['id_product']); $i++) {
             $restar =  Product::select('qty_product')->whereIdProduct($dataInvoice['id_product'][$i])->get();
             $operacion = $restar[0]->qty_product - $dataInvoice['cantidad'][$i];
-
             Product::whereIdProduct($dataInvoice['id_product'][$i])->update(['qty_product' => $operacion]);
         }
 
         $move = (new MovesAccountsController)->createMoves($saveInvoice->id_invoicing, $saveInvoice->date_invoicing, 1);
-
-
-
-        $result = (new AccountingEntriesController)->saveEntriesSales($move, $saveInvoice->id_invoicing);
-
-        //return $result;
-
+        (new AccountingEntriesController)->saveEntriesSales($move, $saveInvoice->id_invoicing);
 
         return redirect()->route('invoicing.show', $saveInvoice->id_invoicing)->with('message', 'Se registro la factura con éxito');
     }
@@ -231,32 +223,27 @@ class InvoicingController extends Controller
 
         $dataSalesOrder = SalesOrder::whereIdSalesOrder($id)->get()[0];
         $dataDetails = SalesOrderDetails::whereIdSalesOrder($id)->get()[0];
-        $dataConfig = InvoicingConfigutarion::all();
+        $dataConfiguration = InvoicingConfigutarion::all();
 
-        if (count($dataConfig) == 0) {
+        if (count($dataConfiguration) == 0) {
             return redirect()->route('order-config.index')->with('success', 'Debe registrar una tasa');
         } else {
-            $dataConfig = $dataConfig[0];
-            $config = $dataConfig->control_number_invoicing_configutarion;
+            $dataConfiguration = $dataConfiguration[0];
         }
 
-        $datax = Invoicing::whereEnabledInvoicing(1)->orderBy('id_invoicing', 'DESC')->get();
 
-        if (count($datax) > 0) {
+        $ctrl = $this->getNroControl($dataConfiguration);    
 
-            if ($config == $datax[0]->ctrl_num) {
-                $config = $datax[0]->ctrl_num + 1;
-            }
-            $config = $datax[0]->ctrl_num + 1;
-        }
 
         $inv = new Invoicing();
         $invDetails = new InvoicingDetails();
-        $inv->type_payment = $dataSalesOrder['type_payment'];
+
+        $inv->type_payment = $dataSalesOrder['type_payment_sales_order'];
         $inv->id_client = $dataSalesOrder['id_client'];
         $inv->id_exchange = $dataSalesOrder['id_exchange'];
-        $inv->ctrl_num = $config;
-        $inv->ref_name_invoicing = $dataConfig->correlative_invoicing_configutarion . '-' . str_pad($config, 6, "0", STR_PAD_LEFT);
+        $inv->ctrl_num = $ctrl;
+        $inv->ref_name_invoicing = $dataConfiguration->correlative_invoicing_configutarion . '-' . str_pad($ctrl, 6, "0", STR_PAD_LEFT);
+        $inv->ctrl_num_invoicing = str_pad($ctrl, 6, "0", STR_PAD_LEFT);
 
         if (isset($dataSalesOrder['id_worker'])) {
             $inv->id_worker = $dataSalesOrder['id_worker'];
@@ -279,7 +266,7 @@ class InvoicingController extends Controller
         SalesOrder::whereIdSalesOrder($id)->update(['id_order_state' => 2, 'id_invoice' => $inv->id_invoicing]);
 
         $move = (new MovesAccountsController)->createMoves($inv->id_invoicing, $inv->date_invoicing, 1);
-        $result = (new AccountingEntriesController)->saveEntriesSales($move, $inv->id_invoicing);
+        (new AccountingEntriesController)->saveEntriesSales($move, $inv->id_invoicing);
 
         return redirect()->route('invoicing.show', $inv->id_invoicing)->with('message', 'Se registro la factura con éxito');
     }

@@ -62,7 +62,7 @@
 
                             </td>
                         </tr>
-                        @if ($data->taxpayer_client == 1)
+                        @if ($data->taxpayer_client == 1 && isset($data->id_withholding_iva_sale))
                             <tr>
                                 <td class="text-end">Retención:</td>
                                 <td class="text-start">
@@ -224,7 +224,7 @@
                             </th>
                         </tr>
 
-                        @if ($data->taxpayer_client == 1)
+                        @if ($data->taxpayer_client == 1 && isset($data->id_withholding_iva_sale))
                             @if ($data->porcentual_amount_tax_client == 75)
                                 <tr>
                                     <th scope="col" class="text-end align-middle text-dark">IVA RETENIDO: </th>
@@ -314,7 +314,7 @@
 
         </x-cards>
     </div>
-    @if ($data->taxpayer_client == 1)
+    @if ($data->taxpayer_client == 1 && isset($data->id_withholding_iva_sale))
     <div class="modal fade" id="exampleModal2" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
         aria-labelledby="staticBackdropLabel2" aria-hidden="true">
         <div class="modal-dialog modal-xl">
@@ -325,7 +325,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="row g-3">
-                        
+
                         {!! Form::model($data, ['method' => 'PATCH', 'route' => ['withholding-sales.update', $data->id_withholding_iva_sale]]) !!}
                         <div class="col-12">
                             {{ $data->ref_name_invoicing }}

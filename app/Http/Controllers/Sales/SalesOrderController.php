@@ -28,6 +28,39 @@ class SalesOrderController extends Controller
         $this->middleware('permission:adm-delete|sales-order-delete', ['only' => ['destroy']]);
     }
 
+    function getNroControl($dataConfiguration)
+    {
+        $facturas = SalesOrder::orderBy('ctrl_num', 'ASC')->get();
+        $nro2 = [];
+
+        for ($i = 0; $i < sizeof($facturas); $i++) {
+            $nro2[$i] = $facturas[$i]->ctrl_num;
+        }
+
+        if (sizeof($facturas)) {
+            $existe = SalesOrder::select('ctrl_num')->whereCtrlNum($dataConfiguration->control_number_sale_order_configuration)->get();
+            if (sizeof($existe) > 0) {
+                if (sizeof(SalesOrder::select('ctrl_num')->whereCtrlNum($dataConfiguration->control_number_sale_order_configuration + 1)->get())) {
+                    $compare_array = range(1, max($nro2));
+                    $missing_values = array_diff($compare_array, $nro2);
+                    if (range(1, max($nro2)) >= $dataConfiguration->control_number_sale_order_configuration && min($missing_values) < $dataConfiguration->control_number_sale_order_configuration) {
+                        $ctrl = $nro2[sizeof($nro2) - 1] + 1;
+                    } else if (sizeof(SalesOrder::select('ctrl_num')->whereCtrlNum($missing_values[key($missing_values)])->get()) == 0) {
+                        $ctrl = $missing_values[key($missing_values)];
+                    }
+                } else {
+                    $ctrl = $dataConfiguration->control_number_sale_order_configuration + 1;
+                }
+            } else {
+                $ctrl = $dataConfiguration->control_number_sale_order_configuration;
+            }
+        } else {
+            $ctrl = $dataConfiguration->control_number_sale_order_configuration;
+        }
+
+        return $ctrl;
+    }
+
     public function index(Request $request)
     {
         $conf = [
@@ -62,6 +95,7 @@ class SalesOrderController extends Controller
             'edit' => false,
             'show' => true,
             'edit_modal' => false,
+            'td_number' => [false, false, false, false, true,],
             'url' => "/sales/sales-order",
             'id' => 'id_sales_order',
             'data' => $data,
@@ -95,21 +129,20 @@ class SalesOrderController extends Controller
         if (count($dataConfiguration) == 0) {
             return redirect()->route('sales-order.index')->with('error', 'No tiene configurado los pedidos');
         } else {
-            //$dataConfiguration = $dataConfiguration[0];
-            $config = $dataConfiguration[0]->control_number_sale_order_configuration;
+            $dataConfiguration = $dataConfiguration[0];
         }
-        if (count($datax) > 0) {
-            if ($config == $datax[0]->ctrl_num) {
-                $config = $datax[0]->ctrl_num + 1;
-            }
-            $config = $datax[0]->ctrl_num + 1;
-        }
+        
+        $ctrl = $this->getNroControl($dataConfiguration);
+
+        //return $ctrl;
+
+
         $dataWorkers =  Workers::select('workers.id_worker', DB::raw('CONCAT(firts_name_worker," ",last_name_worker) as name'), 'group_workers.name_group_worker')
             ->join('group_workers', 'group_workers.id_group_worker', '=', 'workers.id_group_worker')
             ->where('name_group_worker', '=', 'VENDEDORES')
             ->pluck('name', 'workers.id_worker');
 
-        return view('sales.sales-order.create', compact('conf', 'dataWorkers', 'dataExchange', 'dataConfiguration', 'config', 'taxes'));
+        return view('sales.sales-order.create', compact('conf', 'ctrl', 'dataWorkers', 'dataExchange', 'dataConfiguration', 'taxes'));
     }
 
 
@@ -134,11 +167,14 @@ class SalesOrderController extends Controller
             'ctrl_num'
         );
         $saveSalesOrder = new SalesOrder();
+        $saveSalesOrder->ref_name_sales_order = $dataSalesOrder['ref_name_sales_order'];
+        $saveSalesOrder->ctrl_num = $dataSalesOrder['ctrl_num'];
+        $saveSalesOrder->ctrl_num_sales_order = $dataSalesOrder['ctrl_num_sales_order'];
         $saveSalesOrder->type_payment = $dataSalesOrder['type_payment_sales_order'];
         $saveSalesOrder->id_client = $dataSalesOrder['id_client'];
         $saveSalesOrder->id_exchange = $dataSalesOrder['id_exchange'];
-        $saveSalesOrder->ctrl_num = $dataSalesOrder['ctrl_num'];
-        $saveSalesOrder->ref_name_sales_order = $dataSalesOrder['ref_name_sales_order'];
+        
+        
         if (isset($dataSalesOrder['id_worker'])) {
             $saveSalesOrder->id_worker = $dataSalesOrder['id_worker'];
         }
@@ -147,7 +183,7 @@ class SalesOrderController extends Controller
         $saveSalesOrder->exempt_amout_sales_order = $dataSalesOrder['exento'];
         $saveSalesOrder->no_exempt_amout_sales_order = $dataSalesOrder['subFac'];
         $saveSalesOrder->total_amount_tax_sales_order = $dataSalesOrder['total_taxes'];
-        $saveSalesOrder->date_sales_order = date('Y-m-d');
+        $saveSalesOrder->date_sales_order = $dataSalesOrder['date_sales_order'];
         $saveSalesOrder->save();
         $saveDetails = new salesOrderDetails();
         $saveDetails->id_sales_order = $saveSalesOrder->id_sales_order;

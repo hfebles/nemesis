@@ -22,18 +22,28 @@
                     <td class="text-end align-middle">Pedido número:</td>
                     <td width="15%" class="text-end">
                         <span
-                            class="fs-4">{{ $dataConfiguration[0]->correlative_sale_order_configuration }}-{{ str_pad($config, 6, '0', STR_PAD_LEFT) }}</span>
+                            class="fs-4">{{ $dataConfiguration->correlative_sale_order_configuration }}{{ str_pad($ctrl, 6, '0', STR_PAD_LEFT) }}</span>
                         <input type="hidden"
-                            value="{{ $dataConfiguration[0]->correlative_sale_order_configuration }}-{{ str_pad($config, 6, '0', STR_PAD_LEFT) }}"
+                            value="{{ $dataConfiguration->correlative_sale_order_configuration }}{{ str_pad($ctrl, 6, '0', STR_PAD_LEFT) }}"
                             name="ref_name_sales_order" />
                     </td>
                 </tr>
                 <tr>
                     <td class="text-end align-middle">Nro control:</td>
                     <td width="15%" class="text-end">
-                        <span class="fs-4">{{ str_pad($config, 6, '0', STR_PAD_LEFT) }}</span>
-                        <input type="hidden" value="{{ $config }}" name="ctrl_num" />
+                        <span class="fs-4">{{ str_pad($ctrl, 6, '0', STR_PAD_LEFT) }}</span>
+                        <input type="hidden" value="{{ $ctrl }}" name="ctrl_num" />
+                        <input type="hidden"
+                            value="{{ str_pad($ctrl, 6, '0', STR_PAD_LEFT) }}"
+                            name="ctrl_num_sales_order" />
                     </td>
+                </tr>
+                <tr>
+                    <td class="text-end align-middle">Fecha Factura:</td>
+                    <td width="15%" class="text-end">
+                        {!! Form::date('date_sales_order', \Carbon\Carbon::now(), ['max' => date('Y-m-d'), 'class' => 'form-control form-control-sm', 'required']) !!}
+                    </td>
+
                 </tr>
             </table>
 

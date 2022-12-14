@@ -66,7 +66,9 @@ class AccountingEntriesController extends Controller
 
         //VALIDAMOS EL TIPO DE CONTRIBUYENTE
 
-        if ($client->taxpayer_client == 1) {
+        if ($client->taxpayer_client == 1 && $invoice->total_amount_tax_invoicing != 0 ) {
+
+            
             // 1. AGENTE DE RETENCION O CONTRIBUYENTE ESPECIAL
             // 1.1. UBICAMOS EL MONTO DE LA RETENCION
             // 1.2. CONSULTAMOS PARA EL CASO DE 75% O 100%

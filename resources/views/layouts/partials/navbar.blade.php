@@ -33,7 +33,7 @@
         </div>
     </li>
     <li class="nav-item">
-        <a href="#" class="nav-link">Precio BCV: {{ $url['USD']['sicad2'] }}</a>
+        {{-- <a href="#" class="nav-link">Precio BCV: {{ $url['USD']['sicad2'] }}</a> --}}
     </li>
 
     {{-- <!-- Nav Item - Alerts -->
