@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id('id_sale_order_configuration');
             $table->string('print_name_sale_order_configuration')->nullable();
             $table->string('correlative_sale_order_configuration')->nullable();
-            $table->string('control_number_sale_order_configuration')->nullable();
+            $table->integer('control_number_sale_order_configuration')->nullable();
             $table->integer('type_Ledger')->nullable();
             $table->boolean('enabled_sale_order_configuration')->default(1);
             $table->timestamps();

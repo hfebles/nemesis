@@ -80,9 +80,11 @@ class MenusTableSeeder extends Seeder
 
         Menu::create(['id' => 39, 'name' => 'Compras', 'slug' => '/', 'grupo' => 'purchase', 'icono' => 'fa-solid fa-receipt', 'parent' => '0', 'order' => '2', 'href' => '0', ]);
         Menu::create(['id' => 40, 'name' => 'Ordenes de Compras', 'slug' => 'purchase-order.index', 'grupo' => 'purchase-order', 'icono' => 'fa-solid fa-receipt', 'parent' => '39', 'order' => '0', 'href' => '0', ]);
-        Menu::create(['id' => 41, 'name' => 'Proveedores', 'slug' => 'supplier.index', 'grupo' => 'purchase-supplier', 'icono' => 'fa-solid fa-receipt', 'parent' => '39', 'order' => '2', 'href' => '0', ]);
-        Menu::create(['id' => 42, 'name' => 'Compras', 'slug' => 'purchase.index', 'grupo' => 'purchase-purchase', 'icono' => 'fa-solid fa-receipt', 'parent' => '39', 'order' => '1', 'href' => '0', ]);
+        Menu::create(['id' => 41, 'name' => 'Compras', 'slug' => 'purchase.index', 'grupo' => 'purchase-purchase', 'icono' => 'fa-solid fa-receipt', 'parent' => '39', 'order' => '1', 'href' => '0', ]);
+        Menu::create(['id' => 42, 'name' => 'Proveedores', 'slug' => 'supplier.index', 'grupo' => 'purchase-supplier', 'icono' => 'fa-solid fa-receipt', 'parent' => '39', 'order' => '2', 'href' => '0', ]);
         Menu::create(['id' => 43, 'name' => 'Retenciones de iva Compras', 'slug' => 'withholding-purchases.index', 'grupo' => 'accounting-withholding-purchases', 'icono' => 'fa-sharp fa-solid fa-table-list', 'parent' => '39', 'order' => '3', 'href' => '0', ]);
+        Menu::create(['id' => 44, 'name' => 'Configuracion Ordenes de Compra', 'slug' => 'order-config.index', 'grupo' => 'purchase-order-config', 'icono' => 'fa-sharp fa-solid fa-table-list', 'parent' => '39', 'order' => '4', 'href' => '0', ]);
+        Menu::create(['id' => 45, 'name' => 'Configuracion Compras', 'slug' => 'purchase-config.index', 'grupo' => 'purchase-config-list', 'icono' => 'fa-sharp fa-solid fa-table-list', 'parent' => '39', 'order' => '5', 'href' => '0', ]);
     }
 
 }

@@ -149,10 +149,14 @@ class AnotherConfigsSeeder extends Seeder
 ('INVERSIONES POPULAR II', 'J404981845', 'AV BERMUDEZ ESTE ENTRE CALLE INDEPENDENCIA Y BOYACA NRO 01-04', 4),
 ('INVERSIONES LUNA SOL', 'J405047968', 'CALLE INDEPENDENCIA NRO 104-23-10', 4);");
 
-        DB::insert("INSERT INTO sale_order_configurations (print_name_sale_order_configuration, correlative_sale_order_configuration, control_number_sale_order_configuration, enabled_sale_order_configuration) VALUES ('pb', 'PV', '1', '1');");
+        DB::insert("INSERT INTO sale_order_configurations (print_name_sale_order_configuration, correlative_sale_order_configuration, control_number_sale_order_configuration) VALUES ('Pedido de venta', 'PV', 1);");
 
         DB::insert("INSERT INTO type_ledger_accounts (name_type_ledger_account, debe_type_ledger_account, haber_type_ledger_account) VALUES ('ACTIVO', '1', '0' ), ('PASIVO', '0','1'), ('PATRIMONIO', '0','1'), ('INGRESOS', '0','1'), ('COSTOS', '1','0'), ('GASTOS', '1','0');");
 
-        DB::insert("INSERT INTO invoicing_configutarions (print_name_invoicing_configutarion, correlative_invoicing_configutarion, control_number_invoicing_configutarion, id_ledger_account) VALUES ('F', 'Factura', '1', '112');");
+        DB::insert("INSERT INTO invoicing_configutarions (print_name_invoicing_configutarion, correlative_invoicing_configutarion, control_number_invoicing_configutarion, id_ledger_account) VALUES ('Factura', 'F', 1, 112);");
+
+        DB::insert("INSERT INTO purchase_configs (print_name_id_purchase_config, correlative_id_purchase_config, control_number_id_purchase_config, id_ledger_account) VALUES ('Compra', 'C', 1, 112);");
+
+        DB::insert("INSERT INTO purchase_order_configs (print_name_purchase_order_config, correlative_purchase_order_config, control_number_purchase_order_config) VALUES ('Pedido de Compra', 'PC', 1);");
     }
 }

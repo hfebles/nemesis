@@ -68,12 +68,12 @@ class PermissionTableSeeder extends Seeder
             'purchase-list', 'purchase-create', 'purchase-edit', 'purchase-delete',
             'purchase-order-list', 'purchase-order-create', 'purchase-order-edit', 'purchase-order-delete',
             'purchase-purchase-list', 'purchase-purchase-create', 'purchase-purchase-edit', 'purchase-purchase-delete',
+            'purchase-order-config-list', 'purchase-order-config-create', 'purchase-order-config-edit', 'purchase-order-config-delete',
+            'purchase-config-list', 'purchase-config-create', 'purchase-config-edit', 'purchase-config-delete',
 
 
             'supplier-list', 'supplier-create', 'supplier-edit', 'supplier-delete',
-            'purchase-supplier-list', 'purchase-supplier-create', 'purchase-supplier-edit', 'purchase-supplier-delete',
-
-            
+            'purchase-supplier-list', 'purchase-supplier-create', 'purchase-supplier-edit', 'purchase-supplier-delete',           
             
         ];
      

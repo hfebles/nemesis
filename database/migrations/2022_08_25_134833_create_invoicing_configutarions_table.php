@@ -18,9 +18,8 @@ return new class extends Migration
             $table->string('print_name_invoicing_configutarion')->nullable();
             $table->string('correlative_invoicing_configutarion')->nullable();
             $table->integer('control_number_invoicing_configutarion')->nullable();
-            $table->integer('id_ledger_account')->nullable();
-            $table->integer('type_Ledger')->nullable();
-            
+            $table->unsignedBigInteger('id_ledger_account');
+            $table->foreign('id_ledger_account')->references('id_ledger_account')->on('ledger_accounts');            
             $table->boolean('enabled_invoicing_configutarion')->default(1);
             $table->timestamps();
         });

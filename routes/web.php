@@ -43,6 +43,8 @@ use App\Http\Controllers\HumanResources\GroupWorkersController;
 
 use App\Http\Controllers\Conf\BankController;
 use App\Http\Controllers\Conf\CargoController;
+use App\Http\Controllers\Conf\Purchases\PurchaseConfigController;
+use App\Http\Controllers\Conf\Purchases\PurchaseOrderConfigController;
 use App\Http\Controllers\Conf\Sales\InvoicingConfigutarionController;
 use App\Http\Controllers\Conf\ZoneController;
 use App\Http\Controllers\Delivery\DeliveryController;
@@ -114,11 +116,20 @@ Route::group(['middleware' => ['auth']], function () {
     Route::resource('/mantenice/cargo', CargoController::class);
     Route::post('/mantenice/edit-cargo', [CargoController::class, 'editModal'])->name('cargo.edit-cargo');
 
-    //conf pedidos
-
+    //Configurar pedidos
     Route::resource('/mantenice/sales-order/order-config', SaleOrderConfigurationController::class);
+
+    //Facturas
     Route::resource('/mantenice/invoices/invoices-config', InvoicingConfigutarionController::class);
 
+    // Configurar compras
+    Route::resource('/mantenice/purchase/purchase-config', PurchaseConfigController::class);
+
+    //Configurar ordenes de compra
+    Route::resource('/mantenice/purchase/order-config', PurchaseOrderConfigController::class);
+
+
+    
     /**
      * 
      * FIN CONFIGURACIONES
