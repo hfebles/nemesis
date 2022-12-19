@@ -51,7 +51,7 @@ class PurchaseConfigController extends Controller
     {
         $data = $request->except('_token', '_method');
         PurchaseConfig::whereidPurchaseConfig($id)->update($data);
-        return redirect()->route('invoices-config.index');
+        return redirect()->route('purchase-config.index');
     }
 
     public function getInvConf()

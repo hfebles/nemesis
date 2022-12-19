@@ -139,13 +139,9 @@ class InvoicingController extends Controller
         }
 
 
-        $dataConfiguration = InvoicingConfigutarion::all();
+        $dataConfiguration = InvoicingConfigutarion::find(1);
 
-        if (sizeof($dataConfiguration) == 0) {
-            return redirect()->route('invoices-config.index');
-        } else {
-            $dataConfiguration  = $dataConfiguration[0];
-        }
+        if (!isset($dataConfiguration)) {return redirect()->route('invoices-config.index');}
 
         $ctrl = $this->getNroControl($dataConfiguration);
 

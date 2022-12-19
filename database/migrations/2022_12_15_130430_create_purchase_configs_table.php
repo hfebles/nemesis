@@ -15,12 +15,13 @@ class CreatePurchaseConfigsTable extends Migration
     {
         Schema::create('purchase_configs', function (Blueprint $table) {
             $table->id('id_purchase_config');
-            $table->string('print_name_id_purchase_config')->nullable();
-            $table->string('correlative_id_purchase_config')->nullable();
-            $table->integer('control_number_id_purchase_config')->nullable();
+            $table->string('print_name_purchase_config')->nullable();
+            $table->string('correlative_purchase_config')->nullable();
+            $table->integer('control_number_purchase_config')->nullable();
+            $table->string('type_ledger')->nullable();
             $table->unsignedBigInteger('id_ledger_account');
             $table->foreign('id_ledger_account')->references('id_ledger_account')->on('ledger_accounts');
-            $table->boolean('enabled_id_purchase_config')->default(1);
+            $table->boolean('enabled_purchase_config')->default(1);
             $table->timestamps();
         });
     }

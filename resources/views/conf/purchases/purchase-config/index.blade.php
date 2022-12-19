@@ -13,15 +13,15 @@
         <table class="table table-bordered table-sm">
             <tr>
                 <td>Correlativo:</td>
-                <td>{{ $data->correlative_id_purchase_config }}</td>
+                <td>{{ $data->correlative_purchase_config }}</td>
             </tr>
             <tr>
                 <td>Nombre de impresión:</td>
-                <td>{{ $data->print_name_id_purchase_config }}</td>
+                <td>{{ $data->print_name_purchase_config }}</td>
             </tr>
             <tr>
                 <td>Numero de control:</td>
-                <td>{{ $data->control_number_id_purchase_config }}</td>
+                <td>{{ $data->control_number_purchase_config }}</td>
             </tr>
             <tr>
                 <td>Cuenta contable:</td>

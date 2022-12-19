@@ -155,7 +155,7 @@ class AnotherConfigsSeeder extends Seeder
 
         DB::insert("INSERT INTO invoicing_configutarions (print_name_invoicing_configutarion, correlative_invoicing_configutarion, control_number_invoicing_configutarion, id_ledger_account) VALUES ('Factura', 'F', 1, 112);");
 
-        DB::insert("INSERT INTO purchase_configs (print_name_id_purchase_config, correlative_id_purchase_config, control_number_id_purchase_config, id_ledger_account) VALUES ('Compra', 'C', 1, 112);");
+        DB::insert("INSERT INTO purchase_configs (print_name_purchase_config, correlative_purchase_config, control_number_purchase_config, id_ledger_account) VALUES ('Compra', 'C', 1, 112);");
 
         DB::insert("INSERT INTO purchase_order_configs (print_name_purchase_order_config, correlative_purchase_order_config, control_number_purchase_order_config) VALUES ('Pedido de Compra', 'PC', 1);");
     }

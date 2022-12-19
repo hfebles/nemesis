@@ -74,11 +74,8 @@ class ExchangeController extends Controller
 
         //return $route;
 
-        if($request->ruta == 'invoicing.index'){
-            return redirect()->route('invoicing.create')->with('message', 'Se registro la tasa con éxito');
-        }else{
-            return redirect()->route('exchange.index')->with('message', 'Se registro la tasa con éxito');
-        }
+        return redirect()->route($request->ruta)->with('message', 'Se registro la tasa con éxito');
+        
         
     }
 

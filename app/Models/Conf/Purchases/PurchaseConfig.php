@@ -10,4 +10,8 @@ class PurchaseConfig extends Model
     use HasFactory;
 
     protected $primaryKey = 'id_purchase_config';
+
+    protected $fillable = [
+        'control_number_purchase_config',
+    ];
 }

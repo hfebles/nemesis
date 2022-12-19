@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Purchase;
 
 use App\Http\Controllers\Controller;
 use App\Models\Conf\Exchange;
+use App\Models\Conf\Purchases\PurchaseOrderConfig;
 use App\Models\Conf\Sales\SaleOrderConfiguration;
 use App\Models\Conf\Tax;
 use App\Models\Products\Product;
@@ -71,6 +72,41 @@ class PurchaseOrderController extends Controller
         return view('purchases.purchase-order.index', compact('conf', 'table'));
     }
 
+    function getNroControl($dataConfiguration)
+    {
+
+        $facturas = PurchaseOrder::orderBy('ctrl_num', 'ASC')->get();
+        $nro2 = [];
+
+        for ($i = 0; $i < sizeof($facturas); $i++) {
+            $nro2[$i] = $facturas[$i]->ctrl_num;
+        }
+
+        if (sizeof($facturas)) {
+            $existe = PurchaseOrder::select('ctrl_num')->whereCtrlNum($dataConfiguration->control_number_purchase_config)->get();
+            if (sizeof($existe) > 0) {
+                if (sizeof(PurchaseOrder::select('ctrl_num')->whereCtrlNum($dataConfiguration->control_number_purchase_config + 1)->get())) {
+                    $compare_array = range(1, max($nro2));
+                    $missing_values = array_diff($compare_array, $nro2);
+                    if (range(1, max($nro2)) >= $dataConfiguration->control_number_purchase_config && min($missing_values) < $dataConfiguration->control_number_purchase_config) {
+                        $ctrl = $nro2[sizeof($nro2) - 1] + 1;
+                    } else if (sizeof(PurchaseOrder::select('ctrl_num')->whereCtrlNum($missing_values[key($missing_values)])->get()) == 0) {
+                        $ctrl = $missing_values[key($missing_values)];
+                    }
+                } else {
+                    $ctrl = $dataConfiguration->control_number_purchase_config + 1;
+                }
+            } else {
+                $ctrl = $dataConfiguration->control_number_purchase_config;
+            }
+        } else {
+            $ctrl = $dataConfiguration->control_number_purchase_config;
+        }
+
+        return $ctrl;
+    }
+
+
     public function create()
     {
 
@@ -93,20 +129,18 @@ class PurchaseOrderController extends Controller
             $dataExchange = $dataExchange[0];
         }
 
-        $dataConfiguration = SaleOrderConfiguration::all();
-        $config = 1;
-        $datax = PurchaseOrder::whereEnabledPurchaseOrder(1)->orderBy('id_purchase_order', 'DESC')->get();
+        $dataConfiguration = PurchaseOrderConfig::find(1);
+        if (!isset($dataConfiguration)) {return redirect()->route('order-config.index');}
 
-
-        if (count($datax) > 0) {
-            $config = ($config == $datax[0]->ctrl_num) ? $datax[0]->ctrl_num + 1 : $datax[0]->ctrl_num + 1;
-        }
+        $ctrl = $this->getNroControl($dataConfiguration);
 
         $taxes = Tax::where('billable_tax', '=', 1)->get();
         $dataWorkers = \DB::select("SELECT workers.id_worker, workers.firts_name_worker, workers.last_name_worker, group_workers.name_group_worker
                                     FROM workers
                                     INNER JOIN group_workers ON group_workers.id_group_worker = workers.id_group_worker
                                     WHERE name_group_worker = 'COMPRAS'");
+
+                                    $config = 1;
 
         return view('purchases.purchase-order.create', compact('conf', 'dataWorkers', 'dataExchange', 'dataConfiguration', 'config', 'taxes'));
     }
@@ -115,7 +149,7 @@ class PurchaseOrderController extends Controller
     public function store(Request $request)
     {
 
-        // return $request;
+        return $request;
 
         $dataConfiguration = SaleOrderConfiguration::all()[0];
         $dataSalesOrder = $request->except('_token');
@@ -166,6 +200,8 @@ class PurchaseOrderController extends Controller
         $saveDetails->id_purchase_order = $saveSalesOrder->id_purchase_order;
         $saveDetails->details_purchase_order_detail = json_encode($dataDetails);
         $saveDetails->save();
+
+        PurchaseOrderConfig::find(1)->update(['control_number_purchase_config' => $data['ctrl_num']]);
 
 
         return redirect()->route('purchase-order.show', $saveSalesOrder->id_purchase_order)->with('message', 'Se registro la orden con éxito');

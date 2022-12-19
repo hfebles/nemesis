@@ -16,23 +16,21 @@
     ]) !!}
     <div class="row">
         <x-cards>
-
             <table class="table table-sm table-bordered mb-0">
                 <tr>
                     <td class="text-end align-middle">Orden de compra número:</td>
                     <td width="15%" class="text-end">
-                        <span class="fs-4">{{ str_pad($config, 6, '0', STR_PAD_LEFT) }}</span>
-                        <input type="hidden" value="{{ $config }}" name="ctrl_num" />
-                        <input type="hidden" value="-{{ $config }}" name="ref_name_purchase_order" />
+                        <span class="fs-4">{{ $dataConfiguration->correlative_purchase_config }}{{ str_pad($ctrl, 6, '0', STR_PAD_LEFT) }}</span>
+                        <input type="hidden" value="{{ str_pad($ctrl, 6, '0', STR_PAD_LEFT) }}" name="ref_name_purchase" />
                     </td>
 
                 </tr>
                 <tr>
                     <td class="text-end align-middle">Nro control:</td>
                     <td width="15%" class="text-end">
-                        <span class="fs-4">{{ str_pad($config, 6, '0', STR_PAD_LEFT) }}</span>
-                        <input type="hidden" value="{{ $config }}" name="ctrl_num" />
-                        <input type="hidden" value="{{ $config }}" name="ref_name_purchase_order" />
+                        <span class="fs-4">{{ str_pad($ctrl, 6, '0', STR_PAD_LEFT) }}</span>
+                        <input type="hidden" value="{{ $ctrl }}" name="ctrl_num" />
+                        <input type="hidden" value="{{ str_pad($ctrl, 6, '0', STR_PAD_LEFT) }}" name="ctrl_num_purchase" />
                     </td>
                 </tr>
 
@@ -40,6 +38,12 @@
                     <td class="text-end align-middle">Factura proveedor:</td>
                     <td width="15%" class="text-end">
                         <input type="text" class='form-control form-control-sm' name="supplier_order" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-end align-middle">Fecha Factura:</td>
+                    <td width="15%" class="text-end">
+                        {!! Form::date('date_purchase', \Carbon\Carbon::now(), ['max' => date('Y-m-d'), 'class' => 'form-control form-control-sm', 'required']) !!}
                     </td>
                 </tr>
             </table>
@@ -75,16 +79,16 @@
                         <span id="direccion"></span>
                     </td>
                 </tr>
-                {{-- <tr>
+                <tr>
                     <td class="align-middle" width="25%">Tipo de Pago: </td>
                     <td>
-                        <select class="form-select form-control-sm" required name="type_payment_purchase_order">
+                        <select class="form-select form-control-sm" required name="type_payment">
                             <option value="">Seleccione</option>
                             <option value="1">Contado</option>
                             <option value="2">Credito</option>
                         </select>
                     </td>
-                </tr> --}}
+                </tr>
 
             </table>
             <table class="table table-sm border-dark table-bordered mb-4" id="myTable">

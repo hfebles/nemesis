@@ -42,6 +42,12 @@
                         <input type="text" class='form-control form-control-sm' name="supplier_order" />
                     </td>
                 </tr>
+                <tr>
+                    <td class="text-end align-middle">Fecha Factura:</td>
+                    <td width="15%" class="text-end">
+                        {!! Form::date('date_purchase', \Carbon\Carbon::now(), ['max' => date('Y-m-d'), 'class' => 'form-control form-control-sm', 'required']) !!}
+                    </td>
+                </tr>
             </table>
 
             <table class="table table-sm table-bordered mb-4">
@@ -405,10 +411,7 @@
                 input2.setAttribute("type", "hidden");
                 input2.setAttribute("id", 'subtotal_' + y);
 
-                var input3 = document.createElement("input");
-                input3.setAttribute("type", "hidden");
-                input3.setAttribute("name", "noExento[]");
-                input3.setAttribute("id", 'noExempt_product_' + y);
+                
 
                 if (x.tax_exempt_product == 1) {
                     input.setAttribute("value", x.price_product);
@@ -418,8 +421,7 @@
                     document.getElementById('name_product' + y).innerHTML = x.code_product + " " + x.name_product + " (E)"
                 } else {
                     input2.setAttribute("name", "subtotal[]");
-
-                    document.getElementById("td_" + y).appendChild(input3);
+                    
                     document.getElementById("tds_" + y).appendChild(input2);
                     document.getElementById('name_product' + y).innerHTML = x.code_product + " " + x.name_product
 

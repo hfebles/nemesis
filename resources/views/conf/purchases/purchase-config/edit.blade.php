@@ -18,8 +18,8 @@
             <table class="table table-bordered table-sm">
                 <tr>
                     <td>Correlativo:</td>
-                    <td>{!! Form::text('correlative_id_purchase_config', null, [
-                        'id' => 'correlative_id_purchase_config',
+                    <td>{!! Form::text('correlative_purchase_config', null, [
+                        'id' => 'correlative_purchase_config',
                         'autocomplete' => 'off',
                         'required',
                         'class' => 'form-control form-control-sm',
@@ -27,8 +27,8 @@
                 </tr>
                 <tr>
                     <td>Nombre de impresión:</td>
-                    <td>{!! Form::text('print_name_id_purchase_config', null, [
-                        'id' => 'print_name_id_purchase_config',
+                    <td>{!! Form::text('print_name_purchase_config', null, [
+                        'id' => 'print_name_purchase_config',
                         'autocomplete' => 'off',
                         'required',
                         'class' => 'form-control form-control-sm',
@@ -36,8 +36,8 @@
                 </tr>
                 <tr>
                     <td>Numero de control:</td>
-                    <td>{!! Form::text('control_number_id_purchase_config', null, [
-                        'id' => 'control_number_id_purchase_config',
+                    <td>{!! Form::text('control_number_purchase_config', null, [
+                        'id' => 'control_number_purchase_config',
                         'autocomplete' => 'off',
                         'required',
                         'class' => 'form-control form-control-sm',

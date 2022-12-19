@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Conf\Bank;
 use App\Models\Conf\Country\Estados;
 use App\Models\Conf\Exchange;
+use App\Models\Conf\Purchases\PurchaseConfig;
 use App\Models\Conf\Sales\SaleOrderConfiguration;
 use App\Models\Conf\Tax;
 use App\Models\HumanResources\Workers;
@@ -78,6 +79,41 @@ class PurchaseController extends Controller
         return view('purchases.purchase.index', compact('conf', 'table'));
     }
 
+
+    function getNroControl($dataConfiguration)
+    {
+
+        $facturas = Purchase::orderBy('ctrl_num', 'ASC')->get();
+        $nro2 = [];
+
+        for ($i = 0; $i < sizeof($facturas); $i++) {
+            $nro2[$i] = $facturas[$i]->ctrl_num;
+        }
+
+        if (sizeof($facturas)) {
+            $existe = Purchase::select('ctrl_num')->whereCtrlNum($dataConfiguration->control_number_purchase_config)->get();
+            if (sizeof($existe) > 0) {
+                if (sizeof(Purchase::select('ctrl_num')->whereCtrlNum($dataConfiguration->control_number_purchase_config + 1)->get())) {
+                    $compare_array = range(1, max($nro2));
+                    $missing_values = array_diff($compare_array, $nro2);
+                    if (range(1, max($nro2)) >= $dataConfiguration->control_number_purchase_config && min($missing_values) < $dataConfiguration->control_number_purchase_config) {
+                        $ctrl = $nro2[sizeof($nro2) - 1] + 1;
+                    } else if (sizeof(Purchase::select('ctrl_num')->whereCtrlNum($missing_values[key($missing_values)])->get()) == 0) {
+                        $ctrl = $missing_values[key($missing_values)];
+                    }
+                } else {
+                    $ctrl = $dataConfiguration->control_number_purchase_config + 1;
+                }
+            } else {
+                $ctrl = $dataConfiguration->control_number_purchase_config;
+            }
+        } else {
+            $ctrl = $dataConfiguration->control_number_purchase_config;
+        }
+
+        return $ctrl;
+    }
+
     public function create()
     {
 
@@ -96,18 +132,17 @@ class PurchaseController extends Controller
         } else {
             $dataExchange = $dataExchange[0];
         }
-        $dataConfiguration = SaleOrderConfiguration::all();
-        $config = 1;
-        $datax = Purchase::whereEnabledPurchase(1)->orderBy('id_purchase', 'DESC')->get();
-        if (count($datax) > 0) {
-            $config = ($config == $datax[0]->ctrl_num) ? $datax[0]->ctrl_num + 1 : $datax[0]->ctrl_num + 1;
-        }
+        $dataConfiguration = PurchaseConfig::find(1);
+        if (!isset($dataConfiguration)) {return redirect()->route('purchase-config.index');}
+
+        $ctrl = $this->getNroControl($dataConfiguration);
+
         $taxes = Tax::where('billable_tax', '=', 1)->get();
         $dataWorkers = Workers::select('workers.id_worker', 'workers.firts_name_worker', 'workers.last_name_worker', 'group_workers.name_group_worker')
             ->join('group_workers', 'group_workers.id_group_worker', '=', 'workers.id_group_worker')
             ->where('name_group_worker', '=', 'COMPRAS')
             ->get();
-        return view('purchases.purchase.create', compact('conf', 'dataWorkers', 'dataExchange', 'dataConfiguration', 'config', 'taxes'));
+        return view('purchases.purchase.create', compact('conf', 'dataWorkers', 'dataExchange', 'dataConfiguration', 'ctrl', 'taxes'));
     }
 
 
@@ -197,51 +232,47 @@ class PurchaseController extends Controller
     public function store(Request $request)
     {
 
-
-        $dataConfiguration = SaleOrderConfiguration::all()[0];
-        $dataSalesOrder = $request->except('_token');
+        //return $request;
+        
+        $data = $request->except('_token');
+        
         $dataDetails = $request->except(
             '_token',
+            'ref_name_purchase',
             'ctrl_num',
-            'ref_name_purchase_order',
+            'ctrl_num_purchase',
             'supplier_order',
             'id_supplier',
-            'noExento',
-            'subtotal',
             'subFac',
             'exento',
             'total_taxes',
             'total_con_tax',
             'id_exchange',
+            'date_purchase',
+            'type_payment',
+            'noExento',
         );
 
 
-
-        $saveSalesOrder = new Purchase();
-
-       // $saveSalesOrder->type_payment = $dataSalesOrder['type_payment_purchase'];
-        $saveSalesOrder->id_supplier = $dataSalesOrder['id_supplier'];
-        $saveSalesOrder->id_exchange = $dataSalesOrder['id_exchange'];
-        $saveSalesOrder->ctrl_num = $dataSalesOrder['ctrl_num'];
-
-        $saveSalesOrder->ref_name_purchase = $dataConfiguration->correlative_sale_order_configuration . '-' . str_pad($dataSalesOrder['ctrl_num'], 6, "0", STR_PAD_LEFT);
-
-        if (isset($dataSalesOrder['id_worker'])) {
-            $saveSalesOrder->id_worker = $dataSalesOrder['id_worker'];
-        }
-
-        $saveSalesOrder->id_user = Auth::id();
-        $saveSalesOrder->residual_amount_purchase = $dataSalesOrder['total_con_tax'];
-        $saveSalesOrder->total_amount_purchase = $dataSalesOrder['total_con_tax'];
-        $saveSalesOrder->exempt_amout_purchase = $dataSalesOrder['exento'];
-        $saveSalesOrder->no_exempt_amout_purchase = $dataSalesOrder['subFac'];
-        $saveSalesOrder->total_amount_tax_purchase = $dataSalesOrder['total_taxes'];
-        $saveSalesOrder->date_purchase = date('Y-m-d');
-        $saveSalesOrder->id_order_state = 11;
-        $saveSalesOrder->save();
+        $purchase = new Purchase();
+        $purchase->ref_name_purchase = $data['ref_name_purchase'];
+        $purchase->ctrl_num_purchase = $data['ctrl_num_purchase'];
+        $purchase->ctrl_num = $data['ctrl_num'];
+        $purchase->total_amount_purchase = $data['total_con_tax'];
+        $purchase->exempt_amout_purchase = $data['exento'];
+        $purchase->no_exempt_amout_purchase = $data['subFac'];
+        $purchase->total_amount_tax_purchase = $data['total_taxes'];
+        $purchase->residual_amount_purchase = $data['total_con_tax'];
+        $purchase->date_purchase = $data['date_purchase'];
+        $purchase->type_payment = $data['type_payment'];
+        $purchase->id_exchange = $data['id_exchange'];
+        $purchase->id_order_state = 11;
+        $purchase->id_supplier = $data['id_supplier'];
+        $purchase->id_user = Auth::id();
+        $purchase->save();
 
         $saveDetails = new PurchaseDetails();
-        $saveDetails->id_purchase = $saveSalesOrder->id_purchase;
+        $saveDetails->id_purchase = $purchase->id_purchase;
         $saveDetails->details_purchase_detail = json_encode($dataDetails);
         $saveDetails->save();
 
@@ -252,15 +283,15 @@ class PurchaseController extends Controller
             $dataDetails['recibido'][$i] = "0";
         }
 
-
+        PurchaseConfig::find(1)->update(['control_number_purchase_config' => $data['ctrl_num']]);
         $da = json_encode($dataDetails);
 
-        \DB::select("insert into purchase_receptions (id_purchase, details_reception) values($saveSalesOrder->id_purchase, '$da')");
+        \DB::select("insert into purchase_receptions (id_purchase, details_reception) values($purchase->id_purchase, '$da')");
 
-        $move = (new MovesAccountsController)->createMovesPurchase($saveSalesOrder->id_purchase, $saveSalesOrder->date_purchase, 2);
-        $result = (new AccountingEntriesController)->saveEntriesPurchase($move, $saveSalesOrder->id_purchase);
+        $move = (new MovesAccountsController)->createMovesPurchase($purchase->id_purchase, $purchase->date_purchase, 2);
+        (new AccountingEntriesController)->saveEntriesPurchase($move, $purchase->id_purchase);
         //return $result;
-        return redirect()->route('purchase.show', $saveSalesOrder->id_purchase)->with('message', 'Se registro la orden con éxito');
+        return redirect()->route('purchase.show', $purchase->id_purchase)->with('message', 'Se registro la orden con éxito');
     }
 
     public function show($id)
