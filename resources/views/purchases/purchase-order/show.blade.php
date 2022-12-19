@@ -8,22 +8,9 @@
 
 @section('content')
 
-    @if ($message = Session::get('message'))
-        <div class="row">
-            <x-cards size="12" :message="$message" />
-        </div>
-    @endif
-
-
-
     <div class="row">
         <x-cards>
-
-
-
             <div class="row g-3">
-
-
                 <div class="col-sm-12 d-flex">
                     <a href="" class="btn btn-sm btn-info btn-icon-split ml-auto">
                         <span class="icon text-white-50">
@@ -31,9 +18,6 @@
                         </span>
                         <span class="text">Imprimir</span>
                     </a>
-
-
-
                     @if ($data->id_order_state != 9)
                         @if (Gate::check('purchase-purchase-create') || Gate::check('adm-create'))
                             <a href="{{ route('purchase-order.validate', $data->id_purchase_order) }}"
@@ -67,16 +51,8 @@
                             </a>
                         @endif
                     @endif
-
-
-
-
                 </div>
-
-
-
                 <div class="col-sm-12">
-
                     <table class="table table-sm table-bordered">
                         <tr>
                             <td width="80%" class="text-end">Fecha:</td>

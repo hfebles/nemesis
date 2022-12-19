@@ -63,6 +63,7 @@ class PurchaseOrderController extends Controller
             'tds' => ['date_purchase_order', 'ref_name_purchase_order', 'name_supplier', 'name_order_state', 'total_amount_purchase_order'],
             'edit' => false,
             'show' => true,
+            'td_number' => [false, false, false, false, true],
             'edit_modal' => false,
             'url' => "/purchase/purchase-order",
             'id' => 'id_purchase_order',
@@ -83,26 +84,25 @@ class PurchaseOrderController extends Controller
         }
 
         if (sizeof($facturas)) {
-            $existe = PurchaseOrder::select('ctrl_num')->whereCtrlNum($dataConfiguration->control_number_purchase_config)->get();
+            $existe = PurchaseOrder::select('ctrl_num')->whereCtrlNum($dataConfiguration->control_number_purchase_order_config)->get();
             if (sizeof($existe) > 0) {
-                if (sizeof(PurchaseOrder::select('ctrl_num')->whereCtrlNum($dataConfiguration->control_number_purchase_config + 1)->get())) {
+                if (sizeof(PurchaseOrder::select('ctrl_num')->whereCtrlNum($dataConfiguration->control_number_purchase_order_config + 1)->get())) {
                     $compare_array = range(1, max($nro2));
                     $missing_values = array_diff($compare_array, $nro2);
-                    if (range(1, max($nro2)) >= $dataConfiguration->control_number_purchase_config && min($missing_values) < $dataConfiguration->control_number_purchase_config) {
+                    if (range(1, max($nro2)) >= $dataConfiguration->control_number_purchase_order_config && min($missing_values) < $dataConfiguration->control_number_purchase_order_config) {
                         $ctrl = $nro2[sizeof($nro2) - 1] + 1;
                     } else if (sizeof(PurchaseOrder::select('ctrl_num')->whereCtrlNum($missing_values[key($missing_values)])->get()) == 0) {
                         $ctrl = $missing_values[key($missing_values)];
                     }
                 } else {
-                    $ctrl = $dataConfiguration->control_number_purchase_config + 1;
+                    $ctrl = $dataConfiguration->control_number_purchase_order_config + 1;
                 }
             } else {
-                $ctrl = $dataConfiguration->control_number_purchase_config;
+                $ctrl = $dataConfiguration->control_number_purchase_order_config;
             }
         } else {
-            $ctrl = $dataConfiguration->control_number_purchase_config;
+            $ctrl = $dataConfiguration->control_number_purchase_order_config;
         }
-
         return $ctrl;
     }
 
@@ -140,71 +140,70 @@ class PurchaseOrderController extends Controller
                                     INNER JOIN group_workers ON group_workers.id_group_worker = workers.id_group_worker
                                     WHERE name_group_worker = 'COMPRAS'");
 
-                                    $config = 1;
+           //     return $dataConfiguration;                // $config = 1;
 
-        return view('purchases.purchase-order.create', compact('conf', 'dataWorkers', 'dataExchange', 'dataConfiguration', 'config', 'taxes'));
+        return view('purchases.purchase-order.create', compact('conf', 'dataWorkers', 'dataExchange', 'dataConfiguration', 'ctrl', 'taxes'));
     }
 
 
     public function store(Request $request)
     {
 
-        return $request;
+       //return $request;
 
-        $dataConfiguration = SaleOrderConfiguration::all()[0];
         $dataSalesOrder = $request->except('_token');
         $dataDetails = $request->except(
             '_token',
+            'ctrl_num',
+            'ctrl_num_purchase_order',
+            'date_purchase_order',
+            'ref_name_purchase_order',
+            'supplier_order',
+            'date_purchase',
             'id_supplier',
-            'type_payment_purchase_order',
             'subFac',
             'exento',
             'total_taxes',
             'total_con_tax',
-            'noExento',
-            'subtotal',
-            'exempt_product',
-            'subtotal_exento',
-            'id_worker',
             'id_exchange',
-            'ref_name_purchase_order',
-            'ctrl_num',
-            'supplier_order'
         );
 
-        //  return $dataDetails;
-
         $saveSalesOrder = new PurchaseOrder();
-
-        //$saveSalesOrder->type_payment = $dataSalesOrder['type_payment_purchase_order'];
-        $saveSalesOrder->id_supplier = $dataSalesOrder['id_supplier'];
-        $saveSalesOrder->id_exchange = $dataSalesOrder['id_exchange'];
+        $saveSalesOrder->ref_name_purchase_order = $dataSalesOrder['ref_name_purchase_order'];
+        $saveSalesOrder->ctrl_num_purchase_order = $dataSalesOrder['ctrl_num_purchase_order'];
         $saveSalesOrder->ctrl_num = $dataSalesOrder['ctrl_num'];
-
-        $saveSalesOrder->ref_name_purchase_order = $dataConfiguration->correlative_sale_order_configuration . '-' . str_pad($dataSalesOrder['ctrl_num'], 6, "0", STR_PAD_LEFT);
+        $saveSalesOrder->total_amount_purchase_order = $dataSalesOrder['total_con_tax'];
+        $saveSalesOrder->exempt_amout_purchase_order = $dataSalesOrder['exento'];
+        $saveSalesOrder->no_exempt_amout_purchase_order = $dataSalesOrder['subFac'];
+        $saveSalesOrder->total_amount_tax_purchase_order = $dataSalesOrder['total_taxes'];
+        //$saveSalesOrder->residual_amount_purchase_order = $dataSalesOrder['residual_amount_purchase_order'];
+        $saveSalesOrder->date_purchase_order = $dataSalesOrder['date_purchase_order'];
+        $saveSalesOrder->id_exchange = $dataSalesOrder['id_exchange'];
+        $saveSalesOrder->id_order_state = 8;
+        $saveSalesOrder->id_supplier = $dataSalesOrder['id_supplier'];
+        $saveSalesOrder->id_user = Auth::id();
+        //$saveSalesOrder->ref_supplier_order = $dataSalesOrder['ref_supplier_order'];
 
         if (isset($dataSalesOrder['id_worker'])) {
             $saveSalesOrder->id_worker = $dataSalesOrder['id_worker'];
         }
 
-        $saveSalesOrder->id_user = Auth::id();
-        $saveSalesOrder->total_amount_purchase_order = $dataSalesOrder['total_con_tax'];
-        $saveSalesOrder->exempt_amout_purchase_order = $dataSalesOrder['exento'];
-        $saveSalesOrder->no_exempt_amout_purchase_order = $dataSalesOrder['subFac'];
-        $saveSalesOrder->total_amount_tax_purchase_order = $dataSalesOrder['total_taxes'];
-        $saveSalesOrder->date_purchase_order = date('Y-m-d');
-        $saveSalesOrder->id_order_state = 8;
+        if (isset($dataSalesOrder['ref_supplier_order'])) {
+            $saveSalesOrder->ref_supplier_order = $dataSalesOrder['ref_supplier_order'];
+        }
+
         $saveSalesOrder->save();
 
         $saveDetails = new PurchaseOrderDetails();
         $saveDetails->id_purchase_order = $saveSalesOrder->id_purchase_order;
+        $saveDetails->ref_name_purchase_order = $dataSalesOrder['ref_name_purchase_order'];
+        $saveDetails->ctrl_num_purchase_order = $dataSalesOrder['ctrl_num_purchase_order'];
+
         $saveDetails->details_purchase_order_detail = json_encode($dataDetails);
         $saveDetails->save();
 
-        PurchaseOrderConfig::find(1)->update(['control_number_purchase_config' => $data['ctrl_num']]);
-
-
-        return redirect()->route('purchase-order.show', $saveSalesOrder->id_purchase_order)->with('message', 'Se registro la orden con éxito');
+        PurchaseOrderConfig::find(1)->update(['control_number_purchase_order_config' => $dataSalesOrder['ctrl_num']]);
+        return redirect()->route('purchase-order.show', $saveSalesOrder->id_purchase_order)->with('message', 'Se registró la orden con éxito');
     }
 
 

@@ -51,12 +51,12 @@ class PurchaseController extends Controller
             ->orderBy('id_purchase', 'DESC')
             ->paginate(15);
 
-            $table = [
+        $table = [
             'c_table' => 'table table-bordered table-hover mb-0 text-uppercase',
             'c_thead' => 'bg-dark text-white',
             'ths' => ['#', 'Fecha', 'Pedido', 'Proveedor', 'Estado', 'Total'],
             'w_ts' => ['3', '10', '10', '43', '12', '12',],
-            'td_number' => [false, false, false, false, true], 
+            'td_number' => [false, false, false, false, true],
             'c_ths' =>
             [
                 'text-center align-middle',
@@ -133,7 +133,9 @@ class PurchaseController extends Controller
             $dataExchange = $dataExchange[0];
         }
         $dataConfiguration = PurchaseConfig::find(1);
-        if (!isset($dataConfiguration)) {return redirect()->route('purchase-config.index');}
+        if (!isset($dataConfiguration)) {
+            return redirect()->route('purchase-config.index');
+        }
 
         $ctrl = $this->getNroControl($dataConfiguration);
 
@@ -151,7 +153,7 @@ class PurchaseController extends Controller
     public function receptions(Request $request)
     {
 
-       // return $request;
+        // return $request;
         $obj = json_decode(\DB::select("select details_reception from purchase_receptions where id_purchase = $request->id_purchase order by id_purchase_reception DESC")[0]->details_reception, true);
         if (array_sum($obj['pendiente']) > 0) {
             for ($i = 0; $i < count($obj['id_product']); $i++) {
@@ -200,26 +202,38 @@ class PurchaseController extends Controller
         $data = PurchaseOrder::select('*', 'purchase_order_details.*')
             ->join('purchase_order_details', 'purchase_order_details.id_purchase_order', '=', 'purchase_orders.id_purchase_order')
             ->find($id);
+
         $dataPedido = json_decode($data->details_purchase_order_detail, true);
         for ($i = 0; $i < count($dataPedido['id_product']); $i++) {
             $dataPedido['pendiente'][$i] = $dataPedido['cantidad'][$i];
             $dataPedido['recibido'][$i] = "0";
         }
+
         $savePurchase = new Purchase();
-        $savePurchase->id_supplier = $data->id_supplier;
-        $savePurchase->id_exchange = $data->id_exchange;
-        $savePurchase->ctrl_num = $data->ctrl_num;
-        $savePurchase->id_worker = $data->id_worker;
-        $savePurchase->id_user = $data->id_user;
-        $savePurchase->total_amount_purchase = $data->total_amount_purchase_order;
-        $savePurchase->exempt_amout_purchase = $data->exempt_amout_purchase_order;
-        $savePurchase->no_exempt_amout_purchase = $data->no_exempt_amout_purchase_order;
-        $savePurchase->total_amount_tax_purchase = $data->total_amount_tax_purchase_order;
-        $savePurchase->date_purchase = $data->date_purchase_order;
+        $savePurchase->ref_name_purchase = $data['ref_name_purchase_order'];
+        $savePurchase->ctrl_num_purchase = $data['ctrl_num_purchase_order'];
+        $savePurchase->ctrl_num = $data['ctrl_num'];
+        $savePurchase->total_amount_purchase = $data['total_amount_purchase_order'];
+        $savePurchase->exempt_amout_purchase = $data['exempt_amout_purchase_order'];
+        $savePurchase->no_exempt_amout_purchase = $data['no_exempt_amout_purchase_order'];
+        $savePurchase->total_amount_tax_purchase = $data['total_amount_tax_purchase_order'];
+        $savePurchase->residual_amount_purchase = $data['residual_amount_purchase_order'];
+        $savePurchase->date_purchase = $data['date_purchase_order'];
+        $savePurchase->id_exchange = $data['id_exchange'];
         $savePurchase->id_order_state = 11;
+        $savePurchase->id_supplier = $data['id_supplier'];
+        $savePurchase->id_user = $data['id_user'];
+        $savePurchase->id_worker = $data['id_worker'];
+
+
         $savePurchase->save();
+
         $saveDetails = new PurchaseDetails();
         $saveDetails->id_purchase = $savePurchase->id_purchase;
+
+        $saveDetails->ref_name_purchase = $data['ref_name_purchase_order'];
+        $saveDetails->ctrl_num_purchase = $data['ctrl_num_purchase_order'];
+
         $saveDetails->details_purchase_detail = $data->details_purchase_order_detail;
         $saveDetails->save();
         $da = json_encode($dataPedido);
@@ -233,9 +247,9 @@ class PurchaseController extends Controller
     {
 
         //return $request;
-        
+
         $data = $request->except('_token');
-        
+
         $dataDetails = $request->except(
             '_token',
             'ref_name_purchase',
@@ -276,7 +290,7 @@ class PurchaseController extends Controller
         $saveDetails->details_purchase_detail = json_encode($dataDetails);
         $saveDetails->save();
 
-        
+
 
         for ($i = 0; $i < count($dataDetails['id_product']); $i++) {
             $dataDetails['pendiente'][$i] = $dataDetails['cantidad'][$i];
@@ -327,7 +341,7 @@ class PurchaseController extends Controller
             ->where('used_surplus', '=', 1)
             ->get();
 
-            
+
         $conf = [
             'title-section' => 'Compra: ' . $data->ref_name_purchase,
             'group' => 'purchase',

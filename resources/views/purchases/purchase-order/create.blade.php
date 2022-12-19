@@ -21,18 +21,17 @@
                 <tr>
                     <td class="text-end align-middle">Orden de compra número:</td>
                     <td width="15%" class="text-end">
-                        <span class="fs-4">{{ str_pad($config, 6, '0', STR_PAD_LEFT) }}</span>
-                        <input type="hidden" value="{{ $config }}" name="ctrl_num" />
-                        <input type="hidden" value="-{{ $config }}" name="ref_name_purchase_order" />
+                        <span class="fs-4">{{ $dataConfiguration->correlative_purchase_order_config }}{{ str_pad($ctrl, 6, '0', STR_PAD_LEFT) }}</span>
+                        <input type="hidden" value="{{ $dataConfiguration->correlative_purchase_order_config }}{{ str_pad($ctrl, 6, '0', STR_PAD_LEFT) }}" name="ref_name_purchase_order" />
                     </td>
 
                 </tr>
                 <tr>
                     <td class="text-end align-middle">Nro control:</td>
                     <td width="15%" class="text-end">
-                        <span class="fs-4">{{ str_pad($config, 6, '0', STR_PAD_LEFT) }}</span>
-                        <input type="hidden" value="{{ $config }}" name="ctrl_num" />
-                        <input type="hidden" value="{{ $config }}" name="ref_name_purchase_order" />
+                        <span class="fs-4">{{ str_pad($ctrl, 6, '0', STR_PAD_LEFT) }}</span>
+                        <input type="hidden" value="{{ $ctrl }}" name="ctrl_num" />
+                        <input type="hidden" value="{{ str_pad($ctrl, 6, '0', STR_PAD_LEFT) }}" name="ctrl_num_purchase_order" />
                     </td>
                 </tr>
 
@@ -45,7 +44,7 @@
                 <tr>
                     <td class="text-end align-middle">Fecha Factura:</td>
                     <td width="15%" class="text-end">
-                        {!! Form::date('date_purchase', \Carbon\Carbon::now(), ['max' => date('Y-m-d'), 'class' => 'form-control form-control-sm', 'required']) !!}
+                        {!! Form::date('date_purchase_order', \Carbon\Carbon::now(), ['max' => date('Y-m-d'), 'class' => 'form-control form-control-sm', 'required']) !!}
                     </td>
                 </tr>
             </table>
@@ -414,10 +413,8 @@
                 
 
                 if (x.tax_exempt_product == 1) {
-                    input.setAttribute("value", x.price_product);
                     input2.setAttribute("name", "subtotal_exento[]");
                     document.getElementById("tds_" + y).appendChild(input2);
-                    document.getElementById("td_" + y).appendChild(input);
                     document.getElementById('name_product' + y).innerHTML = x.code_product + " " + x.name_product + " (E)"
                 } else {
                     input2.setAttribute("name", "subtotal[]");

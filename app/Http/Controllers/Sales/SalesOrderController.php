@@ -147,12 +147,15 @@ class SalesOrderController extends Controller
 
 
     public function store(Request $request)
+
+    
+
     {
+        return $request;
         $dataSalesOrder = $request->except('_token');
         $dataDetails = $request->except(
             '_token',
             'id_client',
-            'type_payment_sales_order',
             'subFac',
             'exento',
             'total_taxes',
@@ -163,14 +166,13 @@ class SalesOrderController extends Controller
             'subtotal_exento',
             'id_worker',
             'id_exchange',
-            'ref_name_sales_order',
+            'ref_name_purchase_order',
             'ctrl_num'
         );
         $saveSalesOrder = new SalesOrder();
-        $saveSalesOrder->ref_name_sales_order = $dataSalesOrder['ref_name_sales_order'];
+        $saveSalesOrder->ref_name_purchase_order = $dataSalesOrder['ref_name_purchase_order'];
         $saveSalesOrder->ctrl_num = $dataSalesOrder['ctrl_num'];
         $saveSalesOrder->ctrl_num_sales_order = $dataSalesOrder['ctrl_num_sales_order'];
-        $saveSalesOrder->type_payment = $dataSalesOrder['type_payment_sales_order'];
         $saveSalesOrder->id_client = $dataSalesOrder['id_client'];
         $saveSalesOrder->id_exchange = $dataSalesOrder['id_exchange'];
         
@@ -187,6 +189,8 @@ class SalesOrderController extends Controller
         $saveSalesOrder->save();
         $saveDetails = new salesOrderDetails();
         $saveDetails->id_sales_order = $saveSalesOrder->id_sales_order;
+        $saveDetails->ref_name_purchase_order
+        $saveDetails->ctrl_num_purchase_order
         $saveDetails->details_order_detail = json_encode($dataDetails);
         $saveDetails->save();
 

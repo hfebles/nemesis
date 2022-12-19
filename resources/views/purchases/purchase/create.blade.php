@@ -18,10 +18,10 @@
         <x-cards>
             <table class="table table-sm table-bordered mb-0">
                 <tr>
-                    <td class="text-end align-middle">Orden de compra número:</td>
+                    <td class="text-end align-middle">Compra número:</td>
                     <td width="15%" class="text-end">
                         <span class="fs-4">{{ $dataConfiguration->correlative_purchase_config }}{{ str_pad($ctrl, 6, '0', STR_PAD_LEFT) }}</span>
-                        <input type="hidden" value="{{ str_pad($ctrl, 6, '0', STR_PAD_LEFT) }}" name="ref_name_purchase" />
+                        <input type="hidden" value="{{ $dataConfiguration->correlative_purchase_config }}{{ str_pad($ctrl, 6, '0', STR_PAD_LEFT) }}" name="ref_name_purchase" />
                     </td>
 
                 </tr>
