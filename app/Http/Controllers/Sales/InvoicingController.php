@@ -286,6 +286,7 @@ class InvoicingController extends Controller
             'e.date_exchange',
             'r.voucher_number_whs',
             'r.id_withholding_iva_sale',
+            \DB::raw('(exempt_amout_invoicing+no_exempt_amout_invoicing)+(total_amount_tax_invoicing*0.25) as total_pagar'),
             \DB::raw('CASE 
         WHEN invoicings.id_order_state = 3 THEN "Factura Cancelada"
         END as estado')
@@ -297,7 +298,7 @@ class InvoicingController extends Controller
             ->find($id);
 
 
-        //return $data;
+        // return $data;
 
         $conf = [
             'title-section' => 'Factura: ' . $data->ref_name_invoicing,

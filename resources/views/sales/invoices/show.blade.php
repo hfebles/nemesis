@@ -209,23 +209,24 @@
                                     {{ number_format($data->total_amount_tax_invoicing, 2, ',', '.') }}</p>
                             </td>
                         </tr>
-                        <tr>
-                            <th scope="col" class="text-end align-middle text-dark">TOTAL A PAGAR: </th>
-                            <th scope="col" class="text-end align-middle">
-                                <p class='align-middle mb-0 text-dark' id="subFacs">$
-                                    {{ number_format($data->total_amount_invoicing / $data->amount_exchange, 2, ',', '.') }}
-                                </p>
-                            </th>
-
-                            <th scope="col" class="text-end align-middle text-dark">TOTAL A PAGAR: </th>
-                            <th scope="col" class="text-end align-middle text-dark">
-                                <p class='align-middle mb-0' id="totalTotals">Bs.
-                                    {{ number_format($data->total_amount_invoicing, 2, ',', '.') }}</p>
-                            </th>
-                        </tr>
+                        
 
                         @if ($data->taxpayer_client == 1 && isset($data->id_withholding_iva_sale))
                             @if ($data->porcentual_amount_tax_client == 75)
+                            <tr>
+                                <th scope="col" class="text-end align-middle text-dark">TOTAL A PAGAR: </th>
+                                <th scope="col" class="text-end align-middle">
+                                    <p class='align-middle mb-0 text-dark' id="subFacs">$
+                                        {{ number_format($data->total_pagar / $data->amount_exchange, 2, ',', '.') }}
+                                    </p>
+                                </th>
+    
+                                <th scope="col" class="text-end align-middle text-dark">TOTAL A PAGAR: </th>
+                                <th scope="col" class="text-end align-middle text-dark">
+                                    <p class='align-middle mb-0' id="totalTotals">Bs.
+                                        {{ number_format($data->total_pagar, 2, ',', '.') }}</p>
+                                </th>
+                            </tr>
                                 <tr>
                                     <th scope="col" class="text-end align-middle text-dark">IVA RETENIDO: </th>
                                     <th scope="col" class="text-end align-middle text-dark">
@@ -241,6 +242,20 @@
                                     </th>
                                 </tr>
                             @else
+                            <tr>
+                                <th scope="col" class="text-end align-middle text-dark">TOTAL A PAGAR: </th>
+                                <th scope="col" class="text-end align-middle">
+                                    <p class='align-middle mb-0 text-dark' id="subFacs">$
+                                        {{ number_format($data->total_pagar / $data->amount_exchange, 2, ',', '.') }}
+                                    </p>
+                                </th>
+    
+                                <th scope="col" class="text-end align-middle text-dark">TOTAL A PAGAR: </th>
+                                <th scope="col" class="text-end align-middle text-dark">
+                                    <p class='align-middle mb-0' id="totalTotals">Bs.
+                                        {{ number_format($data->total_pagar, 2, ',', '.') }}</p>
+                                </th>
+                            </tr>
                                 <tr>
                                     <th scope="col" class="text-end align-middle text-dark">IVA RETENIDO: </th>
                                     <th scope="col" class="text-end align-middle text-dark">
@@ -263,11 +278,11 @@
                             <tr>
                                 <td width="43%" class="text-end">Pendiente por cobrar: </td>
                                 <td width="7.5%"class="text-end"><label class="text-danger">$
-                                        {{ number_format($data->residual_amount_invoicing / $data->amount_exchange, '2', ',', '.') }}</label>
+                                        {{ number_format($data->total_pagar / $data->amount_exchange, '2', ',', '.') }}</label>
                                 </td>
                                 <td width="19%" class="text-end">Pendiente por cobrar: </td>
                                 <td width="10%" class="text-end"><label class="text-danger">Bs.
-                                        {{ number_format($data->residual_amount_invoicing, '2', ',', '.') }}</label>
+                                        {{ number_format($data->total_pagar, '2', ',', '.') }}</label>
                                 </td>
                             </tr>
                             @if ($data->id_order_state != 3)

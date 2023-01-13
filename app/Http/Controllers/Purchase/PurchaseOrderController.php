@@ -372,7 +372,7 @@ class PurchaseOrderController extends Controller
                     [
 
                         'lista' => $dataProductos,
-                        'th' => ['Codigo', 'Descripcion', 'Unidad', 'Presentacion', 'Cantidad', 'Precio', 'Ref $'],
+                        'th' => ['Codigo', 'Descripcion', 'Unidad', 'Presentacion',],
                         'success' => true,
                         'title' => 'Lista de Productos'
 
@@ -392,7 +392,7 @@ class PurchaseOrderController extends Controller
                     [
 
                         'lista' => $dataProductos,
-                        'th' => ['Codigo', 'Descripcion', 'Unidad', 'Presentacion', 'Cantidad', 'Precio', 'Ref $'],
+                        'th' => ['Codigo', 'Descripcion', 'Unidad', 'Presentacion',],
                         'success' => true,
                         'title' => 'Lista de Productos'
 

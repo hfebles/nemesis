@@ -189,8 +189,8 @@ class SalesOrderController extends Controller
         $saveSalesOrder->save();
         $saveDetails = new salesOrderDetails();
         $saveDetails->id_sales_order = $saveSalesOrder->id_sales_order;
-        $saveDetails->ref_name_purchase_order
-        $saveDetails->ctrl_num_purchase_order
+        $saveDetails->ref_name_purchase_order = $saveSalesOrder->ref_name_purchase_order;
+        $saveDetails->ctrl_num_purchase_order = $saveSalesOrder->ctrl_num;
         $saveDetails->details_order_detail = json_encode($dataDetails);
         $saveDetails->save();
 

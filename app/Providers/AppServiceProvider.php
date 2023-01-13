@@ -32,8 +32,8 @@ class AppServiceProvider extends ServiceProvider
 
 
         view()->composer('layouts.app', function($view) {
-            $url = json_decode(Http::get("https://s3.amazonaws.com/dolartoday/data.json"), true);
-            $view->with('url', $url)->with('menus', Menu::menus());
+            //$url = json_decode(Http::get("https://s3.amazonaws.com/dolartoday/data.json"), true);
+            $view->with('menus', Menu::menus());
         });
     }
 }

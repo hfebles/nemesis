@@ -505,14 +505,14 @@
 
                             linea2 += '<td class="text-center">' + c.name_unit_product + '</td>'
                             linea2 += '<td class="text-center">' + c.name_presentation_product + '</td>'
-                            linea2 += '<td class="text-center">' + c.qty_product + '</td>'
-                            if (c.product_usd_product == 0) {
-                                linea2 += '<td class="text-center">Bs. ' + c.price_product + '</td>'
-                                linea2 += '<td class="text-center">N/A</td>'
-                            } else {
-                                linea2 += '<td class="text-center">Bs. ' + (c.price_product * exchangeRate) + '</td>'
-                                linea2 += '<td class="text-center">$ ' + c.price_product + '</td>'
-                            }
+                            // linea2 += '<td class="text-center">' + c.qty_product + '</td>'
+                            // if (c.product_usd_product == 0) {
+                            //     linea2 += '<td class="text-center">Bs. ' + c.price_product + '</td>'
+                            //     linea2 += '<td class="text-center">N/A</td>'
+                            // } else {
+                            //     linea2 += '<td class="text-center">Bs. ' + (c.price_product * exchangeRate) + '</td>'
+                            //     linea2 += '<td class="text-center">$ ' + c.price_product + '</td>'
+                            // }
                             linea2 += '</tr>'
                         } else {
                             linea2 += '<tr onclick=\'cargar(' + a + ', "' + x + '", ' + i + ')\'>'

@@ -45,8 +45,8 @@ class SupplierController extends Controller
             'edit_modal' => false, 
             'url' => "/purchase/supplier",
             'id' => 'id_supplier',
-            'data' => Supplier::where('enabled_supplier', '=', '1')->paginate(10),
-            'i' => (($request->input('page', 1) - 1) * 5),
+            'data' => Supplier::where('enabled_supplier', '=', '1')->paginate(15),
+            'i' => (($request->input('page', 1) - 1) * 15),
         ];
 
         return view('purchases.supplier.index', compact('conf', 'table'));
